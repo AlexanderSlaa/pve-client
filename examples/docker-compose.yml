@@ -1,0 +1,22 @@
+services:
+  pve:
+    stdin_open: true
+    tty: true
+    container_name: proxmoxve
+    hostname: pve
+    ports:
+      - 8006:8006
+    networks:
+      - eth2
+    privileged: true
+    image: rtedpro/proxmox:9.1.4
+
+
+networks:
+  eth2:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "192.168.2.0/24"
+          gateway: "192.168.2.1"

@@ -1,9 +1,21 @@
 import {Client} from "../src";
+import {Agent} from "node:https";
 
-const client = new Client({baseUrl: "https://145.24.223.1:8006", username: 'root', password: 'testing'})
+const {api} = await new Client({
+    baseUrl: "https://localhost:8006",
+    username: 'root',
+    password: 'root',
+    agent: new Agent({rejectUnauthorized: false}),
+}).login()
 
 async function main() {
-    client.api.access.acl.read({})
+    const result = await api.cluster.index({})
+
+    const nodes = await api.nodes.list({});
+
+    const node = await api.nodes.get('pve').index({})
+
+    console.log(result);
 }
 
 main().catch(console.error);
