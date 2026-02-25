@@ -1,4 +1,6 @@
 import {Client} from "../index";
+import type {ArgsTuple} from "./index";
+import {PathContext} from "./index";
 
 export type StorageAPI = {
     "/storage": {
@@ -172,7 +174,7 @@ export default (client: Client) => ({
      * Parameters:
      * - `type` (query, optional, "btrfs" | "cephfs" | "cifs" | "dir" | "esxi" | "iscsi" | "iscsidirect" | "lvm" | "lvmthin" | "nfs" | "pbs" | "rbd" | "zfs" | "zfspool"): Only list storage of specific type
      */
-    index: (args: StorageAPI["/storage"]["GET"]['parameters']) => client.request("/storage", "GET", args),
+    index: (...args: ArgsTuple<StorageAPI["/storage"]["GET"]['parameters']>) => client.request("/storage", "GET", (args[0] ?? {}) as StorageAPI["/storage"]["GET"]['parameters']),
     /**
      * Create a new storage.
      * @endpoint POST /storage
@@ -244,7 +246,7 @@ export default (client: Client) => ({
      * - `vgname` (body, optional, string): Volume group name.
      * - `zfs-base-path` (body, optional, string): Base path where to look for the created ZFS block devices. Set automatically during creation if not specified. Usually '/dev/zvol'.
      */
-    create: (args: StorageAPI["/storage"]["POST"]['parameters']) => client.request("/storage", "POST", args),
+    create: (...args: ArgsTuple<StorageAPI["/storage"]["POST"]['parameters']>) => client.request("/storage", "POST", (args[0] ?? {}) as StorageAPI["/storage"]["POST"]['parameters']),
     storage: (value: string | number) => ({
         /**
          * Delete storage configuration.
@@ -255,7 +257,10 @@ export default (client: Client) => ({
          * Parameters:
          * - `storage` (path, required, string): The storage identifier.
          */
-        delete_: (args: StorageAPI["/storage/{storage}"]["DELETE"]['parameters']) => client.request("/storage/{storage}", "DELETE", args),
+        delete_: (...args: ArgsTuple<PathContext<StorageAPI["/storage/{storage}"]["DELETE"]['parameters']>>) => client.request("/storage/{storage}", "DELETE", {
+            ...((args[0]) as any),
+            $path: {"storage": value.toString()}
+        }),
         /**
          * Read storage configuration.
          * @endpoint GET /storage/{storage}
@@ -265,7 +270,10 @@ export default (client: Client) => ({
          * Parameters:
          * - `storage` (path, required, string): The storage identifier.
          */
-        read: (args: StorageAPI["/storage/{storage}"]["GET"]['parameters']) => client.request("/storage/{storage}", "GET", args),
+        read: (...args: ArgsTuple<PathContext<StorageAPI["/storage/{storage}"]["GET"]['parameters']>>) => client.request("/storage/{storage}", "GET", {
+            ...((args[0]) as any),
+            $path: {"storage": value.toString()}
+        }),
         /**
          * Update storage configuration.
          * @endpoint PUT /storage/{storage}
@@ -327,6 +335,9 @@ export default (client: Client) => ({
          * - `username` (body, optional, string): RBD Id.
          * - `zfs-base-path` (body, optional, string): Base path where to look for the created ZFS block devices. Set automatically during creation if not specified. Usually '/dev/zvol'.
          */
-        update: (args: StorageAPI["/storage/{storage}"]["PUT"]['parameters']) => client.request("/storage/{storage}", "PUT", args)
+        update: (...args: ArgsTuple<PathContext<StorageAPI["/storage/{storage}"]["PUT"]['parameters']>>) => client.request("/storage/{storage}", "PUT", {
+            ...((args[0]) as any),
+            $path: {"storage": value.toString()}
+        })
     })
 }) as const

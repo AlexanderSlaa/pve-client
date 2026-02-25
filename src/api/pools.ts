@@ -1,4 +1,6 @@
 import {Client} from "../index";
+import type {ArgsTuple} from "./index";
+import {PathContext} from "./index";
 
 export type PoolsAPI = {
     "/pools": {
@@ -93,7 +95,7 @@ export default (client: Client) => ({
      * Parameters:
      * - `poolid` (query, required, string)
      */
-    delete: (args: PoolsAPI["/pools"]["DELETE"]['parameters']) => client.request("/pools", "DELETE", args),
+    delete: (...args: ArgsTuple<PoolsAPI["/pools"]["DELETE"]['parameters']>) => client.request("/pools", "DELETE", (args[0] ?? {}) as PoolsAPI["/pools"]["DELETE"]['parameters']),
     /**
      * List pools or get pool configuration.
      * @endpoint GET /pools
@@ -104,7 +106,7 @@ export default (client: Client) => ({
      * - `poolid` (query, optional, string)
      * - `type` (query, optional, "qemu" | "lxc" | "storage")
      */
-    index: (args: PoolsAPI["/pools"]["GET"]['parameters']) => client.request("/pools", "GET", args),
+    index: (...args: ArgsTuple<PoolsAPI["/pools"]["GET"]['parameters']>) => client.request("/pools", "GET", (args[0] ?? {}) as PoolsAPI["/pools"]["GET"]['parameters']),
     /**
      * Create new pool.
      * @endpoint POST /pools
@@ -115,7 +117,7 @@ export default (client: Client) => ({
      * - `comment` (body, optional, string)
      * - `poolid` (body, required, string)
      */
-    create: (args: PoolsAPI["/pools"]["POST"]['parameters']) => client.request("/pools", "POST", args),
+    create: (...args: ArgsTuple<PoolsAPI["/pools"]["POST"]['parameters']>) => client.request("/pools", "POST", (args[0] ?? {}) as PoolsAPI["/pools"]["POST"]['parameters']),
     /**
      * Update pool.
      * @endpoint PUT /pools
@@ -130,7 +132,7 @@ export default (client: Client) => ({
      * - `storage` (body, optional, string): List of storage IDs to add or remove from this pool.
      * - `vms` (body, optional, string): List of guest VMIDs to add or remove from this pool.
      */
-    update: (args: PoolsAPI["/pools"]["PUT"]['parameters']) => client.request("/pools", "PUT", args),
+    update: (...args: ArgsTuple<PoolsAPI["/pools"]["PUT"]['parameters']>) => client.request("/pools", "PUT", (args[0] ?? {}) as PoolsAPI["/pools"]["PUT"]['parameters']),
     id: (poolid: string) => ({
         /**
          * Delete pool (deprecated, no support for nested pools, use 'DELETE /pools/?poolid={poolid}').
@@ -141,8 +143,8 @@ export default (client: Client) => ({
          * Parameters:
          * - `poolid` (path, required, string)
          */
-        delete_deprecated: (args: PoolsAPI["/pools/{poolid}"]["DELETE"]['parameters']) => client.request("/pools/{poolid}", "DELETE", {
-            ...args,
+        delete_deprecated: (...args: ArgsTuple<PathContext<PoolsAPI["/pools/{poolid}"]["DELETE"]['parameters']>>) => client.request("/pools/{poolid}", "DELETE", {
+            ...((args[0]) as any),
             $path: {poolid}
         }),
         /**
@@ -155,8 +157,8 @@ export default (client: Client) => ({
          * - `poolid` (path, required, string)
          * - `type` (query, optional, "qemu" | "lxc" | "storage")
          */
-        read: (args: PoolsAPI["/pools/{poolid}"]["GET"]['parameters']) => client.request("/pools/{poolid}", "GET", {
-            ...args,
+        read: (...args: ArgsTuple<PathContext<PoolsAPI["/pools/{poolid}"]["GET"]['parameters']>>) => client.request("/pools/{poolid}", "GET", {
+            ...((args[0]) as any),
             $path: {poolid}
         }),
         /**
@@ -173,8 +175,8 @@ export default (client: Client) => ({
          * - `storage` (body, optional, string): List of storage IDs to add or remove from this pool.
          * - `vms` (body, optional, string): List of guest VMIDs to add or remove from this pool.
          */
-        update_deprecated: (args: PoolsAPI["/pools/{poolid}"]["PUT"]['parameters']) => client.request("/pools/{poolid}", "PUT", {
-            ...args,
+        update_deprecated: (...args: ArgsTuple<PathContext<PoolsAPI["/pools/{poolid}"]["PUT"]['parameters']>>) => client.request("/pools/{poolid}", "PUT", {
+            ...((args[0]) as any),
             $path: {poolid}
         })
     })

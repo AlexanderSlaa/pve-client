@@ -10,6 +10,9 @@ export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 export type PathContext<T extends { $path: any }> = Omit<T, '$path'>;
 
+export type ArgsTuple<T> = keyof T extends never ? [args?: T] : [args: T];
+
+
 export type MethodKey<P extends keyof API> = Extract<keyof API[P], HttpMethod>;
 
 export type Params<P extends keyof API, M extends MethodKey<P>> =
@@ -17,6 +20,13 @@ export type Params<P extends keyof API, M extends MethodKey<P>> =
 
 export type Ret<P extends keyof API, M extends MethodKey<P>> =
     API[P][M] extends { return: infer R } ? R : never;
+
+export type QueryOf<P extends keyof API, M extends MethodKey<P>> =
+    Params<P, M> extends { $query: infer Q } ? Q : never;
+
+export type BodyOf<P extends keyof API, M extends MethodKey<P>> =
+    Params<P, M> extends { $body: infer B } ? B : never;
+
 
 export type AnyArgs = {
     $path?: Record<string, string | number>;

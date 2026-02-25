@@ -1,4 +1,5 @@
 import {Client} from "../index";
+import type {ArgsTuple} from "./index";
 import {PathContext} from "./";
 
 export type AccessAPI = {
@@ -578,7 +579,7 @@ export default (client: Client) => ({
      * @allowToken 1
      * @permissions {"user": "all"}
      */
-    index: (args: AccessAPI["/access"]["GET"]['parameters']) => client.request("/access", "GET", args),
+    index: (...args: ArgsTuple<AccessAPI["/access"]["GET"]['parameters']>) => client.request("/access", "GET", (args[0] ?? {}) as AccessAPI["/access"]["GET"]['parameters']),
     acl: {
         /**
          * Get Access Control List (ACLs).
@@ -586,7 +587,7 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"description": "The returned list is restricted to objects where you have rights to modify permissions.", "user": "all"}
          */
-        read: (args: AccessAPI["/access/acl"]["GET"]['parameters']) => client.request("/access/acl", "GET", args),
+        read: (...args: ArgsTuple<AccessAPI["/access/acl"]["GET"]['parameters']>) => client.request("/access/acl", "GET", (args[0] ?? {}) as AccessAPI["/access/acl"]["GET"]['parameters']),
         /**
          * Update Access Control List (add or remove permissions).
          * @endpoint PUT /access/acl
@@ -602,7 +603,7 @@ export default (client: Client) => ({
          * - `tokens` (body, optional, string): List of API tokens.
          * - `users` (body, optional, string): List of users.
          */
-        update: (args: AccessAPI["/access/acl"]["PUT"]['parameters']) => client.request("/access/acl", "PUT", args)
+        update: (...args: ArgsTuple<AccessAPI["/access/acl"]["PUT"]['parameters']>) => client.request("/access/acl", "PUT", (args[0] ?? {}) as AccessAPI["/access/acl"]["PUT"]['parameters'])
     },
     domains: {
         /**
@@ -611,7 +612,7 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"description": "Anyone can access that, because we need that list for the login box (before the user is authenticated).", "user": "world"}
          */
-        index: (args: AccessAPI["/access/domains"]["GET"]['parameters']) => client.request("/access/domains", "GET", args),
+        index: (...args: ArgsTuple<AccessAPI["/access/domains"]["GET"]['parameters']>) => client.request("/access/domains", "GET", (args[0] ?? {}) as AccessAPI["/access/domains"]["GET"]['parameters']),
         /**
          * Add an authentication server.
          * @endpoint POST /access/domains
@@ -662,7 +663,7 @@ export default (client: Client) => ({
          * - `username-claim` (body, optional, string): OpenID claim used to generate the unique username.
          * - `verify` (body, optional, boolean): Verify the server's SSL certificate
          */
-        create: (args: AccessAPI["/access/domains"]["POST"]['parameters']) => client.request("/access/domains", "POST", args),
+        create: (...args: ArgsTuple<AccessAPI["/access/domains"]["POST"]['parameters']>) => client.request("/access/domains", "POST", (args[0] ?? {}) as AccessAPI["/access/domains"]["POST"]['parameters']),
         realm: (value: string) => ({
             /**
              * Delete an authentication server.
@@ -673,8 +674,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `realm` (path, required, string): Authentication domain ID
              */
-            delete: (args: PathContext<AccessAPI["/access/domains/{realm}"]["DELETE"]['parameters']>) => client.request("/access/domains/{realm}", "DELETE", {
-                ...args,
+            delete: (...args: ArgsTuple<PathContext<AccessAPI["/access/domains/{realm}"]["DELETE"]['parameters']>>) => client.request("/access/domains/{realm}", "DELETE", {
+                ...((args[0]) as any),
                 $path: {realm: value}
             }),
             /**
@@ -686,8 +687,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `realm` (path, required, string): Authentication domain ID
              */
-            read: (args: PathContext<AccessAPI["/access/domains/{realm}"]["GET"]['parameters']>) => client.request("/access/domains/{realm}", "GET", {
-                ...args,
+            read: (...args: ArgsTuple<PathContext<AccessAPI["/access/domains/{realm}"]["GET"]['parameters']>>) => client.request("/access/domains/{realm}", "GET", {
+                ...((args[0]) as any),
                 $path: {realm: value}
             }),
             /**
@@ -740,8 +741,8 @@ export default (client: Client) => ({
              * - `user_classes` (body, optional, string): The objectclasses for users.
              * - `verify` (body, optional, boolean): Verify the server's SSL certificate
              */
-            update: (args: PathContext<AccessAPI["/access/domains/{realm}"]["PUT"]['parameters']>) => client.request("/access/domains/{realm}", "PUT", {
-                ...args,
+            update: (...args: ArgsTuple<PathContext<AccessAPI["/access/domains/{realm}"]["PUT"]['parameters']>>) => client.request("/access/domains/{realm}", "PUT", {
+                ...((args[0]) as any),
                 $path: {realm: value}
             }),
             /**
@@ -759,8 +760,8 @@ export default (client: Client) => ({
              * - `remove-vanished` (body, optional, string): A semicolon-separated list of things to remove when they or the user vanishes during a sync. The following values are possible: 'entry' removes the user/group when not returned from the sync. 'properties' removes the set properties on existing user/group that do not appear in the source (even custom ones). 'acl' removes acls when the user/group is not returned from the sync. Instead of a list it also can be 'none' (the default).
              * - `scope` (body, optional, "users" | "groups" | "both"): Select what to sync.
              */
-            sync: (args: PathContext<AccessAPI["/access/domains/{realm}/sync"]["POST"]['parameters']>) => client.request("/access/domains/{realm}/sync", "POST", {
-                ...args,
+            sync: (...args: ArgsTuple<PathContext<AccessAPI["/access/domains/{realm}/sync"]["POST"]['parameters']>>) => client.request("/access/domains/{realm}/sync", "POST", {
+                ...((args[0]) as any),
                 $path: {realm: value}
             })
         }) as const
@@ -772,7 +773,7 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"description": "The returned list is restricted to groups where you have 'User.Modify', 'Sys.Audit'  or 'Group.Allocate' permissions on /access/groups/<group>.", "user": "all"}
          */
-        index: (args: AccessAPI["/access/groups"]["GET"]['parameters']) => client.request("/access/groups", "GET", args),
+        index: (...args: ArgsTuple<AccessAPI["/access/groups"]["GET"]['parameters']>) => client.request("/access/groups", "GET", (args[0] ?? {}) as AccessAPI["/access/groups"]["GET"]['parameters']),
         /**
          * Create new group.
          * @endpoint POST /access/groups
@@ -783,7 +784,7 @@ export default (client: Client) => ({
          * - `comment` (body, optional, string)
          * - `groupid` (body, required, string)
          */
-        create_group: (args: AccessAPI["/access/groups"]["POST"]['parameters']) => client.request("/access/groups", "POST", args),
+        create_group: (...args: ArgsTuple<AccessAPI["/access/groups"]["POST"]['parameters']>) => client.request("/access/groups", "POST", (args[0] ?? {}) as AccessAPI["/access/groups"]["POST"]['parameters']),
         id: (value: string | number) => ({
             /**
              * Delete group.
@@ -794,8 +795,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `groupid` (path, required, string)
              */
-            delete: (args: PathContext<AccessAPI["/access/groups/{groupid}"]["DELETE"]['parameters']>) => client.request("/access/groups/{groupid}", "DELETE", {
-                ...args,
+            delete: (...args: ArgsTuple<PathContext<AccessAPI["/access/groups/{groupid}"]["DELETE"]['parameters']>>) => client.request("/access/groups/{groupid}", "DELETE", {
+                ...((args[0]) as any),
                 $path: {groupid: value.toString()}
             }),
             /**
@@ -807,8 +808,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `groupid` (path, required, string)
              */
-            read: (args: PathContext<AccessAPI["/access/groups/{groupid}"]["GET"]['parameters']>) => client.request("/access/groups/{groupid}", "GET", {
-                ...args,
+            read: (...args: ArgsTuple<PathContext<AccessAPI["/access/groups/{groupid}"]["GET"]['parameters']>>) => client.request("/access/groups/{groupid}", "GET", {
+                ...((args[0]) as any),
                 $path: {groupid: value.toString()}
             }),
             /**
@@ -821,8 +822,8 @@ export default (client: Client) => ({
              * - `comment` (body, optional, string)
              * - `groupid` (path, required, string)
              */
-            update: (args: PathContext<AccessAPI["/access/groups/{groupid}"]["PUT"]['parameters']>) => client.request("/access/groups/{groupid}", "PUT", {
-                ...args,
+            update: (...args: ArgsTuple<PathContext<AccessAPI["/access/groups/{groupid}"]["PUT"]['parameters']>>) => client.request("/access/groups/{groupid}", "PUT", {
+                ...((args[0]) as any),
                 $path: {groupid: value.toString()}
             })
         })
@@ -834,7 +835,7 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"user": "all"}
          */
-        index: (args: AccessAPI["/access/openid"]["GET"]['parameters']) => client.request("/access/openid", "GET", args),
+        index: (...args: ArgsTuple<AccessAPI["/access/openid"]["GET"]['parameters']>) => client.request("/access/openid", "GET", (args[0] ?? {}) as AccessAPI["/access/openid"]["GET"]['parameters']),
         /**
          * Get the OpenId Authorization Url for the specified realm.
          * @endpoint POST /access/openid/auth-url
@@ -845,7 +846,7 @@ export default (client: Client) => ({
          * - `realm` (body, required, string): Authentication domain ID
          * - `redirect-url` (body, required, string): Redirection Url. The client should set this to the used server url (location.origin).
          */
-        auth_url: (args: AccessAPI["/access/openid/auth-url"]["POST"]['parameters']) => client.request("/access/openid/auth-url", "POST", args),
+        auth_url: (...args: ArgsTuple<AccessAPI["/access/openid/auth-url"]["POST"]['parameters']>) => client.request("/access/openid/auth-url", "POST", (args[0] ?? {}) as AccessAPI["/access/openid/auth-url"]["POST"]['parameters']),
         /**
          * Verify OpenID authorization code and create a ticket.
          * @endpoint POST /access/openid/login
@@ -857,7 +858,7 @@ export default (client: Client) => ({
          * - `redirect-url` (body, required, string): Redirection Url. The client should set this to the used server url (location.origin).
          * - `state` (body, required, string): OpenId state.
          */
-        login: (args: AccessAPI["/access/openid/login"]["POST"]['parameters']) => client.request("/access/openid/login", "POST", args)
+        login: (...args: ArgsTuple<AccessAPI["/access/openid/login"]["POST"]['parameters']>) => client.request("/access/openid/login", "POST", (args[0] ?? {}) as AccessAPI["/access/openid/login"]["POST"]['parameters'])
     },
     password: {
         /**
@@ -871,7 +872,7 @@ export default (client: Client) => ({
          * - `password` (body, required, string): The new password.
          * - `userid` (body, required, string): Full User ID, in the `name@realm` format.
          */
-        change_password: (args: AccessAPI["/access/password"]["PUT"]['parameters']) => client.request("/access/password", "PUT", args)
+        change_password: (...args: ArgsTuple<AccessAPI["/access/password"]["PUT"]['parameters']>) => client.request("/access/password", "PUT", (args[0] ?? {}) as AccessAPI["/access/password"]["PUT"]['parameters'])
     },
     /**
      * Retrieve effective permissions of given user/token.
@@ -883,7 +884,7 @@ export default (client: Client) => ({
      * - `path` (query, optional, string): Only dump this specific path, not the whole tree.
      * - `userid` (query, optional, string): User ID or full API token ID
      */
-    permissions: (args: AccessAPI["/access/permissions"]["GET"]['parameters']) => client.request("/access/permissions", "GET", args),
+    permissions: (...args: ArgsTuple<AccessAPI["/access/permissions"]["GET"]['parameters']>) => client.request("/access/permissions", "GET", (args[0] ?? {}) as AccessAPI["/access/permissions"]["GET"]['parameters']),
     roles: {
         /**
          * Role index.
@@ -891,7 +892,7 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"user": "all"}
          */
-        index: (args: AccessAPI["/access/roles"]["GET"]['parameters']) => client.request("/access/roles", "GET", args),
+        index: (...args: ArgsTuple<AccessAPI["/access/roles"]["GET"]['parameters']>) => client.request("/access/roles", "GET", (args[0] ?? {}) as AccessAPI["/access/roles"]["GET"]['parameters']),
         /**
          * Create new role.
          * @endpoint POST /access/roles
@@ -902,7 +903,7 @@ export default (client: Client) => ({
          * - `privs` (body, optional, string)
          * - `roleid` (body, required, string)
          */
-        create_role: (args: AccessAPI["/access/roles"]["POST"]['parameters']) => client.request("/access/roles", "POST", args),
+        create_role: (...args: ArgsTuple<AccessAPI["/access/roles"]["POST"]['parameters']>) => client.request("/access/roles", "POST", (args[0] ?? {}) as AccessAPI["/access/roles"]["POST"]['parameters']),
         role: (value: string | number) => ({
             /**
              * Delete role.
@@ -913,8 +914,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `roleid` (path, required, string)
              */
-            delete: (args: PathContext<AccessAPI["/access/roles/{roleid}"]["DELETE"]['parameters']>) => client.request("/access/roles/{roleid}", "DELETE", {
-                ...args,
+            delete: (...args: ArgsTuple<PathContext<AccessAPI["/access/roles/{roleid}"]["DELETE"]['parameters']>>) => client.request("/access/roles/{roleid}", "DELETE", {
+                ...((args[0]) as any),
                 $path: {"roleid": value.toString()}
             }),
             /**
@@ -926,8 +927,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `roleid` (path, required, string)
              */
-            read: (args: PathContext<AccessAPI["/access/roles/{roleid}"]["GET"]['parameters']>) => client.request("/access/roles/{roleid}", "GET", {
-                ...args,
+            read: (...args: ArgsTuple<PathContext<AccessAPI["/access/roles/{roleid}"]["GET"]['parameters']>>) => client.request("/access/roles/{roleid}", "GET", {
+                ...((args[0]) as any),
                 $path: {"roleid": value.toString()}
             }),
             /**
@@ -941,8 +942,8 @@ export default (client: Client) => ({
              * - `privs` (body, optional, string)
              * - `roleid` (path, required, string)
              */
-            update: (args: PathContext<AccessAPI["/access/roles/{roleid}"]["PUT"]['parameters']>) => client.request("/access/roles/{roleid}", "PUT", {
-                ...args,
+            update: (...args: ArgsTuple<PathContext<AccessAPI["/access/roles/{roleid}"]["PUT"]['parameters']>>) => client.request("/access/roles/{roleid}", "PUT", {
+                ...((args[0]) as any),
                 $path: {"roleid": value.toString()}
             })
         })
@@ -954,7 +955,7 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"description": "Returns all or just the logged-in user, depending on privileges.", "user": "all"}
          */
-        list: (args: AccessAPI["/access/tfa"]["GET"]['parameters']) => client.request("/access/tfa", "GET", args),
+        list: (...args: ArgsTuple<AccessAPI["/access/tfa"]["GET"]['parameters']>) => client.request("/access/tfa", "GET", (args[0] ?? {}) as AccessAPI["/access/tfa"]["GET"]['parameters']),
         user: (userid: string | number) => ({
             /**
              * List TFA configurations of users.
@@ -965,8 +966,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
              */
-            list_user_tfa: (args: PathContext<AccessAPI["/access/tfa/{userid}"]["GET"]['parameters']>) => client.request("/access/tfa/{userid}", "GET", {
-                ...args,
+            list_user_tfa: (...args: ArgsTuple<PathContext<AccessAPI["/access/tfa/{userid}"]["GET"]['parameters']>>) => client.request("/access/tfa/{userid}", "GET", {
+                ...((args[0]) as any),
                 $path: {"userid": userid.toString()}
             }),
             /**
@@ -984,8 +985,8 @@ export default (client: Client) => ({
              * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
              * - `value` (body, optional, string): The current value for the provided totp URI, or a Webauthn/U2F challenge response
              */
-            add_tfa_entry: (args: PathContext<AccessAPI["/access/tfa/{userid}"]["POST"]['parameters']>) => client.request("/access/tfa/{userid}", "POST", {
-                ...args,
+            add_tfa_entry: (...args: ArgsTuple<PathContext<AccessAPI["/access/tfa/{userid}"]["POST"]['parameters']>>) => client.request("/access/tfa/{userid}", "POST", {
+                ...((args[0]) as any),
                 $path: {"userid": userid.toString()}
             }),
             id: (value: string | number) => ({
@@ -1000,8 +1001,8 @@ export default (client: Client) => ({
                  * - `password` (query, optional, string): The current password of the user performing the change.
                  * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
                  */
-                delete: (args: PathContext<AccessAPI["/access/tfa/{userid}/{id}"]["DELETE"]['parameters']>) => client.request("/access/tfa/{userid}/{id}", "DELETE", {
-                    ...args,
+                delete: (...args: ArgsTuple<PathContext<AccessAPI["/access/tfa/{userid}/{id}"]["DELETE"]['parameters']>>) => client.request("/access/tfa/{userid}/{id}", "DELETE", {
+                    ...((args[0]) as any),
                     $path: {"id": value.toString(), userid: userid.toString()}
                 }),
                 /**
@@ -1014,8 +1015,8 @@ export default (client: Client) => ({
                  * - `id` (path, required, string): A TFA entry id.
                  * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
                  */
-                get: (args: PathContext<AccessAPI["/access/tfa/{userid}/{id}"]["GET"]['parameters']>) => client.request("/access/tfa/{userid}/{id}", "GET", {
-                    ...args,
+                get: (...args: ArgsTuple<PathContext<AccessAPI["/access/tfa/{userid}/{id}"]["GET"]['parameters']>>) => client.request("/access/tfa/{userid}/{id}", "GET", {
+                    ...((args[0]) as any),
                     $path: {"id": value.toString(), userid: userid.toString()}
                 }),
                 /**
@@ -1031,8 +1032,8 @@ export default (client: Client) => ({
                  * - `password` (body, optional, string): The current password of the user performing the change.
                  * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
                  */
-                update: (args: PathContext<AccessAPI["/access/tfa/{userid}/{id}"]["PUT"]['parameters']>) => client.request("/access/tfa/{userid}/{id}", "PUT", {
-                    ...args,
+                update: (...args: ArgsTuple<PathContext<AccessAPI["/access/tfa/{userid}/{id}"]["PUT"]['parameters']>>) => client.request("/access/tfa/{userid}/{id}", "PUT", {
+                    ...((args[0]) as any),
                     $path: {"id": value.toString(), userid: userid.toString()}
                 })
             })
@@ -1045,7 +1046,7 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"user": "world"}
          */
-        get: (args: AccessAPI["/access/ticket"]["GET"]['parameters']) => client.request("/access/ticket", "GET", args),
+        get: (...args: ArgsTuple<AccessAPI["/access/ticket"]["GET"]['parameters']>) => client.request("/access/ticket", "GET", (args[0] ?? {}) as AccessAPI["/access/ticket"]["GET"]['parameters']),
         /**
          * Create or verify authentication ticket.
          * @endpoint POST /access/ticket
@@ -1062,7 +1063,7 @@ export default (client: Client) => ({
          * - `tfa-challenge` (body, optional, string): The signed TFA challenge string the user wants to respond to.
          * - `username` (body, required, string): User name
          */
-        create: (args: AccessAPI["/access/ticket"]["POST"]['parameters']) => client.request("/access/ticket", "POST", args)
+        create: (...args: ArgsTuple<AccessAPI["/access/ticket"]["POST"]['parameters']>) => client.request("/access/ticket", "POST", (args[0] ?? {}) as AccessAPI["/access/ticket"]["POST"]['parameters'])
     },
     users: {
         /**
@@ -1075,7 +1076,7 @@ export default (client: Client) => ({
          * - `enabled` (query, optional, boolean): Optional filter for enable property.
          * - `full` (query, optional, boolean): Include group and token information.
          */
-        index: (args: AccessAPI["/access/users"]["GET"]['parameters']) => client.request("/access/users", "GET", args),
+        index: (...args: ArgsTuple<AccessAPI["/access/users"]["GET"]['parameters']>) => client.request("/access/users", "GET", (args[0] ?? {}) as AccessAPI["/access/users"]["GET"]['parameters']),
         /**
          * Create new user.
          * @endpoint POST /access/users
@@ -1094,7 +1095,7 @@ export default (client: Client) => ({
          * - `password` (body, optional, string): Initial password.
          * - `userid` (body, required, string): Full User ID, in the `name@realm` format.
          */
-        create: (args: AccessAPI["/access/users"]["POST"]['parameters']) => client.request("/access/users", "POST", args),
+        create: (...args: ArgsTuple<AccessAPI["/access/users"]["POST"]['parameters']>) => client.request("/access/users", "POST", (args[0] ?? {}) as AccessAPI["/access/users"]["POST"]['parameters']),
         user: (user_id: string | number) => ({
             /**
              * Delete user.
@@ -1105,8 +1106,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
              */
-            delete: (args: PathContext<AccessAPI["/access/users/{userid}"]["DELETE"]['parameters']>) => client.request("/access/users/{userid}", "DELETE", {
-                ...args,
+            delete: (...args: ArgsTuple<PathContext<AccessAPI["/access/users/{userid}"]["DELETE"]['parameters']>>) => client.request("/access/users/{userid}", "DELETE", {
+                ...((args[0]) as any),
                 $path: {"userid": user_id.toString()}
             }),
             /**
@@ -1118,8 +1119,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
              */
-            read: (args: PathContext<AccessAPI["/access/users/{userid}"]["GET"]['parameters']>) => client.request("/access/users/{userid}", "GET", {
-                ...args,
+            read: (...args: ArgsTuple<PathContext<AccessAPI["/access/users/{userid}"]["GET"]['parameters']>>) => client.request("/access/users/{userid}", "GET", {
+                ...((args[0]) as any),
                 $path: {"userid": user_id.toString()}
             }),
             /**
@@ -1140,8 +1141,8 @@ export default (client: Client) => ({
              * - `lastname` (body, optional, string)
              * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
              */
-            update: (args: PathContext<AccessAPI["/access/users/{userid}"]["PUT"]['parameters']>) => client.request("/access/users/{userid}", "PUT", {
-                ...args,
+            update: (...args: ArgsTuple<PathContext<AccessAPI["/access/users/{userid}"]["PUT"]['parameters']>>) => client.request("/access/users/{userid}", "PUT", {
+                ...((args[0]) as any),
                 $path: {"userid": user_id.toString()}
             }),
             tfa: {
@@ -1155,8 +1156,8 @@ export default (client: Client) => ({
                  * - `multiple` (query, optional, boolean): Request all entries as an array.
                  * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
                  */
-                read_user_tfa_type: (args: PathContext<AccessAPI["/access/users/{userid}/tfa"]["GET"]['parameters']>) => client.request("/access/users/{userid}/tfa", "GET", {
-                    ...args,
+                read_user_tfa_type: (...args: ArgsTuple<PathContext<AccessAPI["/access/users/{userid}/tfa"]["GET"]['parameters']>>) => client.request("/access/users/{userid}/tfa", "GET", {
+                    ...((args[0]) as any),
                     $path: {"userid": user_id.toString()}
                 })
             },
@@ -1170,7 +1171,10 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
                  */
-                token_index: (args: AccessAPI["/access/users/{userid}/token"]["GET"]['parameters']) => client.request("/access/users/{userid}/token", "GET", args),
+                token_index: (...args: ArgsTuple<PathContext<AccessAPI["/access/users/{userid}/token"]["GET"]['parameters']>>) => client.request("/access/users/{userid}/token", "GET", {
+                    ...((args[0]) as any),
+                    $path: {"userid": user_id.toString()}
+                }),
                 id: (value: string | number) => ({
                     /**
                      * Remove API token for a specific user.
@@ -1182,8 +1186,8 @@ export default (client: Client) => ({
                      * - `tokenid` (path, required, string): User-specific token identifier.
                      * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
                      */
-                    remove: (args: PathContext<AccessAPI["/access/users/{userid}/token/{tokenid}"]["DELETE"]['parameters']>) => client.request("/access/users/{userid}/token/{tokenid}", "DELETE", {
-                        ...args,
+                    remove: (...args: ArgsTuple<PathContext<AccessAPI["/access/users/{userid}/token/{tokenid}"]["DELETE"]['parameters']>>) => client.request("/access/users/{userid}/token/{tokenid}", "DELETE", {
+                        ...((args[0]) as any),
                         $path: {"tokenid": value.toString(), userid: user_id.toString()}
                     }),
                     /**
@@ -1196,8 +1200,8 @@ export default (client: Client) => ({
                      * - `tokenid` (path, required, string): User-specific token identifier.
                      * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
                      */
-                    read: (args: PathContext<AccessAPI["/access/users/{userid}/token/{tokenid}"]["GET"]['parameters']>) => client.request("/access/users/{userid}/token/{tokenid}", "GET", {
-                        ...args,
+                    read: (...args: ArgsTuple<PathContext<AccessAPI["/access/users/{userid}/token/{tokenid}"]["GET"]['parameters']>>) => client.request("/access/users/{userid}/token/{tokenid}", "GET", {
+                        ...((args[0]) as any),
                         $path: {"tokenid": value.toString(), userid: user_id.toString()}
                     }),
                     /**
@@ -1213,8 +1217,8 @@ export default (client: Client) => ({
                      * - `tokenid` (path, required, string): User-specific token identifier.
                      * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
                      */
-                    generate: (args: PathContext<AccessAPI["/access/users/{userid}/token/{tokenid}"]["POST"]['parameters']>) => client.request("/access/users/{userid}/token/{tokenid}", "POST", {
-                        ...args,
+                    generate: (...args: ArgsTuple<PathContext<AccessAPI["/access/users/{userid}/token/{tokenid}"]["POST"]['parameters']>>) => client.request("/access/users/{userid}/token/{tokenid}", "POST", {
+                        ...((args[0]) as any),
                         $path: {"tokenid": value.toString(), userid: user_id.toString()}
                     }),
                     /**
@@ -1231,8 +1235,8 @@ export default (client: Client) => ({
                      * - `tokenid` (path, required, string): User-specific token identifier.
                      * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
                      */
-                    update_info: (args: PathContext<AccessAPI["/access/users/{userid}/token/{tokenid}"]["PUT"]['parameters']>) => client.request("/access/users/{userid}/token/{tokenid}", "PUT", {
-                        ...args,
+                    update_info: (...args: ArgsTuple<PathContext<AccessAPI["/access/users/{userid}/token/{tokenid}"]["PUT"]['parameters']>>) => client.request("/access/users/{userid}/token/{tokenid}", "PUT", {
+                        ...((args[0]) as any),
                         $path: {"tokenid": value.toString(), userid: user_id.toString()}
                     }),
                 })
@@ -1246,8 +1250,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
              */
-            unlock_tfa: (args: PathContext<AccessAPI["/access/users/{userid}/unlock-tfa"]["PUT"]['parameters']>) => client.request("/access/users/{userid}/unlock-tfa", "PUT", {
-                ...args,
+            unlock_tfa: (...args: ArgsTuple<PathContext<AccessAPI["/access/users/{userid}/unlock-tfa"]["PUT"]['parameters']>>) => client.request("/access/users/{userid}/unlock-tfa", "PUT", {
+                ...((args[0]) as any),
                 $path: {userid: user_id.toString()}
             }),
         })
@@ -1265,6 +1269,6 @@ export default (client: Client) => ({
          * - `privs` (body, required, string): Verify ticket, and check if user have access 'privs' on 'path'
          * - `vncticket` (body, required, string): The VNC ticket.
          */
-        verify_vnc_ticket: (args: AccessAPI["/access/vncticket"]["POST"]['parameters']) => client.request("/access/vncticket", "POST", args)
+        verify_vnc_ticket: (...args: ArgsTuple<AccessAPI["/access/vncticket"]["POST"]['parameters']>) => client.request("/access/vncticket", "POST", (args[0] ?? {}) as AccessAPI["/access/vncticket"]["POST"]['parameters'])
     }
 }) as const;

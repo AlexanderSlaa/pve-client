@@ -1,5 +1,12 @@
 # pve-client
 
+[![npm version](https://img.shields.io/npm/v/pve-client)](https://www.npmjs.com/package/pve-client)
+[![GitHub repo](https://img.shields.io/badge/GitHub-AlexanderSlaa%2Fpve--client-181717?logo=github)](https://github.com/AlexanderSlaa/pve-client)
+[![License](https://img.shields.io/github/license/AlexanderSlaa/pve-client)](LICENSE)
+[![Tests](https://github.com/AlexanderSlaa/pve-client/actions/workflows/test.yml/badge.svg)](https://github.com/AlexanderSlaa/pve-client/actions/workflows/test.yml)
+[![Coverage](https://github.com/AlexanderSlaa/pve-client/actions/workflows/codecov-coverage.yml/badge.svg)](https://github.com/AlexanderSlaa/pve-client/actions/workflows/codecov-coverage.yml)
+[![codecov](https://codecov.io/gh/AlexanderSlaa/pve-client/graph/badge.svg)](https://codecov.io/gh/AlexanderSlaa/pve-client)
+
 TypeScript-first API client for Proxmox VE.
 
 It provides a typed API surface generated from the Proxmox spec, so endpoint paths, query/body fields, and return types are available through autocomplete.
@@ -158,6 +165,31 @@ Controls:
 - `Ctrl-]` disconnects from the local bridge.
 - Terminal resize is forwarded automatically.
 
+## Live Tasks Example
+
+There is also a terminal example that continuously displays cluster tasks:
+
+```bash
+npm run example/tasks
+```
+
+Optional `.env` values:
+
+```env
+# required
+PVE_BASE_URL=https://pve.example.com:8006
+
+# auth: use token OR username/password
+PVE_API_TOKEN=PVEAPIToken=root@pam!tokenid=secret
+# or:
+PVE_USERNAME=root
+PVE_PASSWORD=your-password
+PVE_REALM=pam
+
+# optional polling interval (default 2000)
+PVE_TASKS_POLL_INTERVAL_MS=2000
+```
+
 ## Error Handling
 
 Non-2xx responses throw an `Error` including status and response text:
@@ -175,9 +207,24 @@ try {
 ```bash
 npm run build
 npm test
+npm run test:coverage
 npm run example/auth
 npm run example/terminal -- 100
+npm run example/tasks
 ```
+
+## Testing
+
+This project uses Vitest in a Node environment.
+
+- `npm test` runs all tests
+- `npm run test:coverage` runs tests and generates coverage reports (`text`, `json`, `html`)
+
+Current high-value suites cover:
+
+- `Client` authentication, request handling, events, and task polling
+- `native_fetch` request construction, header/body behavior, and abort handling
+- `TimerPulledEventEmitter` polling, filtering, dedupe, and error flows
 
 ## License
 

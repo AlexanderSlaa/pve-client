@@ -1,4 +1,5 @@
 import {Client} from "../index";
+import type {ArgsTuple} from "./index";
 import {PathContext} from "./index";
 
 export type Service =
@@ -4658,7 +4659,7 @@ export default (client: Client) => ({
      * @allowToken 1
      * @permissions {"user": "all"}
      */
-    list: (args: NodesAPI["/nodes"]["GET"]['parameters']) => client.request("/nodes", "GET", args),
+    list: (...args: ArgsTuple<NodesAPI["/nodes"]["GET"]['parameters']>) => client.request("/nodes", "GET", (args[0] ?? {}) as NodesAPI["/nodes"]["GET"]['parameters']),
     get: (node: string) => ({
         /**
          * Node index.
@@ -4669,8 +4670,8 @@ export default (client: Client) => ({
          * Parameters:
          * - `node` (path, required, string): The cluster node name.
          */
-        index: (args: PathContext<NodesAPI["/nodes/{node}"]["GET"]['parameters']>) => client.request("/nodes/{node}", "GET", {
-            ...args,
+        index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}"]["GET"]['parameters']>>) => client.request("/nodes/{node}", "GET", {
+            ...((args[0]) as any),
             $path: {node}
         }),
         aplinfo: {
@@ -4683,8 +4684,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `node` (path, required, string): The cluster node name.
              */
-            aplinfo: (args: PathContext<NodesAPI["/nodes/{node}/aplinfo"]["GET"]['parameters']>) => client.request("/nodes/{node}/aplinfo", "GET", {
-                ...args,
+            aplinfo: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/aplinfo"]["GET"]['parameters']>>) => client.request("/nodes/{node}/aplinfo", "GET", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             /**
@@ -4698,8 +4699,8 @@ export default (client: Client) => ({
              * - `storage` (body, required, string): The storage where the template will be stored
              * - `template` (body, required, string): The template which will downloaded
              */
-            apl_download: (args: PathContext<NodesAPI["/nodes/{node}/aplinfo"]["POST"]['parameters']>) => client.request("/nodes/{node}/aplinfo", "POST", {
-                ...args,
+            apl_download: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/aplinfo"]["POST"]['parameters']>>) => client.request("/nodes/{node}/aplinfo", "POST", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
         },
@@ -4713,8 +4714,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `node` (path, required, string): The cluster node name.
              */
-            index: (args: PathContext<NodesAPI["/nodes/{node}/apt"]["GET"]['parameters']>) => client.request("/nodes/{node}/apt", "GET", {
-                ...args,
+            index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/apt"]["GET"]['parameters']>>) => client.request("/nodes/{node}/apt", "GET", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             /**
@@ -4728,8 +4729,8 @@ export default (client: Client) => ({
              * - `node` (path, required, string): The cluster node name.
              * - `version` (query, optional, string): Package version.
              */
-            changelog: (args: PathContext<NodesAPI["/nodes/{node}/apt/changelog"]["GET"]['parameters']>) => client.request("/nodes/{node}/apt/changelog", "GET", {
-                ...args,
+            changelog: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/apt/changelog"]["GET"]['parameters']>>) => client.request("/nodes/{node}/apt/changelog", "GET", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             repositories: {
@@ -4742,8 +4743,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                list: (args: PathContext<NodesAPI["/nodes/{node}/apt/repositories"]["GET"]['parameters']>) => client.request("/nodes/{node}/apt/repositories", "GET", {
-                    ...args,
+                list: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/apt/repositories"]["GET"]['parameters']>>) => client.request("/nodes/{node}/apt/repositories", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -4759,8 +4760,8 @@ export default (client: Client) => ({
                  * - `node` (path, required, string): The cluster node name.
                  * - `path` (body, required, string): Path to the containing file.
                  */
-                change_repository: (args: PathContext<NodesAPI["/nodes/{node}/apt/repositories"]["POST"]['parameters']>) => client.request("/nodes/{node}/apt/repositories", "POST", {
-                    ...args,
+                change_repository: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/apt/repositories"]["POST"]['parameters']>>) => client.request("/nodes/{node}/apt/repositories", "POST", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -4774,8 +4775,8 @@ export default (client: Client) => ({
                  * - `handle` (body, required, string): Handle that identifies a repository.
                  * - `node` (path, required, string): The cluster node name.
                  */
-                add_repository: (args: PathContext<NodesAPI["/nodes/{node}/apt/repositories"]["PUT"]['parameters']>) => client.request("/nodes/{node}/apt/repositories", "PUT", {
-                    ...args,
+                add_repository: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/apt/repositories"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/apt/repositories", "PUT", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
             },
@@ -4789,8 +4790,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                list: (args: PathContext<NodesAPI["/nodes/{node}/apt/update"]["GET"]['parameters']>) => client.request("/nodes/{node}/apt/update", "GET", {
-                    ...args,
+                list: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/apt/update"]["GET"]['parameters']>>) => client.request("/nodes/{node}/apt/update", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -4804,8 +4805,8 @@ export default (client: Client) => ({
                  * - `notify` (body, optional, boolean): Send notification about new packages.
                  * - `quiet` (body, optional, boolean): Only produces output suitable for logging, omitting progress indicators.
                  */
-                update_database: (args: PathContext<NodesAPI["/nodes/{node}/apt/update"]["POST"]['parameters']>) => client.request("/nodes/{node}/apt/update", "POST", {
-                    ...args,
+                update_database: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/apt/update"]["POST"]['parameters']>>) => client.request("/nodes/{node}/apt/update", "POST", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
             },
@@ -4818,8 +4819,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `node` (path, required, string): The cluster node name.
              */
-            versions: (args: PathContext<NodesAPI["/nodes/{node}/apt/versions"]["GET"]['parameters']>) => client.request("/nodes/{node}/apt/versions", "GET", {
-                ...args,
+            versions: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/apt/versions"]["GET"]['parameters']>>) => client.request("/nodes/{node}/apt/versions", "GET", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
         },
@@ -4833,8 +4834,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `node` (path, required, string): The cluster node name.
              */
-            index: (args: PathContext<NodesAPI["/nodes/{node}/capabilities"]["GET"]['parameters']>) => client.request("/nodes/{node}/capabilities", "GET", {
-                ...args,
+            index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/capabilities"]["GET"]['parameters']>>) => client.request("/nodes/{node}/capabilities", "GET", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             qemu: {
@@ -4847,8 +4848,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                qemu_caps_index: (args: PathContext<NodesAPI["/nodes/{node}/capabilities/qemu"]["GET"]['parameters']>) => client.request("/nodes/{node}/capabilities/qemu", "GET", {
-                    ...args,
+                qemu_caps_index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/capabilities/qemu"]["GET"]['parameters']>>) => client.request("/nodes/{node}/capabilities/qemu", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -4860,8 +4861,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                cpu: (args: PathContext<NodesAPI["/nodes/{node}/capabilities/qemu/cpu"]["GET"]['parameters']>) => client.request("/nodes/{node}/capabilities/qemu/cpu", "GET", {
-                    ...args,
+                cpu: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/capabilities/qemu/cpu"]["GET"]['parameters']>>) => client.request("/nodes/{node}/capabilities/qemu/cpu", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
 
@@ -4874,8 +4875,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                cpu_flags: (args: PathContext<NodesAPI["/nodes/{node}/capabilities/qemu/cpu-flags"]["GET"]['parameters']>) => client.request("/nodes/{node}/capabilities/qemu/cpu-flags", "GET", {
-                    ...args,
+                cpu_flags: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/capabilities/qemu/cpu-flags"]["GET"]['parameters']>>) => client.request("/nodes/{node}/capabilities/qemu/cpu-flags", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -4887,8 +4888,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                machines: (args: PathContext<NodesAPI["/nodes/{node}/capabilities/qemu/machines"]["GET"]['parameters']>) => client.request("/nodes/{node}/capabilities/qemu/machines", "GET", {
-                    ...args,
+                machines: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/capabilities/qemu/machines"]["GET"]['parameters']>>) => client.request("/nodes/{node}/capabilities/qemu/machines", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -4900,8 +4901,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                migration: (args: PathContext<NodesAPI["/nodes/{node}/capabilities/qemu/migration"]["GET"]['parameters']>) => client.request("/nodes/{node}/capabilities/qemu/migration", "GET", {
-                    ...args,
+                migration: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/capabilities/qemu/migration"]["GET"]['parameters']>>) => client.request("/nodes/{node}/capabilities/qemu/migration", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
             }
@@ -4916,8 +4917,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `node` (path, required, string): The cluster node name.
              */
-            index: (args: PathContext<NodesAPI["/nodes/{node}/ceph"]["GET"]['parameters']>) => client.request("/nodes/{node}/ceph", "GET", {
-                ...args,
+            index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph"]["GET"]['parameters']>>) => client.request("/nodes/{node}/ceph", "GET", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             cfg: {
@@ -4930,8 +4931,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                index: (args: PathContext<NodesAPI["/nodes/{node}/ceph/cfg"]["GET"]['parameters']>) => client.request("/nodes/{node}/ceph/cfg", "GET", {
-                    ...args,
+                index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/cfg"]["GET"]['parameters']>>) => client.request("/nodes/{node}/ceph/cfg", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -4943,8 +4944,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                db: (args: PathContext<NodesAPI["/nodes/{node}/ceph/cfg/db"]["GET"]['parameters']>) => client.request("/nodes/{node}/ceph/cfg/db", "GET", {
-                    ...args,
+                db: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/cfg/db"]["GET"]['parameters']>>) => client.request("/nodes/{node}/ceph/cfg/db", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -4956,8 +4957,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                raw: (args: PathContext<NodesAPI["/nodes/{node}/ceph/cfg/raw"]["GET"]['parameters']>) => client.request("/nodes/{node}/ceph/cfg/raw", "GET", {
-                    ...args,
+                raw: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/cfg/raw"]["GET"]['parameters']>>) => client.request("/nodes/{node}/ceph/cfg/raw", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -4970,8 +4971,8 @@ export default (client: Client) => ({
                  * - `config-keys` (query, required, string): List of <section>:<config key> items.
                  * - `node` (path, required, string): The cluster node name.
                  */
-                value: (args: PathContext<NodesAPI["/nodes/{node}/ceph/cfg/value"]["GET"]['parameters']>) => client.request("/nodes/{node}/ceph/cfg/value", "GET", {
-                    ...args,
+                value: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/cfg/value"]["GET"]['parameters']>>) => client.request("/nodes/{node}/ceph/cfg/value", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
 
@@ -4988,8 +4989,8 @@ export default (client: Client) => ({
              * - `node` (path, required, string): The cluster node name.
              * - `service` (query, required, "osd" | "mon" | "mds"): Service type
              */
-            cmd_safety: (args: PathContext<NodesAPI["/nodes/{node}/ceph/cmd-safety"]["GET"]['parameters']>) => client.request("/nodes/{node}/ceph/cmd-safety", "GET", {
-                ...args,
+            cmd_safety: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/cmd-safety"]["GET"]['parameters']>>) => client.request("/nodes/{node}/ceph/cmd-safety", "GET", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             /**
@@ -5001,8 +5002,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `node` (path, required, string): The cluster node name.
              */
-            crush: (args: PathContext<NodesAPI["/nodes/{node}/ceph/crush"]["GET"]['parameters']>) => client.request("/nodes/{node}/ceph/crush", "GET", {
-                ...args,
+            crush: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/crush"]["GET"]['parameters']>>) => client.request("/nodes/{node}/ceph/crush", "GET", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             fs: {
@@ -5015,8 +5016,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                index: (args: PathContext<NodesAPI["/nodes/{node}/ceph/fs"]["GET"]['parameters']>) => client.request("/nodes/{node}/ceph/fs", "GET", {
-                    ...args,
+                index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/fs"]["GET"]['parameters']>>) => client.request("/nodes/{node}/ceph/fs", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 name: (name: string) => ({
@@ -5032,8 +5033,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `pg_num` (body, optional, number): Number of placement groups for the backing data pool. The metadata pool will use a quarter of client.
                      */
-                    createfs: (args: PathContext<NodesAPI["/nodes/{node}/ceph/fs/{name}"]["POST"]['parameters']>) => client.request("/nodes/{node}/ceph/fs/{name}", "POST", {
-                        ...args,
+                    createfs: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/fs/{name}"]["POST"]['parameters']>>) => client.request("/nodes/{node}/ceph/fs/{name}", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, name}
                     }),
                 })
@@ -5057,8 +5058,8 @@ export default (client: Client) => ({
              Depreacted. This setting was deprecated in recent Ceph versions.
              * - `size` (body, optional, number): Targeted number of replicas per object
              */
-            init: (args: PathContext<NodesAPI["/nodes/{node}/ceph/init"]["POST"]['parameters']>) => client.request("/nodes/{node}/ceph/init", "POST", {
-                ...args,
+            init: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/init"]["POST"]['parameters']>>) => client.request("/nodes/{node}/ceph/init", "POST", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             /**
@@ -5072,8 +5073,8 @@ export default (client: Client) => ({
              * - `node` (path, required, string): The cluster node name.
              * - `start` (query, optional, number)
              */
-            log: (args: PathContext<NodesAPI["/nodes/{node}/ceph/log"]["GET"]['parameters']>) => client.request("/nodes/{node}/ceph/log", "GET", {
-                ...args,
+            log: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/log"]["GET"]['parameters']>>) => client.request("/nodes/{node}/ceph/log", "GET", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             mds: {
@@ -5086,8 +5087,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                index: (args: PathContext<NodesAPI["/nodes/{node}/ceph/mds"]["GET"]['parameters']>) => client.request("/nodes/{node}/ceph/mds", "GET", {
-                    ...args,
+                index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/mds"]["GET"]['parameters']>>) => client.request("/nodes/{node}/ceph/mds", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 name: (name: string) => ({
@@ -5101,8 +5102,8 @@ export default (client: Client) => ({
                      * - `name` (path, required, string): The name (ID) of the mds
                      * - `node` (path, required, string): The cluster node name.
                      */
-                    destroy: (args: PathContext<NodesAPI["/nodes/{node}/ceph/mds/{name}"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/ceph/mds/{name}", "DELETE", {
-                        ...args,
+                    destroy: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/mds/{name}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/ceph/mds/{name}", "DELETE", {
+                        ...((args[0]) as any),
                         $path: {node, name}
                     }),
                     /**
@@ -5116,8 +5117,8 @@ export default (client: Client) => ({
                      * - `name` (path, optional, string): The ID for the mds, when omitted the same as the nodename
                      * - `node` (path, required, string): The cluster node name.
                      */
-                    create: (args: PathContext<NodesAPI["/nodes/{node}/ceph/mds/{name}"]["POST"]['parameters']>) => client.request("/nodes/{node}/ceph/mds/{name}", "POST", {
-                        ...args,
+                    create: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/mds/{name}"]["POST"]['parameters']>>) => client.request("/nodes/{node}/ceph/mds/{name}", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, name}
                     }),
                 })
@@ -5132,8 +5133,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                index: (args: PathContext<NodesAPI["/nodes/{node}/ceph/mgr"]["GET"]['parameters']>) => client.request("/nodes/{node}/ceph/mgr", "GET", {
-                    ...args,
+                index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/mgr"]["GET"]['parameters']>>) => client.request("/nodes/{node}/ceph/mgr", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 id: (id: string) => ({
@@ -5147,8 +5148,8 @@ export default (client: Client) => ({
                      * - `id` (path, required, string): The ID of the manager
                      * - `node` (path, required, string): The cluster node name.
                      */
-                    destroy: (args: PathContext<NodesAPI["/nodes/{node}/ceph/mgr/{id}"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/ceph/mgr/{id}", "DELETE", {
-                        ...args,
+                    destroy: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/mgr/{id}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/ceph/mgr/{id}", "DELETE", {
+                        ...((args[0]) as any),
                         $path: {node, id}
                     }),
                     /**
@@ -5161,8 +5162,8 @@ export default (client: Client) => ({
                      * - `id` (path, optional, string): The ID for the manager, when omitted the same as the nodename
                      * - `node` (path, required, string): The cluster node name.
                      */
-                    create: (args: PathContext<NodesAPI["/nodes/{node}/ceph/mgr/{id}"]["POST"]['parameters']>) => client.request("/nodes/{node}/ceph/mgr/{id}", "POST", {
-                        ...args,
+                    create: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/mgr/{id}"]["POST"]['parameters']>>) => client.request("/nodes/{node}/ceph/mgr/{id}", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, id}
                     }),
                 })
@@ -5177,8 +5178,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                list: (args: PathContext<NodesAPI["/nodes/{node}/ceph/mon"]["GET"]['parameters']>) => client.request("/nodes/{node}/ceph/mon", "GET", {
-                    ...args,
+                list: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/mon"]["GET"]['parameters']>>) => client.request("/nodes/{node}/ceph/mon", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 id: (monid: string) => ({
@@ -5192,8 +5193,8 @@ export default (client: Client) => ({
                      * - `monid` (path, required, string): Monitor ID
                      * - `node` (path, required, string): The cluster node name.
                      */
-                    destroy: (args: PathContext<NodesAPI["/nodes/{node}/ceph/mon/{monid}"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/ceph/mon/{monid}", "DELETE", {
-                        ...args,
+                    destroy: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/mon/{monid}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/ceph/mon/{monid}", "DELETE", {
+                        ...((args[0]) as any),
                         $path: {node, monid}
                     }),
                     /**
@@ -5207,8 +5208,8 @@ export default (client: Client) => ({
                      * - `monid` (path, optional, string): The ID for the monitor, when omitted the same as the nodename
                      * - `node` (path, required, string): The cluster node name.
                      */
-                    create: (args: PathContext<NodesAPI["/nodes/{node}/ceph/mon/{monid}"]["POST"]['parameters']>) => client.request("/nodes/{node}/ceph/mon/{monid}", "POST", {
-                        ...args,
+                    create: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/mon/{monid}"]["POST"]['parameters']>>) => client.request("/nodes/{node}/ceph/mon/{monid}", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, monid}
                     }),
                 })
@@ -5223,8 +5224,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                index: (args: PathContext<NodesAPI["/nodes/{node}/ceph/osd"]["GET"]['parameters']>) => client.request("/nodes/{node}/ceph/osd", "GET", {
-                    ...args,
+                index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/osd"]["GET"]['parameters']>>) => client.request("/nodes/{node}/ceph/osd", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -5244,8 +5245,8 @@ export default (client: Client) => ({
                  * - `wal_dev` (body, optional, string): Block device name for block.wal.
                  * - `wal_dev_size` (body, optional, number): Size in GiB for block.wal.
                  */
-                create: (args: PathContext<NodesAPI["/nodes/{node}/ceph/osd"]["POST"]['parameters']>) => client.request("/nodes/{node}/ceph/osd", "POST", {
-                    ...args,
+                create: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/osd"]["POST"]['parameters']>>) => client.request("/nodes/{node}/ceph/osd", "POST", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 id: (osdid: number) => ({
@@ -5259,8 +5260,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `osdid` (path, required, number): OSD ID
                      */
-                    destroy: (args: PathContext<NodesAPI["/nodes/{node}/ceph/osd/{osdid}"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/ceph/osd/{osdid}", "DELETE", {
-                        ...args,
+                    destroy: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/osd/{osdid}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/ceph/osd/{osdid}", "DELETE", {
+                        ...((args[0]) as any),
                         $path: {node, osdid}
                     }),
                     /**
@@ -5273,8 +5274,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `osdid` (path, required, number): OSD ID
                      */
-                    get: (args: PathContext<NodesAPI["/nodes/{node}/ceph/osd/{osdid}"]["GET"]['parameters']>) => client.request("/nodes/{node}/ceph/osd/{osdid}", "GET", {
-                        ...args,
+                    get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/osd/{osdid}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/ceph/osd/{osdid}", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, osdid}
                     }),
                     /**
@@ -5287,8 +5288,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `osdid` (path, required, number): OSD ID
                      */
-                    in: (args: PathContext<NodesAPI["/nodes/{node}/ceph/osd/{osdid}/in"]["POST"]['parameters']>) => client.request("/nodes/{node}/ceph/osd/{osdid}/in", "POST", {
-                        ...args,
+                    in: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/osd/{osdid}/in"]["POST"]['parameters']>>) => client.request("/nodes/{node}/ceph/osd/{osdid}/in", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, osdid}
                     }),
                     /**
@@ -5302,8 +5303,8 @@ export default (client: Client) => ({
                      * - `osdid` (path, required, number): OSD ID
                      * - `type` (query, optional, "block" | "db" | "wal"): OSD device type
                      */
-                    lv_info: (args: PathContext<NodesAPI["/nodes/{node}/ceph/osd/{osdid}/lv-info"]["GET"]['parameters']>) => client.request("/nodes/{node}/ceph/osd/{osdid}/lv-info", "GET", {
-                        ...args,
+                    lv_info: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/osd/{osdid}/lv-info"]["GET"]['parameters']>>) => client.request("/nodes/{node}/ceph/osd/{osdid}/lv-info", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, osdid}
                     }),
                     /**
@@ -5316,8 +5317,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `osdid` (path, required, number): OSD ID
                      */
-                    metadata: (args: PathContext<NodesAPI["/nodes/{node}/ceph/osd/{osdid}/metadata"]["GET"]['parameters']>) => client.request("/nodes/{node}/ceph/osd/{osdid}/metadata", "GET", {
-                        ...args,
+                    metadata: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/osd/{osdid}/metadata"]["GET"]['parameters']>>) => client.request("/nodes/{node}/ceph/osd/{osdid}/metadata", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, osdid}
                     }),
 
@@ -5331,8 +5332,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `osdid` (path, required, number): OSD ID
                      */
-                    out: (args: PathContext<NodesAPI["/nodes/{node}/ceph/osd/{osdid}/out"]["POST"]['parameters']>) => client.request("/nodes/{node}/ceph/osd/{osdid}/out", "POST", {
-                        ...args,
+                    out: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/osd/{osdid}/out"]["POST"]['parameters']>>) => client.request("/nodes/{node}/ceph/osd/{osdid}/out", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, osdid}
                     }),
                     /**
@@ -5346,8 +5347,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `osdid` (path, required, number): OSD ID
                      */
-                    scrub: (args: PathContext<NodesAPI["/nodes/{node}/ceph/osd/{osdid}/scrub"]["POST"]['parameters']>) => client.request("/nodes/{node}/ceph/osd/{osdid}/scrub", "POST", {
-                        ...args,
+                    scrub: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/osd/{osdid}/scrub"]["POST"]['parameters']>>) => client.request("/nodes/{node}/ceph/osd/{osdid}/scrub", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, osdid}
                     }),
                 })
@@ -5362,8 +5363,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                list: (args: PathContext<NodesAPI["/nodes/{node}/ceph/pool"]["GET"]['parameters']>) => client.request("/nodes/{node}/ceph/pool", "GET", {
-                    ...args,
+                list: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/pool"]["GET"]['parameters']>>) => client.request("/nodes/{node}/ceph/pool", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -5388,8 +5389,8 @@ export default (client: Client) => ({
                  * - `target_size` (body, optional, string): The estimated target size of the pool for the PG autoscaler.
                  * - `target_size_ratio` (body, optional, number): The estimated target ratio of the pool for the PG autoscaler.
                  */
-                create: (args: PathContext<NodesAPI["/nodes/{node}/ceph/pool"]["POST"]['parameters']>) => client.request("/nodes/{node}/ceph/pool", "POST", {
-                    ...args,
+                create: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/pool"]["POST"]['parameters']>>) => client.request("/nodes/{node}/ceph/pool", "POST", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 name: (name: string) => ({
@@ -5406,8 +5407,8 @@ export default (client: Client) => ({
                      * - `remove_ecprofile` (query, optional, boolean): Remove the erasure code profile. Defaults to true, if applicable.
                      * - `remove_storages` (query, optional, boolean): Remove all pveceph-managed storages configured for this pool
                      */
-                    destroy: (args: PathContext<NodesAPI["/nodes/{node}/ceph/pool/{name}"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/ceph/pool/{name}", "DELETE", {
-                        ...args,
+                    destroy: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/pool/{name}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/ceph/pool/{name}", "DELETE", {
+                        ...((args[0]) as any),
                         $path: {node, name}
                     }),
                     /**
@@ -5420,8 +5421,8 @@ export default (client: Client) => ({
                      * - `name` (path, required, string): The name of the pool.
                      * - `node` (path, required, string): The cluster node name.
                      */
-                    get: (args: PathContext<NodesAPI["/nodes/{node}/ceph/pool/{name}"]["GET"]['parameters']>) => client.request("/nodes/{node}/ceph/pool/{name}", "GET", {
-                        ...args,
+                    get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/pool/{name}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/ceph/pool/{name}", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, name}
                     }),
                     /**
@@ -5443,8 +5444,8 @@ export default (client: Client) => ({
                      * - `target_size` (body, optional, string): The estimated target size of the pool for the PG autoscaler.
                      * - `target_size_ratio` (body, optional, number): The estimated target ratio of the pool for the PG autoscaler.
                      */
-                    update: (args: PathContext<NodesAPI["/nodes/{node}/ceph/pool/{name}"]["PUT"]['parameters']>) => client.request("/nodes/{node}/ceph/pool/{name}", "PUT", {
-                        ...args,
+                    update: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/pool/{name}"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/ceph/pool/{name}", "PUT", {
+                        ...((args[0]) as any),
                         $path: {node, name}
                     }),
                     /**
@@ -5458,8 +5459,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `verbose` (query, optional, boolean): If enabled, will display additional data(eg. statistics).
                      */
-                    status: (args: PathContext<NodesAPI["/nodes/{node}/ceph/pool/{name}/status"]["GET"]['parameters']>) => client.request("/nodes/{node}/ceph/pool/{name}/status", "GET", {
-                        ...args,
+                    status: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/pool/{name}/status"]["GET"]['parameters']>>) => client.request("/nodes/{node}/ceph/pool/{name}/status", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, name}
                     }),
                 })
@@ -5474,8 +5475,8 @@ export default (client: Client) => ({
              * - `node` (path, required, string): The cluster node name.
              * - `service` (body, optional, string): Ceph service name.
              */
-            restart: (args: PathContext<NodesAPI["/nodes/{node}/ceph/restart"]["POST"]['parameters']>) => client.request("/nodes/{node}/ceph/restart", "POST", {
-                ...args,
+            restart: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/restart"]["POST"]['parameters']>>) => client.request("/nodes/{node}/ceph/restart", "POST", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             /**
@@ -5487,8 +5488,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `node` (path, required, string): The cluster node name.
              */
-            rules: (args: PathContext<NodesAPI["/nodes/{node}/ceph/rules"]["GET"]['parameters']>) => client.request("/nodes/{node}/ceph/rules", "GET", {
-                ...args,
+            rules: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/rules"]["GET"]['parameters']>>) => client.request("/nodes/{node}/ceph/rules", "GET", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             /**
@@ -5501,8 +5502,8 @@ export default (client: Client) => ({
              * - `node` (path, required, string): The cluster node name.
              * - `service` (body, optional, string): Ceph service name.
              */
-            start: (args: PathContext<NodesAPI["/nodes/{node}/ceph/start"]["POST"]['parameters']>) => client.request("/nodes/{node}/ceph/start", "POST", {
-                ...args,
+            start: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/start"]["POST"]['parameters']>>) => client.request("/nodes/{node}/ceph/start", "POST", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             /**
@@ -5514,8 +5515,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `node` (path, required, string): The cluster node name.
              */
-            status: (args: PathContext<NodesAPI["/nodes/{node}/ceph/status"]["GET"]['parameters']>) => client.request("/nodes/{node}/ceph/status", "GET", {
-                ...args,
+            status: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/status"]["GET"]['parameters']>>) => client.request("/nodes/{node}/ceph/status", "GET", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             /**
@@ -5528,8 +5529,8 @@ export default (client: Client) => ({
              * - `node` (path, required, string): The cluster node name.
              * - `service` (body, optional, string): Ceph service name.
              */
-            stop: (args: PathContext<NodesAPI["/nodes/{node}/ceph/stop"]["POST"]['parameters']>) => client.request("/nodes/{node}/ceph/stop", "POST", {
-                ...args,
+            stop: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/stop"]["POST"]['parameters']>>) => client.request("/nodes/{node}/ceph/stop", "POST", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
         },
@@ -5543,8 +5544,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `node` (path, required, string): The cluster node name.
              */
-            index: (args: PathContext<NodesAPI["/nodes/{node}/certificates"]["GET"]['parameters']>) => client.request("/nodes/{node}/certificates", "GET", {
-                ...args,
+            index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/certificates"]["GET"]['parameters']>>) => client.request("/nodes/{node}/certificates", "GET", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             acme: {
@@ -5557,8 +5558,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                index: (args: PathContext<NodesAPI["/nodes/{node}/certificates/acme"]["GET"]['parameters']>) => client.request("/nodes/{node}/certificates/acme", "GET", {
-                    ...args,
+                index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/certificates/acme"]["GET"]['parameters']>>) => client.request("/nodes/{node}/certificates/acme", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 certificate: {
@@ -5571,8 +5572,8 @@ export default (client: Client) => ({
                      * Parameters:
                      * - `node` (path, required, string): The cluster node name.
                      */
-                    revoke_certificate: (args: PathContext<NodesAPI["/nodes/{node}/certificates/acme/certificate"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/certificates/acme/certificate", "DELETE", {
-                        ...args,
+                    revoke_certificate: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/certificates/acme/certificate"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/certificates/acme/certificate", "DELETE", {
+                        ...((args[0]) as any),
                         $path: {node}
                     }),
                     /**
@@ -5585,8 +5586,8 @@ export default (client: Client) => ({
                      * - `force` (body, optional, boolean): Overwrite existing custom certificate.
                      * - `node` (path, required, string): The cluster node name.
                      */
-                    new_certificate: (args: PathContext<NodesAPI["/nodes/{node}/certificates/acme/certificate"]["POST"]['parameters']>) => client.request("/nodes/{node}/certificates/acme/certificate", "POST", {
-                        ...args,
+                    new_certificate: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/certificates/acme/certificate"]["POST"]['parameters']>>) => client.request("/nodes/{node}/certificates/acme/certificate", "POST", {
+                        ...((args[0]) as any),
                         $path: {node}
                     }),
                     /**
@@ -5599,8 +5600,8 @@ export default (client: Client) => ({
                      * - `force` (body, optional, boolean): Force renewal even if expiry is more than 30 days away.
                      * - `node` (path, required, string): The cluster node name.
                      */
-                    renew_certificate: (args: PathContext<NodesAPI["/nodes/{node}/certificates/acme/certificate"]["PUT"]['parameters']>) => client.request("/nodes/{node}/certificates/acme/certificate", "PUT", {
-                        ...args,
+                    renew_certificate: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/certificates/acme/certificate"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/certificates/acme/certificate", "PUT", {
+                        ...((args[0]) as any),
                         $path: {node}
                     }),
                 }
@@ -5616,8 +5617,8 @@ export default (client: Client) => ({
                  * - `node` (path, required, string): The cluster node name.
                  * - `restart` (query, optional, boolean): Restart pveproxy.
                  */
-                remove_custom_cert: (args: PathContext<NodesAPI["/nodes/{node}/certificates/custom"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/certificates/custom", "DELETE", {
-                    ...args,
+                remove_custom_cert: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/certificates/custom"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/certificates/custom", "DELETE", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -5633,8 +5634,8 @@ export default (client: Client) => ({
                  * - `node` (path, required, string): The cluster node name.
                  * - `restart` (body, optional, boolean): Restart pveproxy.
                  */
-                upload_custom_cert: (args: PathContext<NodesAPI["/nodes/{node}/certificates/custom"]["POST"]['parameters']>) => client.request("/nodes/{node}/certificates/custom", "POST", {
-                    ...args,
+                upload_custom_cert: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/certificates/custom"]["POST"]['parameters']>>) => client.request("/nodes/{node}/certificates/custom", "POST", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
             },
@@ -5648,8 +5649,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                info: (args: PathContext<NodesAPI["/nodes/{node}/certificates/info"]["GET"]['parameters']>) => client.request("/nodes/{node}/certificates/info", "GET", {
-                    ...args,
+                info: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/certificates/info"]["GET"]['parameters']>>) => client.request("/nodes/{node}/certificates/info", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
             }
@@ -5665,8 +5666,8 @@ export default (client: Client) => ({
              * - `node` (path, required, string): The cluster node name.
              * - `property` (query, optional, "acme" | "acmedomain0" | "acmedomain1" | "acmedomain2" | "acmedomain3" | "acmedomain4" | "acmedomain5" | "ballooning-target" | "description" | "startall-onboot-delay" | "wakeonlan"): Return only a specific property from the node configuration.
              */
-            get_config: (args: PathContext<NodesAPI["/nodes/{node}/config"]["GET"]['parameters']>) => client.request("/nodes/{node}/config", "GET", {
-                ...args,
+            get_config: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/config"]["GET"]['parameters']>>) => client.request("/nodes/{node}/config", "GET", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             /**
@@ -5686,8 +5687,8 @@ export default (client: Client) => ({
              * - `startall-onboot-delay` (body, optional, number): Initial delay in seconds, before starting all the Virtual Guests with on-boot enabled.
              * - `wakeonlan` (body, optional, string): Node specific wake on LAN settings.
              */
-            set_options: (args: PathContext<NodesAPI["/nodes/{node}/config"]["PUT"]['parameters']>) => client.request("/nodes/{node}/config", "PUT", {
-                ...args,
+            set_options: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/config"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/config", "PUT", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
         },
@@ -5701,8 +5702,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `node` (path, required, string): The cluster node name.
              */
-            index: (args: PathContext<NodesAPI["/nodes/{node}/disks"]["GET"]['parameters']>) => client.request("/nodes/{node}/disks", "GET", {
-                ...args,
+            index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/disks"]["GET"]['parameters']>>) => client.request("/nodes/{node}/disks", "GET", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             directory: {
@@ -5715,8 +5716,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                index: (args: PathContext<NodesAPI["/nodes/{node}/disks/directory"]["GET"]['parameters']>) => client.request("/nodes/{node}/disks/directory", "GET", {
-                    ...args,
+                index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/disks/directory"]["GET"]['parameters']>>) => client.request("/nodes/{node}/disks/directory", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -5732,8 +5733,8 @@ export default (client: Client) => ({
                  * - `name` (body, required, string): The storage identifier.
                  * - `node` (path, required, string): The cluster node name.
                  */
-                create: (args: PathContext<NodesAPI["/nodes/{node}/disks/directory"]["POST"]['parameters']>) => client.request("/nodes/{node}/disks/directory", "POST", {
-                    ...args,
+                create: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/disks/directory"]["POST"]['parameters']>>) => client.request("/nodes/{node}/disks/directory", "POST", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 name: (name: string) => ({
@@ -5749,8 +5750,8 @@ export default (client: Client) => ({
                      * - `name` (path, required, string): The storage identifier.
                      * - `node` (path, required, string): The cluster node name.
                      */
-                    delete: (args: PathContext<NodesAPI["/nodes/{node}/disks/directory/{name}"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/disks/directory/{name}", "DELETE", {
-                        ...args,
+                    delete: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/disks/directory/{name}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/disks/directory/{name}", "DELETE", {
+                        ...((args[0]) as any),
                         $path: {node, name}
                     })
                 })
@@ -5766,8 +5767,8 @@ export default (client: Client) => ({
              * - `node` (path, required, string): The cluster node name.
              * - `uuid` (body, optional, string): UUID for the GPT table
              */
-            initgpt: (args: PathContext<NodesAPI["/nodes/{node}/disks/initgpt"]["POST"]['parameters']>) => client.request("/nodes/{node}/disks/initgpt", "POST", {
-                ...args,
+            initgpt: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/disks/initgpt"]["POST"]['parameters']>>) => client.request("/nodes/{node}/disks/initgpt", "POST", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             /**
@@ -5782,8 +5783,8 @@ export default (client: Client) => ({
              * - `skipsmart` (query, optional, boolean): Skip smart checks.
              * - `type` (query, optional, "unused" | "journal_disks"): Only list specific types of disks.
              */
-            list: (args: PathContext<NodesAPI["/nodes/{node}/disks/list"]["GET"]['parameters']>) => client.request("/nodes/{node}/disks/list", "GET", {
-                ...args,
+            list: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/disks/list"]["GET"]['parameters']>>) => client.request("/nodes/{node}/disks/list", "GET", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             lvm: {
@@ -5796,8 +5797,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                index: (args: PathContext<NodesAPI["/nodes/{node}/disks/lvm"]["GET"]['parameters']>) => client.request("/nodes/{node}/disks/lvm", "GET", {
-                    ...args,
+                index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/disks/lvm"]["GET"]['parameters']>>) => client.request("/nodes/{node}/disks/lvm", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -5812,8 +5813,8 @@ export default (client: Client) => ({
                  * - `name` (body, required, string): The storage identifier.
                  * - `node` (path, required, string): The cluster node name.
                  */
-                create: (args: PathContext<NodesAPI["/nodes/{node}/disks/lvm"]["POST"]['parameters']>) => client.request("/nodes/{node}/disks/lvm", "POST", {
-                    ...args,
+                create: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/disks/lvm"]["POST"]['parameters']>>) => client.request("/nodes/{node}/disks/lvm", "POST", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 name: (name: string) => ({
@@ -5829,8 +5830,8 @@ export default (client: Client) => ({
                      * - `name` (path, required, string): The storage identifier.
                      * - `node` (path, required, string): The cluster node name.
                      */
-                    delete: (args: PathContext<NodesAPI["/nodes/{node}/disks/lvm/{name}"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/disks/lvm/{name}", "DELETE", {
-                        ...args,
+                    delete: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/disks/lvm/{name}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/disks/lvm/{name}", "DELETE", {
+                        ...((args[0]) as any),
                         $path: {node, name}
                     }),
                 }),
@@ -5844,8 +5845,8 @@ export default (client: Client) => ({
                      * Parameters:
                      * - `node` (path, required, string): The cluster node name.
                      */
-                    index: (args: PathContext<NodesAPI["/nodes/{node}/disks/lvmthin"]["GET"]['parameters']>) => client.request("/nodes/{node}/disks/lvmthin", "GET", {
-                        ...args,
+                    index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/disks/lvmthin"]["GET"]['parameters']>>) => client.request("/nodes/{node}/disks/lvmthin", "GET", {
+                        ...((args[0]) as any),
                         $path: {node}
                     }),
                     /**
@@ -5860,8 +5861,8 @@ export default (client: Client) => ({
                      * - `name` (body, required, string): The storage identifier.
                      * - `node` (path, required, string): The cluster node name.
                      */
-                    create: (args: PathContext<NodesAPI["/nodes/{node}/disks/lvmthin"]["POST"]['parameters']>) => client.request("/nodes/{node}/disks/lvmthin", "POST", {
-                        ...args,
+                    create: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/disks/lvmthin"]["POST"]['parameters']>>) => client.request("/nodes/{node}/disks/lvmthin", "POST", {
+                        ...((args[0]) as any),
                         $path: {node}
                     }),
                     name: (name: string) => ({
@@ -5878,8 +5879,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `volume-group` (query, required, string): The storage identifier.
                          */
-                        delete_: (args: PathContext<NodesAPI["/nodes/{node}/disks/lvmthin/{name}"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/disks/lvmthin/{name}", "DELETE", {
-                            ...args,
+                        delete_: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/disks/lvmthin/{name}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/disks/lvmthin/{name}", "DELETE", {
+                            ...((args[0]) as any),
                             $path: {node, name}
                         }),
                     })
@@ -5895,8 +5896,8 @@ export default (client: Client) => ({
                  * - `healthonly` (query, optional, boolean): If true returns only the health status
                  * - `node` (path, required, string): The cluster node name.
                  */
-                smart: (args: PathContext<NodesAPI["/nodes/{node}/disks/smart"]["GET"]['parameters']>) => client.request("/nodes/{node}/disks/smart", "GET", {
-                    ...args,
+                smart: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/disks/smart"]["GET"]['parameters']>>) => client.request("/nodes/{node}/disks/smart", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -5908,8 +5909,8 @@ export default (client: Client) => ({
                  * - `disk` (body, required, string): Block device name
                  * - `node` (path, required, string): The cluster node name.
                  */
-                wipedisk: (args: PathContext<NodesAPI["/nodes/{node}/disks/wipedisk"]["PUT"]['parameters']>) => client.request("/nodes/{node}/disks/wipedisk", "PUT", {
-                    ...args,
+                wipedisk: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/disks/wipedisk"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/disks/wipedisk", "PUT", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 zfs: {
@@ -5922,8 +5923,8 @@ export default (client: Client) => ({
                      * Parameters:
                      * - `node` (path, required, string): The cluster node name.
                      */
-                    index: (args: PathContext<NodesAPI["/nodes/{node}/disks/zfs"]["GET"]['parameters']>) => client.request("/nodes/{node}/disks/zfs", "GET", {
-                        ...args,
+                    index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/disks/zfs"]["GET"]['parameters']>>) => client.request("/nodes/{node}/disks/zfs", "GET", {
+                        ...((args[0]) as any),
                         $path: {node}
                     }),
                     /**
@@ -5942,8 +5943,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `raidlevel` (body, required, "single" | "mirror" | "raid10" | "raidz" | "raidz2" | "raidz3" | "draid" | "draid2" | "draid3"): The RAID level to use.
                      */
-                    create: (args: PathContext<NodesAPI["/nodes/{node}/disks/zfs"]["POST"]['parameters']>) => client.request("/nodes/{node}/disks/zfs", "POST", {
-                        ...args,
+                    create: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/disks/zfs"]["POST"]['parameters']>>) => client.request("/nodes/{node}/disks/zfs", "POST", {
+                        ...((args[0]) as any),
                         $path: {node}
                     }),
                     name: (name: string) => ({
@@ -5959,8 +5960,8 @@ export default (client: Client) => ({
                          * - `name` (path, required, string): The storage identifier.
                          * - `node` (path, required, string): The cluster node name.
                          */
-                        delete: (args: PathContext<NodesAPI["/nodes/{node}/disks/zfs/{name}"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/disks/zfs/{name}", "DELETE", {
-                            ...args,
+                        delete: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/disks/zfs/{name}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/disks/zfs/{name}", "DELETE", {
+                            ...((args[0]) as any),
                             $path: {node, name}
                         }),
                         /**
@@ -5973,8 +5974,8 @@ export default (client: Client) => ({
                          * - `name` (path, required, string): The storage identifier.
                          * - `node` (path, required, string): The cluster node name.
                          */
-                        get: (args: PathContext<NodesAPI["/nodes/{node}/disks/zfs/{name}"]["GET"]['parameters']>) => client.request("/nodes/{node}/disks/zfs/{name}", "GET", {
-                            ...args,
+                        get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/disks/zfs/{name}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/disks/zfs/{name}", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, name}
                         }),
                     })
@@ -5990,8 +5991,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                get: (args: PathContext<NodesAPI["/nodes/{node}/dns"]["GET"]['parameters']>) => client.request("/nodes/{node}/dns", "GET", {
-                    ...args,
+                get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/dns"]["GET"]['parameters']>>) => client.request("/nodes/{node}/dns", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -6007,8 +6008,8 @@ export default (client: Client) => ({
                  * - `node` (path, required, string): The cluster node name.
                  * - `search` (body, required, string): Search domain for host-name lookup.
                  */
-                update: (args: PathContext<NodesAPI["/nodes/{node}/dns"]["PUT"]['parameters']>) => client.request("/nodes/{node}/dns", "PUT", {
-                    ...args,
+                update: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/dns"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/dns", "PUT", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
             },
@@ -6021,8 +6022,8 @@ export default (client: Client) => ({
              * - `commands` (body, required, string): JSON encoded array of commands.
              * - `node` (path, required, string): The cluster node name.
              */
-            execute: (args: PathContext<NodesAPI["/nodes/{node}/execute"]["POST"]['parameters']>) => client.request("/nodes/{node}/execute", "POST", {
-                ...args,
+            execute: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/execute"]["POST"]['parameters']>>) => client.request("/nodes/{node}/execute", "POST", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             firewall: {
@@ -6035,8 +6036,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                index: (args: PathContext<NodesAPI["/nodes/{node}/firewall"]["GET"]['parameters']>) => client.request("/nodes/{node}/firewall", "GET", {
-                    ...args,
+                index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/firewall"]["GET"]['parameters']>>) => client.request("/nodes/{node}/firewall", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -6052,8 +6053,8 @@ export default (client: Client) => ({
                  * - `start` (query, optional, number)
                  * - `until` (query, optional, number): Display log until this UNIX epoch.
                  */
-                log: (args: PathContext<NodesAPI["/nodes/{node}/firewall/log"]["GET"]['parameters']>) => client.request("/nodes/{node}/firewall/log", "GET", {
-                    ...args,
+                log: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/firewall/log"]["GET"]['parameters']>>) => client.request("/nodes/{node}/firewall/log", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 options: {
@@ -6066,8 +6067,8 @@ export default (client: Client) => ({
                      * Parameters:
                      * - `node` (path, required, string): The cluster node name.
                      */
-                    get: (args: PathContext<NodesAPI["/nodes/{node}/firewall/options"]["GET"]['parameters']>) => client.request("/nodes/{node}/firewall/options", "GET", {
-                        ...args,
+                    get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/firewall/options"]["GET"]['parameters']>>) => client.request("/nodes/{node}/firewall/options", "GET", {
+                        ...((args[0]) as any),
                         $path: {node}
                     }),
                     /**
@@ -6100,8 +6101,8 @@ export default (client: Client) => ({
                      * - `tcp_flags_log_level` (body, optional, "emerg" | "alert" | "crit" | "err" | "warning" | "notice" | "info" | "debug" | "nolog"): Log level for illegal tcp flags filter.
                      * - `tcpflags` (body, optional, boolean): Filter illegal combinations of TCP flags.
                      */
-                    set: (args: PathContext<NodesAPI["/nodes/{node}/firewall/options"]["PUT"]['parameters']>) => client.request("/nodes/{node}/firewall/options", "PUT", {
-                        ...args,
+                    set: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/firewall/options"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/firewall/options", "PUT", {
+                        ...((args[0]) as any),
                         $path: {node}
                     }),
                 },
@@ -6115,8 +6116,8 @@ export default (client: Client) => ({
                      * Parameters:
                      * - `node` (path, required, string): The cluster node name.
                      */
-                    list: (args: PathContext<NodesAPI["/nodes/{node}/firewall/rules"]["GET"]['parameters']>) => client.request("/nodes/{node}/firewall/rules", "GET", {
-                        ...args,
+                    list: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/firewall/rules"]["GET"]['parameters']>>) => client.request("/nodes/{node}/firewall/rules", "GET", {
+                        ...((args[0]) as any),
                         $path: {node}
                     }),
                     /**
@@ -6143,8 +6144,8 @@ export default (client: Client) => ({
                      * - `sport` (body, optional, string): Restrict TCP/UDP source port. You can use service names or simple numbers (0-65535), as defined in '/etc/services'. Port ranges can be specified with '\d+:\d+', for example '80:85', and you can use comma separated list to match several ports or ranges.
                      * - `type` (body, required, "in" | "out" | "forward" | "group"): Rule type.
                      */
-                    create: (args: PathContext<NodesAPI["/nodes/{node}/firewall/rules"]["POST"]['parameters']>) => client.request("/nodes/{node}/firewall/rules", "POST", {
-                        ...args,
+                    create: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/firewall/rules"]["POST"]['parameters']>>) => client.request("/nodes/{node}/firewall/rules", "POST", {
+                        ...((args[0]) as any),
                         $path: {node}
                     }),
                     pos: (pos: number) => ({
@@ -6159,8 +6160,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `pos` (path, optional, number): Update rule at position <pos>.
                          */
-                        delete: (args: PathContext<NodesAPI["/nodes/{node}/firewall/rules/{pos}"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/firewall/rules/{pos}", "DELETE", {
-                            ...args,
+                        delete: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/firewall/rules/{pos}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/firewall/rules/{pos}", "DELETE", {
+                            ...((args[0]) as any),
                             $path: {node, pos}
                         }),
                         /**
@@ -6173,8 +6174,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `pos` (path, optional, number): Update rule at position <pos>.
                          */
-                        get: (args: PathContext<NodesAPI["/nodes/{node}/firewall/rules/{pos}"]["GET"]['parameters']>) => client.request("/nodes/{node}/firewall/rules/{pos}", "GET", {
-                            ...args,
+                        get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/firewall/rules/{pos}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/firewall/rules/{pos}", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, pos}
                         }),
                         /**
@@ -6203,8 +6204,8 @@ export default (client: Client) => ({
                          * - `sport` (body, optional, string): Restrict TCP/UDP source port. You can use service names or simple numbers (0-65535), as defined in '/etc/services'. Port ranges can be specified with '\d+:\d+', for example '80:85', and you can use comma separated list to match several ports or ranges.
                          * - `type` (body, optional, "in" | "out" | "forward" | "group"): Rule type.
                          */
-                        update: (args: PathContext<NodesAPI["/nodes/{node}/firewall/rules/{pos}"]["PUT"]['parameters']>) => client.request("/nodes/{node}/firewall/rules/{pos}", "PUT", {
-                            ...args,
+                        update: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/firewall/rules/{pos}"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/firewall/rules/{pos}", "PUT", {
+                            ...((args[0]) as any),
                             $path: {node, pos}
                         }),
                     })
@@ -6220,8 +6221,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                index: (args: PathContext<NodesAPI["/nodes/{node}/hardware"]["GET"]['parameters']>) => client.request("/nodes/{node}/hardware", "GET", {
-                    ...args,
+                index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/hardware"]["GET"]['parameters']>>) => client.request("/nodes/{node}/hardware", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 pci: {
@@ -6236,8 +6237,8 @@ export default (client: Client) => ({
                      * - `pci-class-blacklist` (query, optional, string): A list of blacklisted PCI classes, which will not be returned. Following are filtered by default: Memory Controller (05), Bridge (06) and Processor (0b).
                      * - `verbose` (query, optional, boolean): If disabled, does only print the PCI IDs. Otherwise, additional information like vendor and device will be returned.
                      */
-                    pci_scan: (args: PathContext<NodesAPI["/nodes/{node}/hardware/pci"]["GET"]['parameters']>) => client.request("/nodes/{node}/hardware/pci", "GET", {
-                        ...args,
+                    pci_scan: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/hardware/pci"]["GET"]['parameters']>>) => client.request("/nodes/{node}/hardware/pci", "GET", {
+                        ...((args[0]) as any),
                         $path: {node}
                     }),
                     pci_id_or_mapping: (pci_id_or_mapping: string) => ({
@@ -6251,8 +6252,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `pci-id-or-mapping` (path, required, string)
                          */
-                        pci_index: (args: PathContext<NodesAPI["/nodes/{node}/hardware/pci/{pci-id-or-mapping}"]["GET"]['parameters']>) => client.request("/nodes/{node}/hardware/pci/{pci-id-or-mapping}", "GET", {
-                            ...args,
+                        pci_index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/hardware/pci/{pci-id-or-mapping}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/hardware/pci/{pci-id-or-mapping}", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, 'pci-id-or-mapping': pci_id_or_mapping}
                         }),
                         /**
@@ -6265,8 +6266,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `pci-id-or-mapping` (path, required, string): The PCI ID or mapping to list the mdev types for.
                          */
-                        mdev: (args: PathContext<NodesAPI["/nodes/{node}/hardware/pci/{pci-id-or-mapping}/mdev"]["GET"]['parameters']>) => client.request("/nodes/{node}/hardware/pci/{pci-id-or-mapping}/mdev", "GET", {
-                            ...args,
+                        mdev: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/hardware/pci/{pci-id-or-mapping}/mdev"]["GET"]['parameters']>>) => client.request("/nodes/{node}/hardware/pci/{pci-id-or-mapping}/mdev", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, 'pci-id-or-mapping': pci_id_or_mapping}
                         }),
 
@@ -6281,8 +6282,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                usb: (args: PathContext<NodesAPI["/nodes/{node}/hardware/usb"]["GET"]['parameters']>) => client.request("/nodes/{node}/hardware/usb", "GET", {
-                    ...args,
+                usb: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/hardware/usb"]["GET"]['parameters']>>) => client.request("/nodes/{node}/hardware/usb", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
             },
@@ -6296,8 +6297,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                list: (args: PathContext<NodesAPI["/nodes/{node}/hosts"]["GET"]['parameters']>) => client.request("/nodes/{node}/hosts", "GET", {
-                    ...args,
+                list: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/hosts"]["GET"]['parameters']>>) => client.request("/nodes/{node}/hosts", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -6311,8 +6312,8 @@ export default (client: Client) => ({
                  * - `digest` (body, optional, string): Prevent changes if current configuration file has a different digest. This can be used to prevent concurrent modifications.
                  * - `node` (path, required, string): The cluster node name.
                  */
-                write: (args: PathContext<NodesAPI["/nodes/{node}/hosts"]["POST"]['parameters']>) => client.request("/nodes/{node}/hosts", "POST", {
-                    ...args,
+                write: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/hosts"]["POST"]['parameters']>>) => client.request("/nodes/{node}/hosts", "POST", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
             },
@@ -6330,8 +6331,8 @@ export default (client: Client) => ({
              * - `startcursor` (query, optional, string): Start after the given Cursor. Conflicts with 'since'
              * - `until` (query, optional, number): Display all log until this UNIX epoch. Conflicts with 'endcursor'.
              */
-            journal: (args: PathContext<NodesAPI["/nodes/{node}/journal"]["GET"]['parameters']>) => client.request("/nodes/{node}/journal", "GET", {
-                ...args,
+            journal: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/journal"]["GET"]['parameters']>>) => client.request("/nodes/{node}/journal", "GET", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             lxc: {
@@ -6344,8 +6345,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                list: (args: PathContext<NodesAPI["/nodes/{node}/lxc"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc", "GET", {
-                    ...args,
+                list: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -6404,8 +6405,8 @@ export default (client: Client) => ({
                  * - `unused[n]` (body, optional, string): Reference to unused volumes. This is used internally, and should not be modified manually.
                  * - `vmid` (body, required, number): The (unique) ID of the VM.
                  */
-                crate: (args: PathContext<NodesAPI["/nodes/{node}/lxc"]["POST"]['parameters']>) => client.request("/nodes/{node}/lxc", "POST", {
-                    ...args,
+                crate: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc", "POST", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 id: (vmid: number | string) => ({
@@ -6422,8 +6423,8 @@ export default (client: Client) => ({
                      * - `purge` (query, optional, boolean): Remove container from all related configurations. For example, backup jobs, replication jobs or HA. Related ACLs and Firewall entries will *always* be removed.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    destroy: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}", "DELETE", {
-                        ...args,
+                    destroy: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}", "DELETE", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     /**
@@ -6436,8 +6437,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    diridx: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}", "GET", {
-                        ...args,
+                    diridx: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     /**
@@ -6459,8 +6460,8 @@ export default (client: Client) => ({
                      * - `target` (body, optional, string): Target node. Only allowed if the original VM is on shared storage.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    clone: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/clone"]["POST"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/clone", "POST", {
-                        ...args,
+                    clone: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/clone"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/clone", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     config: {
@@ -6476,8 +6477,8 @@ export default (client: Client) => ({
                          * - `snapshot` (query, optional, string): Fetch config values from given snapshot.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        get: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/config"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/config", "GET", {
-                            ...args,
+                        get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/config"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/config", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -6527,8 +6528,8 @@ export default (client: Client) => ({
                          * - `unused[n]` (body, optional, string): Reference to unused volumes. This is used internally, and should not be modified manually.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        update: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/config"]["PUT"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/config", "PUT", {
-                            ...args,
+                        update: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/config"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/config", "PUT", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                     },
@@ -6544,8 +6545,8 @@ export default (client: Client) => ({
                      * - `snapname` (query, optional, string): The name of the snapshot.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    feature: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/feature"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/feature", "GET", {
-                        ...args,
+                    feature: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/feature"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/feature", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     firewall: {
@@ -6559,8 +6560,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        index: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/firewall", "GET", {
-                            ...args,
+                        index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/firewall", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         aliases: {
@@ -6574,8 +6575,8 @@ export default (client: Client) => ({
                              * - `node` (path, required, string): The cluster node name.
                              * - `vmid` (path, required, number): The (unique) ID of the VM.
                              */
-                            list: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/aliases"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/aliases", "GET", {
-                                ...args,
+                            list: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/aliases"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/aliases", "GET", {
+                                ...((args[0]) as any),
                                 $path: {node, vmid: parseInt(vmid.toString())}
                             }),
                             /**
@@ -6591,8 +6592,8 @@ export default (client: Client) => ({
                              * - `node` (path, required, string): The cluster node name.
                              * - `vmid` (path, required, number): The (unique) ID of the VM.
                              */
-                            create: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/aliases"]["POST"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/aliases", "POST", {
-                                ...args,
+                            create: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/aliases"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/aliases", "POST", {
+                                ...((args[0]) as any),
                                 $path: {node, vmid: parseInt(vmid.toString())}
                             }),
                             alias: (name: string) => ({
@@ -6608,8 +6609,8 @@ export default (client: Client) => ({
                                  * - `node` (path, required, string): The cluster node name.
                                  * - `vmid` (path, required, number): The (unique) ID of the VM.
                                  */
-                                remove: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/aliases/{name}"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/aliases/{name}", "DELETE", {
-                                    ...args,
+                                remove: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/aliases/{name}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/aliases/{name}", "DELETE", {
+                                    ...((args[0]) as any),
                                     $path: {node, vmid: parseInt(vmid.toString()), name}
                                 }),
                                 /**
@@ -6623,8 +6624,8 @@ export default (client: Client) => ({
                                  * - `node` (path, required, string): The cluster node name.
                                  * - `vmid` (path, required, number): The (unique) ID of the VM.
                                  */
-                                get: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/aliases/{name}"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/aliases/{name}", "GET", {
-                                    ...args,
+                                get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/aliases/{name}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/aliases/{name}", "GET", {
+                                    ...((args[0]) as any),
                                     $path: {node, vmid: parseInt(vmid.toString()), name}
                                 }),
                                 /**
@@ -6642,8 +6643,8 @@ export default (client: Client) => ({
                                  * - `rename` (body, optional, string): Rename an existing alias.
                                  * - `vmid` (path, required, number): The (unique) ID of the VM.
                                  */
-                                update: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/aliases/{name}"]["PUT"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/aliases/{name}", "PUT", {
-                                    ...args,
+                                update: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/aliases/{name}"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/aliases/{name}", "PUT", {
+                                    ...((args[0]) as any),
                                     $path: {node, vmid: parseInt(vmid.toString()), name}
                                 }),
                             })
@@ -6659,8 +6660,8 @@ export default (client: Client) => ({
                              * - `node` (path, required, string): The cluster node name.
                              * - `vmid` (path, required, number): The (unique) ID of the VM.
                              */
-                            index: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/ipset"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/ipset", "GET", {
-                                ...args,
+                            index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/ipset"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/ipset", "GET", {
+                                ...((args[0]) as any),
                                 $path: {node, vmid: parseInt(vmid.toString())}
                             }),
                             /**
@@ -6677,8 +6678,8 @@ export default (client: Client) => ({
                              * - `rename` (body, optional, string): Rename an existing IPSet. You can set 'rename' to the same value as 'name' to update the 'comment' of an existing IPSet.
                              * - `vmid` (path, required, number): The (unique) ID of the VM.
                              */
-                            create: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/ipset"]["POST"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/ipset", "POST", {
-                                ...args,
+                            create: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/ipset"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/ipset", "POST", {
+                                ...((args[0]) as any),
                                 $path: {node, vmid: parseInt(vmid.toString())}
                             }),
                             name: (name: string) => ({
@@ -6694,8 +6695,8 @@ export default (client: Client) => ({
                                  * - `node` (path, required, string): The cluster node name.
                                  * - `vmid` (path, required, number): The (unique) ID of the VM.
                                  */
-                                delete: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}", "DELETE", {
-                                    ...args,
+                                delete: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}", "DELETE", {
+                                    ...((args[0]) as any),
                                     $path: {node, vmid: parseInt(vmid.toString()), name}
                                 }),
                                 /**
@@ -6709,8 +6710,8 @@ export default (client: Client) => ({
                                  * - `node` (path, required, string): The cluster node name.
                                  * - `vmid` (path, required, number): The (unique) ID of the VM.
                                  */
-                                get: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}", "GET", {
-                                    ...args,
+                                get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}", "GET", {
+                                    ...((args[0]) as any),
                                     $path: {node, vmid: parseInt(vmid.toString()), name}
                                 }),
                                 /**
@@ -6727,8 +6728,8 @@ export default (client: Client) => ({
                                  * - `nomatch` (body, optional, boolean)
                                  * - `vmid` (path, required, number): The (unique) ID of the VM.
                                  */
-                                create_ip: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}"]["POST"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}", "POST", {
-                                    ...args,
+                                create_ip: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}", "POST", {
+                                    ...((args[0]) as any),
                                     $path: {node, vmid: parseInt(vmid.toString()), name}
                                 }),
                                 ip: (cidr: string) => ({
@@ -6745,8 +6746,8 @@ export default (client: Client) => ({
                                      * - `node` (path, required, string): The cluster node name.
                                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                                      */
-                                    remove: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}/{cidr}"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}/{cidr}", "DELETE", {
-                                        ...args,
+                                    remove: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}/{cidr}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}/{cidr}", "DELETE", {
+                                        ...((args[0]) as any),
                                         $path: {node, vmid: parseInt(vmid.toString()), cidr, name}
                                     }),
                                     /**
@@ -6761,8 +6762,8 @@ export default (client: Client) => ({
                                      * - `node` (path, required, string): The cluster node name.
                                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                                      */
-                                    read_ip: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}/{cidr}"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}/{cidr}", "GET", {
-                                        ...args,
+                                    read_ip: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}/{cidr}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}/{cidr}", "GET", {
+                                        ...((args[0]) as any),
                                         $path: {node, vmid: parseInt(vmid.toString()), cidr, name}
                                     }),
                                     /**
@@ -6780,8 +6781,8 @@ export default (client: Client) => ({
                                      * - `nomatch` (body, optional, boolean)
                                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                                      */
-                                    update_ip: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}/{cidr}"]["PUT"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}/{cidr}", "PUT", {
-                                        ...args,
+                                    update_ip: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}/{cidr}"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}/{cidr}", "PUT", {
+                                        ...((args[0]) as any),
                                         $path: {node, vmid: parseInt(vmid.toString()), cidr, name}
                                     }),
                                 })
@@ -6801,8 +6802,8 @@ export default (client: Client) => ({
                          * - `until` (query, optional, number): Display log until this UNIX epoch.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        log: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/log"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/log", "GET", {
-                            ...args,
+                        log: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/log"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/log", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         options: {
@@ -6816,8 +6817,8 @@ export default (client: Client) => ({
                              * - `node` (path, required, string): The cluster node name.
                              * - `vmid` (path, required, number): The (unique) ID of the VM.
                              */
-                            get: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/options"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/options", "GET", {
-                                ...args,
+                            get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/options"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/options", "GET", {
+                                ...((args[0]) as any),
                                 $path: {node, vmid: parseInt(vmid.toString())}
                             }),
                             /**
@@ -6842,8 +6843,8 @@ export default (client: Client) => ({
                              * - `radv` (body, optional, boolean): Allow sending Router Advertisement.
                              * - `vmid` (path, required, number): The (unique) ID of the VM.
                              */
-                            set: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/options"]["PUT"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/options", "PUT", {
-                                ...args,
+                            set: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/options"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/options", "PUT", {
+                                ...((args[0]) as any),
                                 $path: {node, vmid: parseInt(vmid.toString())}
                             }),
                         },
@@ -6858,8 +6859,8 @@ export default (client: Client) => ({
                          * - `type` (query, optional, "alias" | "ipset"): Only list references of specified type.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        refs: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/refs"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/refs", "GET", {
-                            ...args,
+                        refs: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/refs"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/refs", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         rules: {
@@ -6873,8 +6874,8 @@ export default (client: Client) => ({
                              * - `node` (path, required, string): The cluster node name.
                              * - `vmid` (path, required, number): The (unique) ID of the VM.
                              */
-                            list: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/rules"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/rules", "GET", {
-                                ...args,
+                            list: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/rules"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/rules", "GET", {
+                                ...((args[0]) as any),
                                 $path: {node, vmid: parseInt(vmid.toString())}
                             }),
                             /**
@@ -6902,8 +6903,8 @@ export default (client: Client) => ({
                              * - `type` (body, required, "in" | "out" | "forward" | "group"): Rule type.
                              * - `vmid` (path, required, number): The (unique) ID of the VM.
                              */
-                            create_rule: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/rules"]["POST"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/rules", "POST", {
-                                ...args,
+                            create_rule: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/rules"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/rules", "POST", {
+                                ...((args[0]) as any),
                                 $path: {node, vmid: parseInt(vmid.toString())}
                             }),
                             pos: (pos: number) => ({
@@ -6919,8 +6920,8 @@ export default (client: Client) => ({
                                  * - `pos` (path, optional, number): Update rule at position <pos>.
                                  * - `vmid` (path, required, number): The (unique) ID of the VM.
                                  */
-                                delete: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/rules/{pos}"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/rules/{pos}", "DELETE", {
-                                    ...args,
+                                delete: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/rules/{pos}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/rules/{pos}", "DELETE", {
+                                    ...((args[0]) as any),
                                     $path: {node, vmid: parseInt(vmid.toString()), pos}
                                 }),
                                 /**
@@ -6934,8 +6935,8 @@ export default (client: Client) => ({
                                  * - `pos` (path, optional, number): Update rule at position <pos>.
                                  * - `vmid` (path, required, number): The (unique) ID of the VM.
                                  */
-                                get: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/rules/{pos}"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/rules/{pos}", "GET", {
-                                    ...args,
+                                get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/rules/{pos}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/rules/{pos}", "GET", {
+                                    ...((args[0]) as any),
                                     $path: {node, vmid: parseInt(vmid.toString()), pos}
                                 }),
                                 /**
@@ -6965,8 +6966,8 @@ export default (client: Client) => ({
                                  * - `type` (body, optional, "in" | "out" | "forward" | "group"): Rule type.
                                  * - `vmid` (path, required, number): The (unique) ID of the VM.
                                  */
-                                update: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/rules/{pos}"]["PUT"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/rules/{pos}", "PUT", {
-                                    ...args,
+                                update: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/firewall/rules/{pos}"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/firewall/rules/{pos}", "PUT", {
+                                    ...((args[0]) as any),
                                     $path: {node, vmid: parseInt(vmid.toString()), pos}
                                 }),
                             })
@@ -6982,8 +6983,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    interfaces: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/interfaces"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/interfaces", "GET", {
-                        ...args,
+                    interfaces: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/interfaces"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/interfaces", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     migrate: {
@@ -6998,8 +6999,8 @@ export default (client: Client) => ({
                          * - `target` (query, optional, string): Target node.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        preconditions: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/migrate"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/migrate", "GET", {
-                            ...args,
+                        preconditions: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/migrate"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/migrate", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -7018,8 +7019,8 @@ export default (client: Client) => ({
                          * - `timeout` (body, optional, number): Timeout in seconds for shutdown for restart migration
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        migrate_vm: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/migrate"]["POST"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/migrate", "POST", {
-                            ...args,
+                        migrate_vm: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/migrate"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/migrate", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                     },
@@ -7044,8 +7045,8 @@ export default (client: Client) => ({
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      * - `volume` (body, required, "rootfs" | "mp0" | "mp1" | "mp2" | "mp3" | "mp4" | "mp5" | "mp6" | "mp7" | "mp8" | "mp9" | "mp10" | "mp11" | "mp12" | "mp13" | "mp14" | "mp15" | "mp16" | "mp17" | "mp18" | "mp19" | "mp20" | "mp21" | "mp22" | "mp23" | "mp24" | "mp25" | "mp26" | "mp27" | "mp28" | "mp29" | "mp30" | "mp31" | "mp32" | "mp33" | "mp34" | "mp35" | "mp36" | "mp37" | "mp38" | "mp39" | "mp40" | "mp41" | "mp42" | "mp43" | "mp44" | "mp45" | "mp46" | "mp47" | "mp48" | "mp49" | "mp50" | "mp51" | "mp52" | "mp53" | "mp54" | "mp55" | "mp56" | "mp57" | "mp58" | "mp59" | "mp60" | "mp61" | "mp62" | "mp63" | "mp64" | "mp65" | "mp66" | "mp67" | "mp68" | "mp69" | "mp70" | "mp71" | "mp72" | "mp73" | "mp74" | "mp75" | "mp76" | "mp77" | "mp78" | "mp79" | "mp80" | "mp81" | "mp82" | "mp83" | "mp84" | "mp85" | "mp86" | "mp87" | "mp88" | "mp89" | "mp90" | "mp91" | "mp92" | "mp93" | "mp94" | "mp95" | "mp96" | "mp97" | "mp98" | "mp99" | "mp100" | "mp101" | "mp102" | "mp103" | "mp104" | "mp105" | "mp106" | "mp107" | "mp108" | "mp109" | "mp110" | "mp111" | "mp112" | "mp113" | "mp114" | "mp115" | "mp116" | "mp117" | "mp118" | "mp119" | "mp120" | "mp121" | "mp122" | "mp123" | "mp124" | "mp125" | "mp126" | "mp127" | "mp128" | "mp129" | "mp130" | "mp131" | "mp132" | "mp133" | "mp134" | "mp135" | "mp136" | "mp137" | "mp138" | "mp139" | "mp140" | "mp141" | "mp142" | "mp143" | "mp144" | "mp145" | "mp146" | "mp147" | "mp148" | "mp149" | "mp150" | "mp151" | "mp152" | "mp153" | "mp154" | "mp155" | "mp156" | "mp157" | "mp158" | "mp159" | "mp160" | "mp161" | "mp162" | "mp163" | "mp164" | "mp165" | "mp166" | "mp167" | "mp168" | "mp169" | "mp170" | "mp171" | "mp172" | "mp173" | "mp174" | "mp175" | "mp176" | "mp177" | "mp178" | "mp179" | "mp180" | "mp181" | "mp182" | "mp183" | "mp184" | "mp185" | "mp186" | "mp187" | "mp188" | "mp189" | "mp190" | "mp191" | "mp192" | "mp193" | "mp194" | "mp195" | "mp196" | "mp197" | "mp198" | "mp199" | "mp200" | "mp201" | "mp202" | "mp203" | "mp204" | "mp205" | "mp206" | "mp207" | "mp208" | "mp209" | "mp210" | "mp211" | "mp212" | "mp213" | "mp214" | "mp215" | "mp216" | "mp217" | "mp218" | "mp219" | "mp220" | "mp221" | "mp222" | "mp223" | "mp224" | "mp225" | "mp226" | "mp227" | "mp228" | "mp229" | "mp230" | "mp231" | "mp232" | "mp233" | "mp234" | "mp235" | "mp236" | "mp237" | "mp238" | "mp239" | "mp240" | "mp241" | "mp242" | "mp243" | "mp244" | "mp245" | "mp246" | "mp247" | "mp248" | "mp249" | "mp250" | "mp251" | "mp252" | "mp253" | "mp254" | "mp255" | "unused0" | "unused1" | "unused2" | "unused3" | "unused4" | "unused5" | "unused6" | "unused7" | "unused8" | "unused9" | "unused10" | "unused11" | "unused12" | "unused13" | "unused14" | "unused15" | "unused16" | "unused17" | "unused18" | "unused19" | "unused20" | "unused21" | "unused22" | "unused23" | "unused24" | "unused25" | "unused26" | "unused27" | "unused28" | "unused29" | "unused30" | "unused31" | "unused32" | "unused33" | "unused34" | "unused35" | "unused36" | "unused37" | "unused38" | "unused39" | "unused40" | "unused41" | "unused42" | "unused43" | "unused44" | "unused45" | "unused46" | "unused47" | "unused48" | "unused49" | "unused50" | "unused51" | "unused52" | "unused53" | "unused54" | "unused55" | "unused56" | "unused57" | "unused58" | "unused59" | "unused60" | "unused61" | "unused62" | "unused63" | "unused64" | "unused65" | "unused66" | "unused67" | "unused68" | "unused69" | "unused70" | "unused71" | "unused72" | "unused73" | "unused74" | "unused75" | "unused76" | "unused77" | "unused78" | "unused79" | "unused80" | "unused81" | "unused82" | "unused83" | "unused84" | "unused85" | "unused86" | "unused87" | "unused88" | "unused89" | "unused90" | "unused91" | "unused92" | "unused93" | "unused94" | "unused95" | "unused96" | "unused97" | "unused98" | "unused99" | "unused100" | "unused101" | "unused102" | "unused103" | "unused104" | "unused105" | "unused106" | "unused107" | "unused108" | "unused109" | "unused110" | "unused111" | "unused112" | "unused113" | "unused114" | "unused115" | "unused116" | "unused117" | "unused118" | "unused119" | "unused120" | "unused121" | "unused122" | "unused123" | "unused124" | "unused125" | "unused126" | "unused127" | "unused128" | "unused129" | "unused130" | "unused131" | "unused132" | "unused133" | "unused134" | "unused135" | "unused136" | "unused137" | "unused138" | "unused139" | "unused140" | "unused141" | "unused142" | "unused143" | "unused144" | "unused145" | "unused146" | "unused147" | "unused148" | "unused149" | "unused150" | "unused151" | "unused152" | "unused153" | "unused154" | "unused155" | "unused156" | "unused157" | "unused158" | "unused159" | "unused160" | "unused161" | "unused162" | "unused163" | "unused164" | "unused165" | "unused166" | "unused167" | "unused168" | "unused169" | "unused170" | "unused171" | "unused172" | "unused173" | "unused174" | "unused175" | "unused176" | "unused177" | "unused178" | "unused179" | "unused180" | "unused181" | "unused182" | "unused183" | "unused184" | "unused185" | "unused186" | "unused187" | "unused188" | "unused189" | "unused190" | "unused191" | "unused192" | "unused193" | "unused194" | "unused195" | "unused196" | "unused197" | "unused198" | "unused199" | "unused200" | "unused201" | "unused202" | "unused203" | "unused204" | "unused205" | "unused206" | "unused207" | "unused208" | "unused209" | "unused210" | "unused211" | "unused212" | "unused213" | "unused214" | "unused215" | "unused216" | "unused217" | "unused218" | "unused219" | "unused220" | "unused221" | "unused222" | "unused223" | "unused224" | "unused225" | "unused226" | "unused227" | "unused228" | "unused229" | "unused230" | "unused231" | "unused232" | "unused233" | "unused234" | "unused235" | "unused236" | "unused237" | "unused238" | "unused239" | "unused240" | "unused241" | "unused242" | "unused243" | "unused244" | "unused245" | "unused246" | "unused247" | "unused248" | "unused249" | "unused250" | "unused251" | "unused252" | "unused253" | "unused254" | "unused255"): Volume which will be moved.
                      */
-                    move_volume: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/move_volume"]["POST"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/move_volume", "POST", {
-                        ...args,
+                    move_volume: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/move_volume"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/move_volume", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     /**
@@ -7060,8 +7061,8 @@ export default (client: Client) => ({
                      * - `storages` (body, optional, string): List of storages to check permission and availability. Will be checked again for all actually used storages during migration.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    mtunnel: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/mtunnel"]["POST"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/mtunnel", "POST", {
-                        ...args,
+                    mtunnel: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/mtunnel"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/mtunnel", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     /**
@@ -7076,8 +7077,8 @@ export default (client: Client) => ({
                      * - `ticket` (query, required, string): ticket return by initial 'mtunnel' API call, or retrieved via 'ticket' tunnel command
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    mtunnelwebsocket: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/mtunnelwebsocket"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/mtunnelwebsocket", "GET", {
-                        ...args,
+                    mtunnelwebsocket: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/mtunnelwebsocket"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/mtunnelwebsocket", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     /**
@@ -7090,8 +7091,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    pending: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/pending"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/pending", "GET", {
-                        ...args,
+                    pending: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/pending"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/pending", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     /**
@@ -7113,8 +7114,8 @@ export default (client: Client) => ({
                      * - `timeout` (body, optional, number): Timeout in seconds for shutdown for restart migration
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    remote_migrate: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/remote_migrate"]["POST"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/remote_migrate", "POST", {
-                        ...args,
+                    remote_migrate: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/remote_migrate"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/remote_migrate", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     /**
@@ -7130,8 +7131,8 @@ export default (client: Client) => ({
                      * - `size` (body, required, string): The new size. With the '+' sign the value is added to the actual size of the volume and without it, the value is taken as an absolute one. Shrinking disk size is not supported.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    resize: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/resize"]["PUT"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/resize", "PUT", {
-                        ...args,
+                    resize: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/resize"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/resize", "PUT", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     /**
@@ -7147,8 +7148,8 @@ export default (client: Client) => ({
                      * - `timeframe` (query, required, "hour" | "day" | "week" | "month" | "year"): Specify the time frame you are interested in.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    rrd: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/rrd"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/rrd", "GET", {
-                        ...args,
+                    rrd: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/rrd"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/rrd", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     /**
@@ -7163,8 +7164,8 @@ export default (client: Client) => ({
                      * - `timeframe` (query, required, "hour" | "day" | "week" | "month" | "year"): Specify the time frame you are interested in.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    rrddata: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/rrddata"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/rrddata", "GET", {
-                        ...args,
+                    rrddata: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/rrddata"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/rrddata", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     snapshot: {
@@ -7178,8 +7179,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        list: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/snapshot"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/snapshot", "GET", {
-                            ...args,
+                        list: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/snapshot"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/snapshot", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -7194,8 +7195,8 @@ export default (client: Client) => ({
                          * - `snapname` (body, required, string): The name of the snapshot.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        create: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/snapshot"]["POST"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/snapshot", "POST", {
-                            ...args,
+                        create: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/snapshot"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/snapshot", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         name: (snapname: string) => ({
@@ -7211,8 +7212,8 @@ export default (client: Client) => ({
                              * - `snapname` (path, required, string): The name of the snapshot.
                              * - `vmid` (path, required, number): The (unique) ID of the VM.
                              */
-                            delete: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/snapshot/{snapname}"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/snapshot/{snapname}", "DELETE", {
-                                ...args,
+                            delete: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/snapshot/{snapname}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/snapshot/{snapname}", "DELETE", {
+                                ...((args[0]) as any),
                                 $path: {node, vmid: parseInt(vmid.toString()), snapname}
                             }),
                             /**
@@ -7225,8 +7226,8 @@ export default (client: Client) => ({
                              * - `snapname` (path, required, string): The name of the snapshot.
                              * - `vmid` (path, required, number): The (unique) ID of the VM.
                              */
-                            get: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/snapshot/{snapname}"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/snapshot/{snapname}", "GET", {
-                                ...args,
+                            get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/snapshot/{snapname}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/snapshot/{snapname}", "GET", {
+                                ...((args[0]) as any),
                                 $path: {node, vmid: parseInt(vmid.toString()), snapname}
                             }),
                             config: {
@@ -7241,8 +7242,8 @@ export default (client: Client) => ({
                                  * - `snapname` (path, required, string): The name of the snapshot.
                                  * - `vmid` (path, required, number): The (unique) ID of the VM.
                                  */
-                                get: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/snapshot/{snapname}/config"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/snapshot/{snapname}/config", "GET", {
-                                    ...args,
+                                get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/snapshot/{snapname}/config"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/snapshot/{snapname}/config", "GET", {
+                                    ...((args[0]) as any),
                                     $path: {node, vmid: parseInt(vmid.toString()), snapname}
                                 }),
                                 /**
@@ -7257,8 +7258,8 @@ export default (client: Client) => ({
                                  * - `snapname` (path, required, string): The name of the snapshot.
                                  * - `vmid` (path, required, number): The (unique) ID of the VM.
                                  */
-                                update: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/snapshot/{snapname}/config"]["PUT"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/snapshot/{snapname}/config", "PUT", {
-                                    ...args,
+                                update: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/snapshot/{snapname}/config"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/snapshot/{snapname}/config", "PUT", {
+                                    ...((args[0]) as any),
                                     $path: {node, vmid: parseInt(vmid.toString()), snapname}
                                 }),
                             },
@@ -7274,8 +7275,8 @@ export default (client: Client) => ({
                              * - `start` (body, optional, boolean): Whether the container should get started after rolling back successfully
                              * - `vmid` (path, required, number): The (unique) ID of the VM.
                              */
-                            rollback: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/snapshot/{snapname}/rollback"]["POST"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/snapshot/{snapname}/rollback", "POST", {
-                                ...args,
+                            rollback: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/snapshot/{snapname}/rollback"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/snapshot/{snapname}/rollback", "POST", {
+                                ...((args[0]) as any),
                                 $path: {node, vmid: parseInt(vmid.toString()), snapname}
                             }),
                         })
@@ -7291,8 +7292,8 @@ export default (client: Client) => ({
                      * - `proxy` (body, optional, string): SPICE proxy server. This can be used by the client to specify the proxy server. All nodes in a cluster runs 'spiceproxy', so it is up to the client to choose one. By default, we return the node where the VM is currently running. As reasonable setting is to use same node you use to connect to the API (This is window.location.hostname for the JS GUI).
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    spiceproxy: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/spiceproxy"]["POST"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/spiceproxy", "POST", {
-                        ...args,
+                    spiceproxy: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/spiceproxy"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/spiceproxy", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     status: {
@@ -7306,8 +7307,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        get: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/status"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/status", "GET", {
-                            ...args,
+                        get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/status"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/status", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -7320,8 +7321,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        current: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/status/current"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/status/current", "GET", {
-                            ...args,
+                        current: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/status/current"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/status/current", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -7335,8 +7336,8 @@ export default (client: Client) => ({
                          * - `timeout` (body, optional, number): Wait maximal timeout seconds for the shutdown.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        reboot: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/status/reboot"]["POST"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/status/reboot", "POST", {
-                            ...args,
+                        reboot: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/status/reboot"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/status/reboot", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -7349,8 +7350,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        resume: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/status/resume"]["POST"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/status/resume", "POST", {
-                            ...args,
+                        resume: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/status/resume"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/status/resume", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -7365,8 +7366,8 @@ export default (client: Client) => ({
                          * - `timeout` (body, optional, number): Wait maximal timeout seconds.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        shutdown: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/status/shutdown"]["POST"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/status/shutdown", "POST", {
-                            ...args,
+                        shutdown: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/status/shutdown"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/status/shutdown", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -7381,8 +7382,8 @@ export default (client: Client) => ({
                          * - `skiplock` (body, optional, boolean): Ignore locks - only root is allowed to use this option.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        start: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/status/start"]["POST"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/status/start", "POST", {
-                            ...args,
+                        start: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/status/start"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/status/start", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -7397,8 +7398,8 @@ export default (client: Client) => ({
                          * - `skiplock` (body, optional, boolean): Ignore locks - only root is allowed to use this option.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        stop: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/status/stop"]["POST"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/status/stop", "POST", {
-                            ...args,
+                        stop: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/status/stop"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/status/stop", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -7411,8 +7412,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        suspend: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/status/suspend"]["POST"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/status/suspend", "POST", {
-                            ...args,
+                        suspend: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/status/suspend"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/status/suspend", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                     },
@@ -7426,8 +7427,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    template: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/template"]["POST"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/template", "POST", {
-                        ...args,
+                    template: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/template"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/template", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     /**
@@ -7440,8 +7441,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    termproxy: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/termproxy"]["POST"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/termproxy", "POST", {
-                        ...args,
+                    termproxy: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/termproxy"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/termproxy", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     /**
@@ -7457,8 +7458,8 @@ export default (client: Client) => ({
                      * - `websocket` (body, optional, boolean): use websocket instead of standard VNC.
                      * - `width` (body, optional, number): sets the width of the console in pixels.
                      */
-                    vncproxy: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/vncproxy"]["POST"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/vncproxy", "POST", {
-                        ...args,
+                    vncproxy: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/vncproxy"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/vncproxy", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     /**
@@ -7473,8 +7474,8 @@ export default (client: Client) => ({
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      * - `vncticket` (query, required, string): Ticket from previous call to vncproxy.
                      */
-                    vncwebsocket: (args: PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/vncwebsocket"]["GET"]['parameters']>) => client.request("/nodes/{node}/lxc/{vmid}/vncwebsocket", "GET", {
-                        ...args,
+                    vncwebsocket: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/vncwebsocket"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/vncwebsocket", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                 })
@@ -7492,8 +7493,8 @@ export default (client: Client) => ({
              * - `vms` (body, optional, string): Only consider Guests with these IDs.
              * - `with-local-disks` (body, optional, boolean): Enable live storage migration for local disk
              */
-            migrate_all: (args: PathContext<NodesAPI["/nodes/{node}/migrateall"]["POST"]['parameters']>) => client.request("/nodes/{node}/migrateall", "POST", {
-                ...args,
+            migrate_all: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/migrateall"]["POST"]['parameters']>>) => client.request("/nodes/{node}/migrateall", "POST", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             /**
@@ -7505,8 +7506,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `node` (path, required, string): The cluster node name.
              */
-            netstat: (args: PathContext<NodesAPI["/nodes/{node}/netstat"]["GET"]['parameters']>) => client.request("/nodes/{node}/netstat", "GET", {
-                ...args,
+            netstat: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/netstat"]["GET"]['parameters']>>) => client.request("/nodes/{node}/netstat", "GET", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             network: {
@@ -7519,8 +7520,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                revert_changes: (args: PathContext<NodesAPI["/nodes/{node}/network"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/network", "DELETE", {
-                    ...args,
+                revert_changes: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/network"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/network", "DELETE", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -7533,8 +7534,8 @@ export default (client: Client) => ({
                  * - `node` (path, required, string): The cluster node name.
                  * - `type` (query, optional, "bridge" | "bond" | "eth" | "alias" | "vlan" | "fabric" | "OVSBridge" | "OVSBond" | "OVSPort" | "OVSIntPort" | "vnet" | "any_bridge" | "any_local_bridge" | "include_sdn"): Only list specific interface types.
                  */
-                index: (args: PathContext<NodesAPI["/nodes/{node}/network"]["GET"]['parameters']>) => client.request("/nodes/{node}/network", "GET", {
-                    ...args,
+                index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/network"]["GET"]['parameters']>>) => client.request("/nodes/{node}/network", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -7574,8 +7575,8 @@ export default (client: Client) => ({
                  * - `vlan-id` (body, optional, number): vlan-id for a custom named vlan interface (ifupdown2 only).
                  * - `vlan-raw-device` (body, optional, string): Specify the raw interface for the vlan interface.
                  */
-                create: (args: PathContext<NodesAPI["/nodes/{node}/network"]["POST"]['parameters']>) => client.request("/nodes/{node}/network", "POST", {
-                    ...args,
+                create: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/network"]["POST"]['parameters']>>) => client.request("/nodes/{node}/network", "POST", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -7588,8 +7589,8 @@ export default (client: Client) => ({
                  * - `node` (path, required, string): The cluster node name.
                  * - `regenerate-frr` (body, optional, boolean): Whether FRR config generation should get skipped or not.
                  */
-                reload_config: (args: PathContext<NodesAPI["/nodes/{node}/network"]["PUT"]['parameters']>) => client.request("/nodes/{node}/network", "PUT", {
-                    ...args,
+                reload_config: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/network"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/network", "PUT", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 iface: (iface: string) => ({
@@ -7603,8 +7604,8 @@ export default (client: Client) => ({
                      * - `iface` (path, required, string): Network interface name.
                      * - `node` (path, required, string): The cluster node name.
                      */
-                    delete: (args: PathContext<NodesAPI["/nodes/{node}/network/{iface}"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/network/{iface}", "DELETE", {
-                        ...args,
+                    delete: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/network/{iface}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/network/{iface}", "DELETE", {
+                        ...((args[0]) as any),
                         $path: {node, iface}
                     }),
                     /**
@@ -7617,8 +7618,8 @@ export default (client: Client) => ({
                      * - `iface` (path, required, string): Network interface name.
                      * - `node` (path, required, string): The cluster node name.
                      */
-                    network_config: (args: PathContext<NodesAPI["/nodes/{node}/network/{iface}"]["GET"]['parameters']>) => client.request("/nodes/{node}/network/{iface}", "GET", {
-                        ...args,
+                    network_config: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/network/{iface}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/network/{iface}", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, iface}
                     }),
                     /**
@@ -7659,8 +7660,8 @@ export default (client: Client) => ({
                      * - `vlan-id` (body, optional, number): vlan-id for a custom named vlan interface (ifupdown2 only).
                      * - `vlan-raw-device` (body, optional, string): Specify the raw interface for the vlan interface.
                      */
-                    update: (args: PathContext<NodesAPI["/nodes/{node}/network/{iface}"]["PUT"]['parameters']>) => client.request("/nodes/{node}/network/{iface}", "PUT", {
-                        ...args,
+                    update: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/network/{iface}"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/network/{iface}", "PUT", {
+                        ...((args[0]) as any),
                         $path: {node, iface}
                     }),
                 })
@@ -7676,8 +7677,8 @@ export default (client: Client) => ({
                  * - `full` (query, optional, boolean): Determine the full status of active VMs.
                  * - `node` (path, required, string): The cluster node name.
                  */
-                list: (args: PathContext<NodesAPI["/nodes/{node}/qemu"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu", "GET", {
-                    ...args,
+                list: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -7793,8 +7794,8 @@ export default (client: Client) => ({
                  * - `vmstatestorage` (body, optional, string): Default storage for VM state volumes/files.
                  * - `watchdog` (body, optional, string): Create a virtual hardware watchdog device.
                  */
-                create_vm: (args: PathContext<NodesAPI["/nodes/{node}/qemu"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu", "POST", {
-                    ...args,
+                create_vm: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu", "POST", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 vmid: (vmid: string | number) => ({
@@ -7811,8 +7812,8 @@ export default (client: Client) => ({
                      * - `skiplock` (query, optional, boolean): Ignore locks - only root is allowed to use this option.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    destroy: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}", "DELETE", {
-                        ...args,
+                    destroy: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}", "DELETE", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     /**
@@ -7825,8 +7826,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    diridx: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}", "GET", {
-                        ...args,
+                    diridx: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     agent: {
@@ -7840,8 +7841,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        index: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent", "GET", {
-                            ...args,
+                        index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -7855,8 +7856,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        agent: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent", "POST", {
-                            ...args,
+                        agent: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         exec: {
@@ -7872,8 +7873,8 @@ export default (client: Client) => ({
                              * - `node` (path, required, string): The cluster node name.
                              * - `vmid` (path, required, number): The (unique) ID of the VM.
                              */
-                            exec: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/exec"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent/exec", "POST", {
-                                ...args,
+                            exec: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/exec"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent/exec", "POST", {
+                                ...((args[0]) as any),
                                 $path: {node, vmid: parseInt(vmid.toString())}
                             }),
                         },
@@ -7889,8 +7890,8 @@ export default (client: Client) => ({
                          * - `pid` (query, required, number): The PID to query
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        exec_status: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/exec-status"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent/exec-status", "GET", {
-                            ...args,
+                        exec_status: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/exec-status"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent/exec-status", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -7904,8 +7905,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        file_read: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/file-read"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent/file-read", "GET", {
-                            ...args,
+                        file_read: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/file-read"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent/file-read", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -7921,8 +7922,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        file_write: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/file-write"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent/file-write", "POST", {
-                            ...args,
+                        file_write: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/file-write"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent/file-write", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
 
@@ -7936,8 +7937,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        fsfreeze_freeze: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/fsfreeze-freeze"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent/fsfreeze-freeze", "POST", {
-                            ...args,
+                        fsfreeze_freeze: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/fsfreeze-freeze"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent/fsfreeze-freeze", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -7950,8 +7951,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        fsfreeze_status: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/fsfreeze-status"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent/fsfreeze-status", "POST", {
-                            ...args,
+                        fsfreeze_status: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/fsfreeze-status"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent/fsfreeze-status", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -7964,8 +7965,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        fsfreeze_thaw: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/fsfreeze-thaw"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent/fsfreeze-thaw", "POST", {
-                            ...args,
+                        fsfreeze_thaw: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/fsfreeze-thaw"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent/fsfreeze-thaw", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -7978,8 +7979,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        fstrim: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/fstrim"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent/fstrim", "POST", {
-                            ...args,
+                        fstrim: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/fstrim"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent/fstrim", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -7992,8 +7993,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        get_fsinfo: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/get-fsinfo"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent/get-fsinfo", "GET", {
-                            ...args,
+                        get_fsinfo: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/get-fsinfo"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent/get-fsinfo", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
 
@@ -8007,8 +8008,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        get_host_name: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/get-host-name"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent/get-host-name", "GET", {
-                            ...args,
+                        get_host_name: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/get-host-name"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent/get-host-name", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -8021,8 +8022,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        get_memory_block_info: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/get-memory-block-info"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent/get-memory-block-info", "GET", {
-                            ...args,
+                        get_memory_block_info: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/get-memory-block-info"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent/get-memory-block-info", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -8035,8 +8036,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        get_memory_blocks: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/get-memory-blocks"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent/get-memory-blocks", "GET", {
-                            ...args,
+                        get_memory_blocks: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/get-memory-blocks"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent/get-memory-blocks", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -8049,8 +8050,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        get_osinfo: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/get-osinfo"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent/get-osinfo", "GET", {
-                            ...args,
+                        get_osinfo: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/get-osinfo"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent/get-osinfo", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -8063,8 +8064,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        get_time: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/get-time"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent/get-time", "GET", {
-                            ...args,
+                        get_time: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/get-time"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent/get-time", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
 
@@ -8078,8 +8079,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        get_timezone: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/get-timezone"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent/get-timezone", "GET", {
-                            ...args,
+                        get_timezone: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/get-timezone"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent/get-timezone", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -8092,8 +8093,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        get_users: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/get-users"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent/get-users", "GET", {
-                            ...args,
+                        get_users: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/get-users"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent/get-users", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -8106,8 +8107,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        get_vcpus: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/get-vcpus"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent/get-vcpus", "GET", {
-                            ...args,
+                        get_vcpus: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/get-vcpus"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent/get-vcpus", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -8120,8 +8121,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        info: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/info"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent/info", "GET", {
-                            ...args,
+                        info: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/info"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent/info", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -8134,8 +8135,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        network_get_interfaces: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/network-get-interfaces"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent/network-get-interfaces", "GET", {
-                            ...args,
+                        network_get_interfaces: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/network-get-interfaces"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent/network-get-interfaces", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -8148,8 +8149,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        ping: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/ping"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent/ping", "POST", {
-                            ...args,
+                        ping: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/ping"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent/ping", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -8165,8 +8166,8 @@ export default (client: Client) => ({
                          * - `username` (body, required, string): The user to set the password for.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        set_user_password: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/set-user-password"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent/set-user-password", "POST", {
-                            ...args,
+                        set_user_password: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/set-user-password"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent/set-user-password", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -8179,8 +8180,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        shutdown: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/shutdown"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent/shutdown", "POST", {
-                            ...args,
+                        shutdown: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/shutdown"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent/shutdown", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -8193,8 +8194,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        suspend_disk: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/suspend-disk"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent/suspend-disk", "POST", {
-                            ...args,
+                        suspend_disk: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/suspend-disk"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent/suspend-disk", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -8207,8 +8208,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        suspend_hybrid: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/suspend-hybrid"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent/suspend-hybrid", "POST", {
-                            ...args,
+                        suspend_hybrid: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/suspend-hybrid"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent/suspend-hybrid", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -8221,8 +8222,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        suspend_ram: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/suspend-ram"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/agent/suspend-ram", "POST", {
-                            ...args,
+                        suspend_ram: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent/suspend-ram"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent/suspend-ram", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
 
@@ -8247,8 +8248,8 @@ export default (client: Client) => ({
                      * - `target` (body, optional, string): Target node. Only allowed if the original VM is on shared storage.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    clone: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/clone"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/clone", "POST", {
-                        ...args,
+                    clone: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/clone"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/clone", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     cloudinit: {
@@ -8262,8 +8263,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        pending: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/cloudinit"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/cloudinit", "GET", {
-                            ...args,
+                        pending: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/cloudinit"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/cloudinit", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -8276,8 +8277,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        update: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/cloudinit"]["PUT"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/cloudinit", "PUT", {
-                            ...args,
+                        update: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/cloudinit"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/cloudinit", "PUT", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -8291,8 +8292,8 @@ export default (client: Client) => ({
                          * - `type` (query, required, "user" | "network" | "meta"): Config type.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        dump: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/cloudinit/dump"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/cloudinit/dump", "GET", {
-                            ...args,
+                        dump: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/cloudinit/dump"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/cloudinit/dump", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                     },
@@ -8309,8 +8310,8 @@ export default (client: Client) => ({
                          * - `snapshot` (query, optional, string): Fetch config values from given snapshot.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        get: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/config"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/config", "GET", {
-                            ...args,
+                        get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/config"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/config", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -8423,8 +8424,8 @@ export default (client: Client) => ({
                          * - `vmstatestorage` (body, optional, string): Default storage for VM state volumes/files.
                          * - `watchdog` (body, optional, string): Create a virtual hardware watchdog device.
                          */
-                        update_async: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/config"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/config", "POST", {
-                            ...args,
+                        update_async: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/config"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/config", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -8535,8 +8536,8 @@ export default (client: Client) => ({
                          * - `vmstatestorage` (body, optional, string): Default storage for VM state volumes/files.
                          * - `watchdog` (body, optional, string): Create a virtual hardware watchdog device.
                          */
-                        update_sync: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/config"]["PUT"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/config", "PUT", {
-                            ...args,
+                        update_sync: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/config"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/config", "PUT", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                     },
@@ -8551,8 +8552,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    dbus_vmstate: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/dbus-vmstate"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/dbus-vmstate", "POST", {
-                        ...args,
+                    dbus_vmstate: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/dbus-vmstate"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/dbus-vmstate", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     /**
@@ -8567,8 +8568,8 @@ export default (client: Client) => ({
                      * - `snapname` (query, optional, string): The name of the snapshot.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    feature: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/feature"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/feature", "GET", {
-                        ...args,
+                    feature: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/feature"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/feature", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     firewall: {
@@ -8582,8 +8583,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        index: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/firewall", "GET", {
-                            ...args,
+                        index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/firewall", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         aliases: {
@@ -8597,8 +8598,8 @@ export default (client: Client) => ({
                              * - `node` (path, required, string): The cluster node name.
                              * - `vmid` (path, required, number): The (unique) ID of the VM.
                              */
-                            list: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/aliases"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/aliases", "GET", {
-                                ...args,
+                            list: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/aliases"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/aliases", "GET", {
+                                ...((args[0]) as any),
                                 $path: {node, vmid: parseInt(vmid.toString())}
                             }),
                             /**
@@ -8614,8 +8615,8 @@ export default (client: Client) => ({
                              * - `node` (path, required, string): The cluster node name.
                              * - `vmid` (path, required, number): The (unique) ID of the VM.
                              */
-                            create: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/aliases"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/aliases", "POST", {
-                                ...args,
+                            create: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/aliases"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/aliases", "POST", {
+                                ...((args[0]) as any),
                                 $path: {node, vmid: parseInt(vmid.toString())}
                             }),
                             alias: (name: string) => ({
@@ -8631,8 +8632,8 @@ export default (client: Client) => ({
                                  * - `node` (path, required, string): The cluster node name.
                                  * - `vmid` (path, required, number): The (unique) ID of the VM.
                                  */
-                                remove: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/aliases/{name}"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/aliases/{name}", "DELETE", {
-                                    ...args,
+                                remove: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/aliases/{name}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/aliases/{name}", "DELETE", {
+                                    ...((args[0]) as any),
                                     $path: {node, vmid: parseInt(vmid.toString()), name}
                                 }),
                                 /**
@@ -8646,8 +8647,8 @@ export default (client: Client) => ({
                                  * - `node` (path, required, string): The cluster node name.
                                  * - `vmid` (path, required, number): The (unique) ID of the VM.
                                  */
-                                read: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/aliases/{name}"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/aliases/{name}", "GET", {
-                                    ...args,
+                                read: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/aliases/{name}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/aliases/{name}", "GET", {
+                                    ...((args[0]) as any),
                                     $path: {node, vmid: parseInt(vmid.toString()), name}
                                 }),
                                 /**
@@ -8665,8 +8666,8 @@ export default (client: Client) => ({
                                  * - `rename` (body, optional, string): Rename an existing alias.
                                  * - `vmid` (path, required, number): The (unique) ID of the VM.
                                  */
-                                update: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/aliases/{name}"]["PUT"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/aliases/{name}", "PUT", {
-                                    ...args,
+                                update: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/aliases/{name}"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/aliases/{name}", "PUT", {
+                                    ...((args[0]) as any),
                                     $path: {node, vmid: parseInt(vmid.toString()), name}
                                 }),
                             })
@@ -8682,8 +8683,8 @@ export default (client: Client) => ({
                              * - `node` (path, required, string): The cluster node name.
                              * - `vmid` (path, required, number): The (unique) ID of the VM.
                              */
-                            list: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/ipset"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/ipset", "GET", {
-                                ...args,
+                            list: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/ipset"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/ipset", "GET", {
+                                ...((args[0]) as any),
                                 $path: {node, vmid: parseInt(vmid.toString())}
                             }),
                             /**
@@ -8700,8 +8701,8 @@ export default (client: Client) => ({
                              * - `rename` (body, optional, string): Rename an existing IPSet. You can set 'rename' to the same value as 'name' to update the 'comment' of an existing IPSet.
                              * - `vmid` (path, required, number): The (unique) ID of the VM.
                              */
-                            create: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/ipset"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/ipset", "POST", {
-                                ...args,
+                            create: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/ipset"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/ipset", "POST", {
+                                ...((args[0]) as any),
                                 $path: {node, vmid: parseInt(vmid.toString())}
                             }),
                             name: (name: string) => ({
@@ -8717,8 +8718,8 @@ export default (client: Client) => ({
                                  * - `node` (path, required, string): The cluster node name.
                                  * - `vmid` (path, required, number): The (unique) ID of the VM.
                                  */
-                                delete: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}", "DELETE", {
-                                    ...args,
+                                delete: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}", "DELETE", {
+                                    ...((args[0]) as any),
                                     $path: {node, vmid: parseInt(vmid.toString()), name}
 
                                 }),
@@ -8733,8 +8734,8 @@ export default (client: Client) => ({
                                  * - `node` (path, required, string): The cluster node name.
                                  * - `vmid` (path, required, number): The (unique) ID of the VM.
                                  */
-                                get: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}", "GET", {
-                                    ...args,
+                                get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}", "GET", {
+                                    ...((args[0]) as any),
                                     $path: {node, vmid: parseInt(vmid.toString()), name}
                                 }),
                                 /**
@@ -8751,8 +8752,8 @@ export default (client: Client) => ({
                                  * - `nomatch` (body, optional, boolean)
                                  * - `vmid` (path, required, number): The (unique) ID of the VM.
                                  */
-                                create_ip: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}", "POST", {
-                                    ...args,
+                                create_ip: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}", "POST", {
+                                    ...((args[0]) as any),
                                     $path: {node, vmid: parseInt(vmid.toString()), name}
                                 }),
                                 ip: (cidr: string) => ({
@@ -8769,8 +8770,8 @@ export default (client: Client) => ({
                                      * - `node` (path, required, string): The cluster node name.
                                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                                      */
-                                    remove: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}/{cidr}"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}/{cidr}", "DELETE", {
-                                        ...args,
+                                    remove: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}/{cidr}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}/{cidr}", "DELETE", {
+                                        ...((args[0]) as any),
                                         $path: {node, name, cidr, vmid: parseInt(vmid.toString())}
                                     }),
                                     /**
@@ -8785,8 +8786,8 @@ export default (client: Client) => ({
                                      * - `node` (path, required, string): The cluster node name.
                                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                                      */
-                                    read: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}/{cidr}"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}/{cidr}", "GET", {
-                                        ...args,
+                                    read: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}/{cidr}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}/{cidr}", "GET", {
+                                        ...((args[0]) as any),
                                         $path: {node, name, cidr, vmid: parseInt(vmid.toString())}
                                     }),
                                     /**
@@ -8804,8 +8805,8 @@ export default (client: Client) => ({
                                      * - `nomatch` (body, optional, boolean)
                                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                                      */
-                                    update: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}/{cidr}"]["PUT"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}/{cidr}", "PUT", {
-                                        ...args,
+                                    update: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}/{cidr}"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}/{cidr}", "PUT", {
+                                        ...((args[0]) as any),
                                         $path: {node, name, cidr, vmid: parseInt(vmid.toString())}
                                     }),
                                 })
@@ -8825,8 +8826,8 @@ export default (client: Client) => ({
                          * - `until` (query, optional, number): Display log until this UNIX epoch.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        log: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/log"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/log", "GET", {
-                            ...args,
+                        log: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/log"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/log", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         options: {
@@ -8840,8 +8841,8 @@ export default (client: Client) => ({
                              * - `node` (path, required, string): The cluster node name.
                              * - `vmid` (path, required, number): The (unique) ID of the VM.
                              */
-                            get: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/options"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/options", "GET", {
-                                ...args,
+                            get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/options"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/options", "GET", {
+                                ...((args[0]) as any),
                                 $path: {node, vmid: parseInt(vmid.toString())}
                             }),
                             /**
@@ -8866,8 +8867,8 @@ export default (client: Client) => ({
                              * - `radv` (body, optional, boolean): Allow sending Router Advertisement.
                              * - `vmid` (path, required, number): The (unique) ID of the VM.
                              */
-                            set: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/options"]["PUT"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/options", "PUT", {
-                                ...args,
+                            set: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/options"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/options", "PUT", {
+                                ...((args[0]) as any),
                                 $path: {node, vmid: parseInt(vmid.toString())}
                             }),
                         },
@@ -8882,8 +8883,8 @@ export default (client: Client) => ({
                          * - `type` (query, optional, "alias" | "ipset"): Only list references of specified type.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        refs: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/refs"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/refs", "GET", {
-                            ...args,
+                        refs: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/refs"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/refs", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         rules: {
@@ -8897,8 +8898,8 @@ export default (client: Client) => ({
                              * - `node` (path, required, string): The cluster node name.
                              * - `vmid` (path, required, number): The (unique) ID of the VM.
                              */
-                            list: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/rules"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/rules", "GET", {
-                                ...args,
+                            list: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/rules"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/rules", "GET", {
+                                ...((args[0]) as any),
                                 $path: {node, vmid: parseInt(vmid.toString())}
                             }),
                             /**
@@ -8926,8 +8927,8 @@ export default (client: Client) => ({
                              * - `type` (body, required, "in" | "out" | "forward" | "group"): Rule type.
                              * - `vmid` (path, required, number): The (unique) ID of the VM.
                              */
-                            create_rule: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/rules"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/rules", "POST", {
-                                ...args,
+                            create_rule: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/rules"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/rules", "POST", {
+                                ...((args[0]) as any),
                                 $path: {node, vmid: parseInt(vmid.toString())}
                             }),
                             rule: (pos: number) => ({
@@ -8943,8 +8944,8 @@ export default (client: Client) => ({
                                  * - `pos` (path, optional, number): Update rule at position <pos>.
                                  * - `vmid` (path, required, number): The (unique) ID of the VM.
                                  */
-                                delete: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/rules/{pos}"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/rules/{pos}", "DELETE", {
-                                    ...args,
+                                delete: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/rules/{pos}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/rules/{pos}", "DELETE", {
+                                    ...((args[0]) as any),
                                     $path: {node, vmid: parseInt(vmid.toString()), pos}
                                 }),
                                 /**
@@ -8958,8 +8959,8 @@ export default (client: Client) => ({
                                  * - `pos` (path, optional, number): Update rule at position <pos>.
                                  * - `vmid` (path, required, number): The (unique) ID of the VM.
                                  */
-                                get: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/rules/{pos}"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/rules/{pos}", "GET", {
-                                    ...args,
+                                get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/rules/{pos}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/rules/{pos}", "GET", {
+                                    ...((args[0]) as any),
                                     $path: {node, vmid: parseInt(vmid.toString()), pos}
                                 }),
                                 /**
@@ -8989,8 +8990,8 @@ export default (client: Client) => ({
                                  * - `type` (body, optional, "in" | "out" | "forward" | "group"): Rule type.
                                  * - `vmid` (path, required, number): The (unique) ID of the VM.
                                  */
-                                update: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/rules/{pos}"]["PUT"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/rules/{pos}", "PUT", {
-                                    ...args,
+                                update: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/firewall/rules/{pos}"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/firewall/rules/{pos}", "PUT", {
+                                    ...((args[0]) as any),
                                     $path: {node, vmid: parseInt(vmid.toString()), pos}
                                 }),
                             })
@@ -9008,8 +9009,8 @@ export default (client: Client) => ({
                          * - `target` (query, optional, string): Target node.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        migrate_vm_precondition: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/migrate"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/migrate", "GET", {
-                            ...args,
+                        migrate_vm_precondition: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/migrate"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/migrate", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -9031,8 +9032,8 @@ export default (client: Client) => ({
                          * - `with-conntrack-state` (body, optional, boolean): Whether to migrate conntrack entries for running VMs.
                          * - `with-local-disks` (body, optional, boolean): Enable live storage migration for local disk
                          */
-                        migrate_vm: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/migrate"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/migrate", "POST", {
-                            ...args,
+                        migrate_vm: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/migrate"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/migrate", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                     },
@@ -9047,8 +9048,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    monitor: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/monitor"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/monitor", "POST", {
-                        ...args,
+                    monitor: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/monitor"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/monitor", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
 
@@ -9071,8 +9072,8 @@ export default (client: Client) => ({
                      * - `target-vmid` (body, optional, number): The (unique) ID of the VM.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    move_disk: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/move_disk"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/move_disk", "POST", {
-                        ...args,
+                    move_disk: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/move_disk"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/move_disk", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     /**
@@ -9087,8 +9088,8 @@ export default (client: Client) => ({
                      * - `storages` (body, optional, string): List of storages to check permission and availability. Will be checked again for all actually used storages during migration.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    mtunnel: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/mtunnel"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/mtunnel", "POST", {
-                        ...args,
+                    mtunnel: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/mtunnel"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/mtunnel", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     /**
@@ -9103,8 +9104,8 @@ export default (client: Client) => ({
                      * - `ticket` (query, required, string): ticket return by initial 'mtunnel' API call, or retrieved via 'ticket' tunnel command
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    mtunnelwebsocket: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/mtunnelwebsocket"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/mtunnelwebsocket", "GET", {
-                        ...args,
+                    mtunnelwebsocket: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/mtunnelwebsocket"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/mtunnelwebsocket", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     /**
@@ -9117,8 +9118,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    pending: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/pending"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/pending", "GET", {
-                        ...args,
+                    pending: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/pending"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/pending", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     /**
@@ -9138,8 +9139,8 @@ export default (client: Client) => ({
                      * - `target-vmid` (body, optional, number): The (unique) ID of the VM.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    remote_migrate: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/remote_migrate"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/remote_migrate", "POST", {
-                        ...args,
+                    remote_migrate: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/remote_migrate"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/remote_migrate", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     /**
@@ -9156,8 +9157,8 @@ export default (client: Client) => ({
                      * - `skiplock` (body, optional, boolean): Ignore locks - only root is allowed to use this option.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    resize: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/resize"]["PUT"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/resize", "PUT", {
-                        ...args,
+                    resize: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/resize"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/resize", "PUT", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     /**
@@ -9173,8 +9174,8 @@ export default (client: Client) => ({
                      * - `timeframe` (query, required, "hour" | "day" | "week" | "month" | "year"): Specify the time frame you are interested in.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    rrd: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/rrd"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/rrd", "GET", {
-                        ...args,
+                    rrd: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/rrd"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/rrd", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     /**
@@ -9189,8 +9190,8 @@ export default (client: Client) => ({
                      * - `timeframe` (query, required, "hour" | "day" | "week" | "month" | "year"): Specify the time frame you are interested in.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    rrddata: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/rrddata"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/rrddata", "GET", {
-                        ...args,
+                    rrddata: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/rrddata"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/rrddata", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     /**
@@ -9205,8 +9206,8 @@ export default (client: Client) => ({
                      * - `skiplock` (body, optional, boolean): Ignore locks - only root is allowed to use this option.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    sendkey: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/sendkey"]["PUT"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/sendkey", "PUT", {
-                        ...args,
+                    sendkey: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/sendkey"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/sendkey", "PUT", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
 
@@ -9221,8 +9222,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        list: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/snapshot"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/snapshot", "GET", {
-                            ...args,
+                        list: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/snapshot"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/snapshot", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -9238,8 +9239,8 @@ export default (client: Client) => ({
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          * - `vmstate` (body, optional, boolean): Save the vmstate
                          */
-                        create: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/snapshot"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/snapshot", "POST", {
-                            ...args,
+                        create: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/snapshot"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/snapshot", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         snapname: (snapname: string) => ({
@@ -9255,8 +9256,8 @@ export default (client: Client) => ({
                              * - `snapname` (path, required, string): The name of the snapshot.
                              * - `vmid` (path, required, number): The (unique) ID of the VM.
                              */
-                            delete: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/snapshot/{snapname}"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/snapshot/{snapname}", "DELETE", {
-                                ...args,
+                            delete: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/snapshot/{snapname}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/snapshot/{snapname}", "DELETE", {
+                                ...((args[0]) as any),
                                 $path: {node, vmid: parseInt(vmid.toString()), snapname}
                             }),
                             /**
@@ -9269,8 +9270,8 @@ export default (client: Client) => ({
                              * - `snapname` (path, required, string): The name of the snapshot.
                              * - `vmid` (path, required, number): The (unique) ID of the VM.
                              */
-                            get: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/snapshot/{snapname}"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/snapshot/{snapname}", "GET", {
-                                ...args,
+                            get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/snapshot/{snapname}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/snapshot/{snapname}", "GET", {
+                                ...((args[0]) as any),
                                 $path: {node, vmid: parseInt(vmid.toString()), snapname}
                             }),
                             config: {
@@ -9285,8 +9286,8 @@ export default (client: Client) => ({
                                  * - `snapname` (path, required, string): The name of the snapshot.
                                  * - `vmid` (path, required, number): The (unique) ID of the VM.
                                  */
-                                get: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/snapshot/{snapname}/config"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/snapshot/{snapname}/config", "GET", {
-                                    ...args,
+                                get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/snapshot/{snapname}/config"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/snapshot/{snapname}/config", "GET", {
+                                    ...((args[0]) as any),
                                     $path: {node, vmid: parseInt(vmid.toString()), snapname}
                                 }),
                                 /**
@@ -9301,8 +9302,8 @@ export default (client: Client) => ({
                                  * - `snapname` (path, required, string): The name of the snapshot.
                                  * - `vmid` (path, required, number): The (unique) ID of the VM.
                                  */
-                                update: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/snapshot/{snapname}/config"]["PUT"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/snapshot/{snapname}/config", "PUT", {
-                                    ...args,
+                                update: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/snapshot/{snapname}/config"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/snapshot/{snapname}/config", "PUT", {
+                                    ...((args[0]) as any),
                                     $path: {node, vmid: parseInt(vmid.toString()), snapname}
                                 }),
                             },
@@ -9318,8 +9319,8 @@ export default (client: Client) => ({
                              * - `start` (body, optional, boolean): Whether the VM should get started after rolling back successfully. (Note: VMs will be automatically started if the snapshot includes RAM.)
                              * - `vmid` (path, required, number): The (unique) ID of the VM.
                              */
-                            rollback: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/snapshot/{snapname}/rollback"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/snapshot/{snapname}/rollback", "POST", {
-                                ...args,
+                            rollback: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/snapshot/{snapname}/rollback"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/snapshot/{snapname}/rollback", "POST", {
+                                ...((args[0]) as any),
                                 $path: {node, vmid: parseInt(vmid.toString()), snapname}
                             }),
                         })
@@ -9335,8 +9336,8 @@ export default (client: Client) => ({
                      * - `proxy` (body, optional, string): SPICE proxy server. This can be used by the client to specify the proxy server. All nodes in a cluster runs 'spiceproxy', so it is up to the client to choose one. By default, we return the node where the VM is currently running. As reasonable setting is to use same node you use to connect to the API (This is window.location.hostname for the JS GUI).
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    spiceproxy: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/spiceproxy"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/spiceproxy", "POST", {
-                        ...args,
+                    spiceproxy: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/spiceproxy"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/spiceproxy", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     status: {
@@ -9350,8 +9351,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        get: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/status", "GET", {
-                            ...args,
+                        get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/status", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
 
@@ -9365,8 +9366,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        current: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status/current"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/status/current", "GET", {
-                            ...args,
+                        current: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status/current"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/status/current", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
 
@@ -9381,8 +9382,8 @@ export default (client: Client) => ({
                          * - `timeout` (body, optional, number): Wait maximal timeout seconds for the shutdown.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        reboot: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status/reboot"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/status/reboot", "POST", {
-                            ...args,
+                        reboot: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status/reboot"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/status/reboot", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -9396,8 +9397,8 @@ export default (client: Client) => ({
                          * - `skiplock` (body, optional, boolean): Ignore locks - only root is allowed to use this option.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        reset: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status/reset"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/status/reset", "POST", {
-                            ...args,
+                        reset: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status/reset"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/status/reset", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -9412,8 +9413,8 @@ export default (client: Client) => ({
                          * - `skiplock` (body, optional, boolean): Ignore locks - only root is allowed to use this option.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        resume: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status/resume"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/status/resume", "POST", {
-                            ...args,
+                        resume: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status/resume"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/status/resume", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -9430,8 +9431,8 @@ export default (client: Client) => ({
                          * - `timeout` (body, optional, number): Wait maximal timeout seconds.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        shutdown: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status/shutdown"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/status/shutdown", "POST", {
-                            ...args,
+                        shutdown: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status/shutdown"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/status/shutdown", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -9455,8 +9456,8 @@ export default (client: Client) => ({
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          * - `with-conntrack-state` (body, optional, boolean): Whether to migrate conntrack entries for running VMs.
                          */
-                        start: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status/start"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/status/start", "POST", {
-                            ...args,
+                        start: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status/start"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/status/start", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
 
@@ -9475,8 +9476,8 @@ export default (client: Client) => ({
                          * - `timeout` (body, optional, number): Wait maximal timeout seconds.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        stop: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status/stop"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/status/stop", "POST", {
-                            ...args,
+                        stop: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status/stop"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/status/stop", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                         /**
@@ -9492,8 +9493,8 @@ export default (client: Client) => ({
                          * - `todisk` (body, optional, boolean): If set, suspends the VM to disk. Will be resumed on next VM start.
                          * - `vmid` (path, required, number): The (unique) ID of the VM.
                          */
-                        suspend: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status/suspend"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/status/suspend", "POST", {
-                            ...args,
+                        suspend: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status/suspend"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/status/suspend", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, vmid: parseInt(vmid.toString())}
                         }),
                     },
@@ -9508,8 +9509,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    template: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/template"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/template", "POST", {
-                        ...args,
+                    template: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/template"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/template", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
 
@@ -9524,8 +9525,8 @@ export default (client: Client) => ({
                      * - `serial` (body, optional, "serial0" | "serial1" | "serial2" | "serial3"): opens a serial terminal (defaults to display)
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    termproxy: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/termproxy"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/termproxy", "POST", {
-                        ...args,
+                    termproxy: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/termproxy"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/termproxy", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     /**
@@ -9540,8 +9541,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      */
-                    unlink: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/unlink"]["PUT"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/unlink", "PUT", {
-                        ...args,
+                    unlink: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/unlink"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/unlink", "PUT", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     /**
@@ -9556,8 +9557,8 @@ export default (client: Client) => ({
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      * - `websocket` (body, optional, boolean): Prepare for websocket upgrade (only required when using serial terminal, otherwise upgrade is always possible).
                      */
-                    vncproxy: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/vncproxy"]["POST"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/vncproxy", "POST", {
-                        ...args,
+                    vncproxy: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/vncproxy"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/vncproxy", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                     /**
@@ -9572,8 +9573,8 @@ export default (client: Client) => ({
                      * - `vmid` (path, required, number): The (unique) ID of the VM.
                      * - `vncticket` (query, required, string): Ticket from previous call to vncproxy.
                      */
-                    vncwebsocket: (args: PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/vncwebsocket"]["GET"]['parameters']>) => client.request("/nodes/{node}/qemu/{vmid}/vncwebsocket", "GET", {
-                        ...args,
+                    vncwebsocket: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/vncwebsocket"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/vncwebsocket", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, vmid: parseInt(vmid.toString())}
                     }),
                 })
@@ -9588,8 +9589,8 @@ export default (client: Client) => ({
              * - `node` (path, required, string): The cluster node name.
              * - `reference` (query, required, string): The reference to the repository to query tags from.
              */
-            query_oci_repo_tags: (args: PathContext<NodesAPI["/nodes/{node}/query-oci-repo-tags"]["GET"]['parameters']>) => client.request("/nodes/{node}/query-oci-repo-tags", "GET", {
-                ...args,
+            query_oci_repo_tags: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/query-oci-repo-tags"]["GET"]['parameters']>>) => client.request("/nodes/{node}/query-oci-repo-tags", "GET", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             /**
@@ -9603,8 +9604,8 @@ export default (client: Client) => ({
              * - `url` (query, required, string): The URL to query the metadata from.
              * - `verify-certificates` (query, optional, boolean): If false, no SSL/TLS certificates will be verified.
              */
-            query_url_metadata: (args: PathContext<NodesAPI["/nodes/{node}/query-url-metadata"]["GET"]['parameters']>) => client.request("/nodes/{node}/query-url-metadata", "GET", {
-                ...args,
+            query_url_metadata: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/query-url-metadata"]["GET"]['parameters']>>) => client.request("/nodes/{node}/query-url-metadata", "GET", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             replication: {
@@ -9618,8 +9619,8 @@ export default (client: Client) => ({
                  * - `guest` (query, optional, number): Only list replication jobs for this guest.
                  * - `node` (path, required, string): The cluster node name.
                  */
-                status: (args: PathContext<NodesAPI["/nodes/{node}/replication"]["GET"]['parameters']>) => client.request("/nodes/{node}/replication", "GET", {
-                    ...args,
+                status: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/replication"]["GET"]['parameters']>>) => client.request("/nodes/{node}/replication", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 id: (id: string) => ({
@@ -9633,8 +9634,8 @@ export default (client: Client) => ({
                      * - `id` (path, required, string): Replication Job ID. The ID is composed of a Guest ID and a job number, separated by a hyphen, i.e. '<GUEST>-<JOBNUM>'.
                      * - `node` (path, required, string): The cluster node name.
                      */
-                    get: (args: PathContext<NodesAPI["/nodes/{node}/replication/{id}"]["GET"]['parameters']>) => client.request("/nodes/{node}/replication/{id}", "GET", {
-                        ...args,
+                    get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/replication/{id}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/replication/{id}", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, id}
                     }),
                     /**
@@ -9649,8 +9650,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `start` (query, optional, number)
                      */
-                    log: (args: PathContext<NodesAPI["/nodes/{node}/replication/{id}/log"]["GET"]['parameters']>) => client.request("/nodes/{node}/replication/{id}/log", "GET", {
-                        ...args,
+                    log: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/replication/{id}/log"]["GET"]['parameters']>>) => client.request("/nodes/{node}/replication/{id}/log", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, id}
                     }),
                     /**
@@ -9663,8 +9664,8 @@ export default (client: Client) => ({
                      * - `id` (path, required, string): Replication Job ID. The ID is composed of a Guest ID and a job number, separated by a hyphen, i.e. '<GUEST>-<JOBNUM>'.
                      * - `node` (path, required, string): The cluster node name.
                      */
-                    schedule_now: (args: PathContext<NodesAPI["/nodes/{node}/replication/{id}/schedule_now"]["POST"]['parameters']>) => client.request("/nodes/{node}/replication/{id}/schedule_now", "POST", {
-                        ...args,
+                    schedule_now: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/replication/{id}/schedule_now"]["POST"]['parameters']>>) => client.request("/nodes/{node}/replication/{id}/schedule_now", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, id}
                     }),
                     /**
@@ -9677,8 +9678,8 @@ export default (client: Client) => ({
                      * - `id` (path, required, string): Replication Job ID. The ID is composed of a Guest ID and a job number, separated by a hyphen, i.e. '<GUEST>-<JOBNUM>'.
                      * - `node` (path, required, string): The cluster node name.
                      */
-                    status: (args: PathContext<NodesAPI["/nodes/{node}/replication/{id}/status"]["GET"]['parameters']>) => client.request("/nodes/{node}/replication/{id}/status", "GET", {
-                        ...args,
+                    status: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/replication/{id}/status"]["GET"]['parameters']>>) => client.request("/nodes/{node}/replication/{id}/status", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, id}
                     }),
                 })
@@ -9692,8 +9693,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `node` (path, required, string): The cluster node name.
              */
-            report: (args: PathContext<NodesAPI["/nodes/{node}/report"]["GET"]['parameters']>) => client.request("/nodes/{node}/report", "GET", {
-                ...args,
+            report: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/report"]["GET"]['parameters']>>) => client.request("/nodes/{node}/report", "GET", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             /**
@@ -9708,8 +9709,8 @@ export default (client: Client) => ({
              * - `node` (path, required, string): The cluster node name.
              * - `timeframe` (query, required, "hour" | "day" | "week" | "month" | "year" | "decade"): Specify the time frame you are interested in.
              */
-            rrd: (args: PathContext<NodesAPI["/nodes/{node}/rrd"]["GET"]['parameters']>) => client.request("/nodes/{node}/rrd", "GET", {
-                ...args,
+            rrd: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/rrd"]["GET"]['parameters']>>) => client.request("/nodes/{node}/rrd", "GET", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             /**
@@ -9723,8 +9724,8 @@ export default (client: Client) => ({
              * - `node` (path, required, string): The cluster node name.
              * - `timeframe` (query, required, "hour" | "day" | "week" | "month" | "year" | "decade"): Specify the time frame you are interested in.
              */
-            rrddata: (args: PathContext<NodesAPI["/nodes/{node}/rrddata"]["GET"]['parameters']>) => client.request("/nodes/{node}/rrddata", "GET", {
-                ...args,
+            rrddata: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/rrddata"]["GET"]['parameters']>>) => client.request("/nodes/{node}/rrddata", "GET", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             scan: {
@@ -9737,8 +9738,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                index: (args: PathContext<NodesAPI["/nodes/{node}/scan"]["GET"]['parameters']>) => client.request("/nodes/{node}/scan", "GET", {
-                    ...args,
+                index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/scan"]["GET"]['parameters']>>) => client.request("/nodes/{node}/scan", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -9754,8 +9755,8 @@ export default (client: Client) => ({
                  * - `server` (query, required, string): The server address (name or IP).
                  * - `username` (query, optional, string): User name.
                  */
-                cifs: (args: PathContext<NodesAPI["/nodes/{node}/scan/cifs"]["GET"]['parameters']>) => client.request("/nodes/{node}/scan/cifs", "GET", {
-                    ...args,
+                cifs: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/scan/cifs"]["GET"]['parameters']>>) => client.request("/nodes/{node}/scan/cifs", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -9768,8 +9769,8 @@ export default (client: Client) => ({
                  * - `node` (path, required, string): The cluster node name.
                  * - `portal` (query, required, string): The iSCSI portal (IP or DNS name with optional port).
                  */
-                iscsi: (args: PathContext<NodesAPI["/nodes/{node}/scan/iscsi"]["GET"]['parameters']>) => client.request("/nodes/{node}/scan/iscsi", "GET", {
-                    ...args,
+                iscsi: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/scan/iscsi"]["GET"]['parameters']>>) => client.request("/nodes/{node}/scan/iscsi", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -9781,8 +9782,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                lvm: (args: PathContext<NodesAPI["/nodes/{node}/scan/lvm"]["GET"]['parameters']>) => client.request("/nodes/{node}/scan/lvm", "GET", {
-                    ...args,
+                lvm: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/scan/lvm"]["GET"]['parameters']>>) => client.request("/nodes/{node}/scan/lvm", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -9795,8 +9796,8 @@ export default (client: Client) => ({
                  * - `node` (path, required, string): The cluster node name.
                  * - `vg` (query, required, string)
                  */
-                lvmthin: (args: PathContext<NodesAPI["/nodes/{node}/scan/lvmthin"]["GET"]['parameters']>) => client.request("/nodes/{node}/scan/lvmthin", "GET", {
-                    ...args,
+                lvmthin: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/scan/lvmthin"]["GET"]['parameters']>>) => client.request("/nodes/{node}/scan/lvmthin", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -9809,8 +9810,8 @@ export default (client: Client) => ({
                  * - `node` (path, required, string): The cluster node name.
                  * - `server` (query, required, string): The server address (name or IP).
                  */
-                nfs: (args: PathContext<NodesAPI["/nodes/{node}/scan/nfs"]["GET"]['parameters']>) => client.request("/nodes/{node}/scan/nfs", "GET", {
-                    ...args,
+                nfs: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/scan/nfs"]["GET"]['parameters']>>) => client.request("/nodes/{node}/scan/nfs", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -9827,8 +9828,8 @@ export default (client: Client) => ({
                  * - `server` (query, required, string): The server address (name or IP).
                  * - `username` (query, required, string): User-name or API token-ID.
                  */
-                pbs: (args: PathContext<NodesAPI["/nodes/{node}/scan/pbs"]["GET"]['parameters']>) => client.request("/nodes/{node}/scan/pbs", "GET", {
-                    ...args,
+                pbs: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/scan/pbs"]["GET"]['parameters']>>) => client.request("/nodes/{node}/scan/pbs", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -9840,8 +9841,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                zfs: (args: PathContext<NodesAPI["/nodes/{node}/scan/zfs"]["GET"]['parameters']>) => client.request("/nodes/{node}/scan/zfs", "GET", {
-                    ...args,
+                zfs: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/scan/zfs"]["GET"]['parameters']>>) => client.request("/nodes/{node}/scan/zfs", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
             },
@@ -9855,8 +9856,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                index: (args: PathContext<NodesAPI["/nodes/{node}/sdn"]["GET"]['parameters']>) => client.request("/nodes/{node}/sdn", "GET", {
-                    ...args,
+                index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/sdn"]["GET"]['parameters']>>) => client.request("/nodes/{node}/sdn", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 fabrics: {
@@ -9871,8 +9872,8 @@ export default (client: Client) => ({
                          * - `fabric` (path, required, string): Identifier for SDN fabrics
                          * - `node` (path, required, string): The cluster node name.
                          */
-                        index: (args: PathContext<NodesAPI["/nodes/{node}/sdn/fabrics/{fabric}"]["GET"]['parameters']>) => client.request("/nodes/{node}/sdn/fabrics/{fabric}", "GET", {
-                            ...args,
+                        index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/sdn/fabrics/{fabric}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/sdn/fabrics/{fabric}", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, fabric}
                         }),
                         /**
@@ -9885,8 +9886,8 @@ export default (client: Client) => ({
                          * - `fabric` (path, required, string): Identifier for SDN fabrics
                          * - `node` (path, required, string): The cluster node name.
                          */
-                        interfaces: (args: PathContext<NodesAPI["/nodes/{node}/sdn/fabrics/{fabric}/interfaces"]["GET"]['parameters']>) => client.request("/nodes/{node}/sdn/fabrics/{fabric}/interfaces", "GET", {
-                            ...args,
+                        interfaces: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/sdn/fabrics/{fabric}/interfaces"]["GET"]['parameters']>>) => client.request("/nodes/{node}/sdn/fabrics/{fabric}/interfaces", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, fabric}
                         }),
                         /**
@@ -9899,8 +9900,8 @@ export default (client: Client) => ({
                          * - `fabric` (path, required, string): Identifier for SDN fabrics
                          * - `node` (path, required, string): The cluster node name.
                          */
-                        neighbors: (args: PathContext<NodesAPI["/nodes/{node}/sdn/fabrics/{fabric}/neighbors"]["GET"]['parameters']>) => client.request("/nodes/{node}/sdn/fabrics/{fabric}/neighbors", "GET", {
-                            ...args,
+                        neighbors: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/sdn/fabrics/{fabric}/neighbors"]["GET"]['parameters']>>) => client.request("/nodes/{node}/sdn/fabrics/{fabric}/neighbors", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, fabric}
                         }),
                         /**
@@ -9913,8 +9914,8 @@ export default (client: Client) => ({
                          * - `fabric` (path, required, string): Identifier for SDN fabrics
                          * - `node` (path, required, string): The cluster node name.
                          */
-                        routes: (args: PathContext<NodesAPI["/nodes/{node}/sdn/fabrics/{fabric}/routes"]["GET"]['parameters']>) => client.request("/nodes/{node}/sdn/fabrics/{fabric}/routes", "GET", {
-                            ...args,
+                        routes: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/sdn/fabrics/{fabric}/routes"]["GET"]['parameters']>>) => client.request("/nodes/{node}/sdn/fabrics/{fabric}/routes", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, fabric}
                         }),
 
@@ -9931,8 +9932,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vnet` (path, required, string): The SDN vnet object identifier.
                          */
-                        get: (args: PathContext<NodesAPI["/nodes/{node}/sdn/vnets/{vnet}"]["GET"]['parameters']>) => client.request("/nodes/{node}/sdn/vnets/{vnet}", "GET", {
-                            ...args,
+                        get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/sdn/vnets/{vnet}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/sdn/vnets/{vnet}", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vnet}
                         }),
                         /**
@@ -9945,8 +9946,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `vnet` (path, required, string): The SDN vnet object identifier.
                          */
-                        mac_vrf: (args: PathContext<NodesAPI["/nodes/{node}/sdn/vnets/{vnet}/mac-vrf"]["GET"]['parameters']>) => client.request("/nodes/{node}/sdn/vnets/{vnet}/mac-vrf", "GET", {
-                            ...args,
+                        mac_vrf: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/sdn/vnets/{vnet}/mac-vrf"]["GET"]['parameters']>>) => client.request("/nodes/{node}/sdn/vnets/{vnet}/mac-vrf", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, vnet}
                         }),
                     })
@@ -9961,8 +9962,8 @@ export default (client: Client) => ({
                      * Parameters:
                      * - `node` (path, required, string): The cluster node name.
                      */
-                    index: (args: PathContext<NodesAPI["/nodes/{node}/sdn/zones"]["GET"]['parameters']>) => client.request("/nodes/{node}/sdn/zones", "GET", {
-                        ...args,
+                    index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/sdn/zones"]["GET"]['parameters']>>) => client.request("/nodes/{node}/sdn/zones", "GET", {
+                        ...((args[0]) as any),
                         $path: {node}
                     }),
                     zone: (zone: string) => ({
@@ -9976,8 +9977,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `zone` (path, required, string): The SDN zone object identifier.
                          */
-                        index: (args: PathContext<NodesAPI["/nodes/{node}/sdn/zones/{zone}"]["GET"]['parameters']>) => client.request("/nodes/{node}/sdn/zones/{zone}", "GET", {
-                            ...args,
+                        index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/sdn/zones/{zone}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/sdn/zones/{zone}", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, zone}
                         }),
                         /**
@@ -9990,8 +9991,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `zone` (path, required, string): zone name or "localnetwork"
                          */
-                        bridges: (args: PathContext<NodesAPI["/nodes/{node}/sdn/zones/{zone}/bridges"]["GET"]['parameters']>) => client.request("/nodes/{node}/sdn/zones/{zone}/bridges", "GET", {
-                            ...args,
+                        bridges: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/sdn/zones/{zone}/bridges"]["GET"]['parameters']>>) => client.request("/nodes/{node}/sdn/zones/{zone}/bridges", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, zone}
                         }),
                         /**
@@ -10004,8 +10005,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `zone` (path, required, string): The SDN zone object identifier.
                          */
-                        content: (args: PathContext<NodesAPI["/nodes/{node}/sdn/zones/{zone}/content"]["GET"]['parameters']>) => client.request("/nodes/{node}/sdn/zones/{zone}/content", "GET", {
-                            ...args,
+                        content: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/sdn/zones/{zone}/content"]["GET"]['parameters']>>) => client.request("/nodes/{node}/sdn/zones/{zone}/content", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, zone}
                         }),
                         /**
@@ -10018,8 +10019,8 @@ export default (client: Client) => ({
                          * - `node` (path, required, string): The cluster node name.
                          * - `zone` (path, required, string): Name of an EVPN zone.
                          */
-                        ip_vrf: (args: PathContext<NodesAPI["/nodes/{node}/sdn/zones/{zone}/ip-vrf"]["GET"]['parameters']>) => client.request("/nodes/{node}/sdn/zones/{zone}/ip-vrf", "GET", {
-                            ...args,
+                        ip_vrf: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/sdn/zones/{zone}/ip-vrf"]["GET"]['parameters']>>) => client.request("/nodes/{node}/sdn/zones/{zone}/ip-vrf", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, zone}
                         }),
                     })
@@ -10035,8 +10036,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                index: (args: PathContext<NodesAPI["/nodes/{node}/services"]["GET"]['parameters']>) => client.request("/nodes/{node}/services", "GET", {
-                    ...args,
+                index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/services"]["GET"]['parameters']>>) => client.request("/nodes/{node}/services", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 service: (service: Service) => ({
@@ -10050,8 +10051,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `service` (path, required, Services): Service ID
                      */
-                    index: (args: PathContext<NodesAPI["/nodes/{node}/services/{service}"]["GET"]['parameters']>) => client.request("/nodes/{node}/services/{service}", "GET", {
-                        ...args,
+                    index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/services/{service}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/services/{service}", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, service}
                     }),
                     /**
@@ -10064,8 +10065,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `service` (path, required, Services): Service ID
                      */
-                    reload: (args: PathContext<NodesAPI["/nodes/{node}/services/{service}/reload"]["POST"]['parameters']>) => client.request("/nodes/{node}/services/{service}/reload", "POST", {
-                        ...args,
+                    reload: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/services/{service}/reload"]["POST"]['parameters']>>) => client.request("/nodes/{node}/services/{service}/reload", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, service}
                     }),
                     /**
@@ -10078,8 +10079,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `service` (path, required, Services): Service ID
                      */
-                    restart: (args: PathContext<NodesAPI["/nodes/{node}/services/{service}/restart"]["POST"]['parameters']>) => client.request("/nodes/{node}/services/{service}/restart", "POST", {
-                        ...args,
+                    restart: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/services/{service}/restart"]["POST"]['parameters']>>) => client.request("/nodes/{node}/services/{service}/restart", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, service}
                     }),
                     /**
@@ -10092,8 +10093,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `service` (path, required, Services): Service ID
                      */
-                    start: (args: PathContext<NodesAPI["/nodes/{node}/services/{service}/start"]["POST"]['parameters']>) => client.request("/nodes/{node}/services/{service}/start", "POST", {
-                        ...args,
+                    start: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/services/{service}/start"]["POST"]['parameters']>>) => client.request("/nodes/{node}/services/{service}/start", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, service}
                     }),
                     /**
@@ -10106,8 +10107,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `service` (path, required, Services): Service ID
                      */
-                    state: (args: PathContext<NodesAPI["/nodes/{node}/services/{service}/state"]["GET"]['parameters']>) => client.request("/nodes/{node}/services/{service}/state", "GET", {
-                        ...args,
+                    state: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/services/{service}/state"]["GET"]['parameters']>>) => client.request("/nodes/{node}/services/{service}/state", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, service}
                     }),
                     /**
@@ -10120,8 +10121,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `service` (path, required, Services): Service ID
                      */
-                    stop: (args: PathContext<NodesAPI["/nodes/{node}/services/{service}/stop"]["POST"]['parameters']>) => client.request("/nodes/{node}/services/{service}/stop", "POST", {
-                        ...args,
+                    stop: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/services/{service}/stop"]["POST"]['parameters']>>) => client.request("/nodes/{node}/services/{service}/stop", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, service}
                     }),
                 })
@@ -10138,8 +10139,8 @@ export default (client: Client) => ({
              * - `node` (path, required, string): The cluster node name.
              * - `proxy` (body, optional, string): SPICE proxy server. This can be used by the client to specify the proxy server. All nodes in a cluster runs 'spiceproxy', so it is up to the client to choose one. By default, we return the node where the VM is currently running. As reasonable setting is to use same node you use to connect to the API (This is window.location.hostname for the JS GUI).
              */
-            spiceshell: (args: PathContext<NodesAPI["/nodes/{node}/spiceshell"]["POST"]['parameters']>) => client.request("/nodes/{node}/spiceshell", "POST", {
-                ...args,
+            spiceshell: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/spiceshell"]["POST"]['parameters']>>) => client.request("/nodes/{node}/spiceshell", "POST", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             /**
@@ -10153,8 +10154,8 @@ export default (client: Client) => ({
              * - `node` (path, required, string): The cluster node name.
              * - `vms` (body, optional, string): Only consider guests from this comma separated list of VMIDs.
              */
-            startall: (args: PathContext<NodesAPI["/nodes/{node}/startall"]["POST"]['parameters']>) => client.request("/nodes/{node}/startall", "POST", {
-                ...args,
+            startall: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/startall"]["POST"]['parameters']>>) => client.request("/nodes/{node}/startall", "POST", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             status: {
@@ -10167,8 +10168,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                get: (args: PathContext<NodesAPI["/nodes/{node}/status"]["GET"]['parameters']>) => client.request("/nodes/{node}/status", "GET", {
-                    ...args,
+                get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/status"]["GET"]['parameters']>>) => client.request("/nodes/{node}/status", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -10181,8 +10182,8 @@ export default (client: Client) => ({
                  * - `command` (body, required, "reboot" | "shutdown"): Specify the command.
                  * - `node` (path, required, string): The cluster node name.
                  */
-                node_cmd: (args: PathContext<NodesAPI["/nodes/{node}/status"]["POST"]['parameters']>) => client.request("/nodes/{node}/status", "POST", {
-                    ...args,
+                node_cmd: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/status"]["POST"]['parameters']>>) => client.request("/nodes/{node}/status", "POST", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
             },
@@ -10198,8 +10199,8 @@ export default (client: Client) => ({
              * - `timeout` (body, optional, number): Timeout for each guest shutdown task. Depending on `force-stop`, the shutdown gets then simply aborted or a hard-stop is forced.
              * - `vms` (body, optional, string): Only consider Guests with these IDs.
              */
-            stop_all: (args: PathContext<NodesAPI["/nodes/{node}/stopall"]["POST"]['parameters']>) => client.request("/nodes/{node}/stopall", "POST", {
-                ...args,
+            stop_all: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/stopall"]["POST"]['parameters']>>) => client.request("/nodes/{node}/stopall", "POST", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             storage: {
@@ -10217,8 +10218,8 @@ export default (client: Client) => ({
                  * - `storage` (query, optional, string): Only list status for  specified storage
                  * - `target` (query, optional, string): If target is different to 'node', we only lists shared storages which content is accessible on this 'node' and the specified 'target' node.
                  */
-                index: (args: PathContext<NodesAPI["/nodes/{node}/storage"]["GET"]['parameters']>) => client.request("/nodes/{node}/storage", "GET", {
-                    ...args,
+                index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/storage"]["GET"]['parameters']>>) => client.request("/nodes/{node}/storage", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 storage: (storage: string) => ({
@@ -10231,8 +10232,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `storage` (path, required, string): The storage identifier.
                      */
-                    index: (args: PathContext<NodesAPI["/nodes/{node}/storage/{storage}"]["GET"]['parameters']>) => client.request("/nodes/{node}/storage/{storage}", "GET", {
-                        ...args,
+                    index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/storage/{storage}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/storage/{storage}", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, storage}
                     }),
                     content: {
@@ -10248,8 +10249,8 @@ export default (client: Client) => ({
                          * - `storage` (path, required, string): The storage identifier.
                          * - `vmid` (query, optional, number): Only list images for this VM
                          */
-                        list: (args: PathContext<NodesAPI["/nodes/{node}/storage/{storage}/content"]["GET"]['parameters']>) => client.request("/nodes/{node}/storage/{storage}/content", "GET", {
-                            ...args,
+                        list: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/storage/{storage}/content"]["GET"]['parameters']>>) => client.request("/nodes/{node}/storage/{storage}/content", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, storage}
                         }),
                         /**
@@ -10266,8 +10267,8 @@ export default (client: Client) => ({
                          * - `storage` (path, required, string): The storage identifier.
                          * - `vmid` (body, required, number): Specify owner VM
                          */
-                        create: (args: PathContext<NodesAPI["/nodes/{node}/storage/{storage}/content"]["POST"]['parameters']>) => client.request("/nodes/{node}/storage/{storage}/content", "POST", {
-                            ...args,
+                        create: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/storage/{storage}/content"]["POST"]['parameters']>>) => client.request("/nodes/{node}/storage/{storage}/content", "POST", {
+                            ...((args[0]) as any),
                             $path: {node, storage}
                         }),
                         volume: (volume: string) => ({
@@ -10283,8 +10284,8 @@ export default (client: Client) => ({
                              * - `storage` (path, optional, string): The storage identifier.
                              * - `volume` (path, required, string): Volume identifier
                              */
-                            delete: (args: PathContext<NodesAPI["/nodes/{node}/storage/{storage}/content/{volume}"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/storage/{storage}/content/{volume}", "DELETE", {
-                                ...args,
+                            delete: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/storage/{storage}/content/{volume}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/storage/{storage}/content/{volume}", "DELETE", {
+                                ...((args[0]) as any),
                                 $path: {node, storage, volume}
                             }),
                             /**
@@ -10298,8 +10299,8 @@ export default (client: Client) => ({
                              * - `storage` (path, optional, string): The storage identifier.
                              * - `volume` (path, required, string): Volume identifier
                              */
-                            info: (args: PathContext<NodesAPI["/nodes/{node}/storage/{storage}/content/{volume}"]["GET"]['parameters']>) => client.request("/nodes/{node}/storage/{storage}/content/{volume}", "GET", {
-                                ...args,
+                            info: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/storage/{storage}/content/{volume}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/storage/{storage}/content/{volume}", "GET", {
+                                ...((args[0]) as any),
                                 $path: {node, storage, volume}
                             }),
                             /**
@@ -10314,8 +10315,8 @@ export default (client: Client) => ({
                              * - `target_node` (body, optional, string): Target node. Default is local node.
                              * - `volume` (path, required, string): Source volume identifier
                              */
-                            copy: (args: PathContext<NodesAPI["/nodes/{node}/storage/{storage}/content/{volume}"]["POST"]['parameters']>) => client.request("/nodes/{node}/storage/{storage}/content/{volume}", "POST", {
-                                ...args,
+                            copy: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/storage/{storage}/content/{volume}"]["POST"]['parameters']>>) => client.request("/nodes/{node}/storage/{storage}/content/{volume}", "POST", {
+                                ...((args[0]) as any),
                                 $path: {node, storage, volume}
                             }),
                             /**
@@ -10331,8 +10332,8 @@ export default (client: Client) => ({
                              * - `storage` (path, optional, string): The storage identifier.
                              * - `volume` (path, required, string): Volume identifier
                              */
-                            update: (args: PathContext<NodesAPI["/nodes/{node}/storage/{storage}/content/{volume}"]["PUT"]['parameters']>) => client.request("/nodes/{node}/storage/{storage}/content/{volume}", "PUT", {
-                                ...args,
+                            update: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/storage/{storage}/content/{volume}"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/storage/{storage}/content/{volume}", "PUT", {
+                                ...((args[0]) as any),
                                 $path: {node, storage, volume}
                             }),
                         })
@@ -10354,8 +10355,8 @@ export default (client: Client) => ({
                      * - `url` (body, required, string): The URL to download the file from.
                      * - `verify-certificates` (body, optional, boolean): If false, no SSL/TLS certificates will be verified.
                      */
-                    download_url: (args: PathContext<NodesAPI["/nodes/{node}/storage/{storage}/download-url"]["POST"]['parameters']>) => client.request("/nodes/{node}/storage/{storage}/download-url", "POST", {
-                        ...args,
+                    download_url: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/storage/{storage}/download-url"]["POST"]['parameters']>>) => client.request("/nodes/{node}/storage/{storage}/download-url", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, storage}
                     }),
                     file_restore: {
@@ -10372,8 +10373,8 @@ export default (client: Client) => ({
                          * - `tar` (query, optional, boolean): Download dirs as 'tar.zst' instead of 'zip'.
                          * - `volume` (query, required, string): Backup volume ID or name. Currently only PBS snapshots are supported.
                          */
-                        download: (args: PathContext<NodesAPI["/nodes/{node}/storage/{storage}/file-restore/download"]["GET"]['parameters']>) => client.request("/nodes/{node}/storage/{storage}/file-restore/download", "GET", {
-                            ...args,
+                        download: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/storage/{storage}/file-restore/download"]["GET"]['parameters']>>) => client.request("/nodes/{node}/storage/{storage}/file-restore/download", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, storage}
                         }),
                         /**
@@ -10388,8 +10389,8 @@ export default (client: Client) => ({
                          * - `storage` (path, required, string): The storage identifier.
                          * - `volume` (query, required, string): Backup volume ID or name. Currently only PBS snapshots are supported.
                          */
-                        list: (args: PathContext<NodesAPI["/nodes/{node}/storage/{storage}/file-restore/list"]["GET"]['parameters']>) => client.request("/nodes/{node}/storage/{storage}/file-restore/list", "GET", {
-                            ...args,
+                        list: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/storage/{storage}/file-restore/list"]["GET"]['parameters']>>) => client.request("/nodes/{node}/storage/{storage}/file-restore/list", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, storage}
                         }),
                     },
@@ -10404,8 +10405,8 @@ export default (client: Client) => ({
                      * - `storage` (path, required, string): The storage identifier.
                      * - `volume` (query, required, string): Volume identifier for the guest archive/entry.
                      */
-                    import_metadata: (args: PathContext<NodesAPI["/nodes/{node}/storage/{storage}/import-metadata"]["GET"]['parameters']>) => client.request("/nodes/{node}/storage/{storage}/import-metadata", "GET", {
-                        ...args,
+                    import_metadata: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/storage/{storage}/import-metadata"]["GET"]['parameters']>>) => client.request("/nodes/{node}/storage/{storage}/import-metadata", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, storage}
                     }),
                     /**
@@ -10420,8 +10421,8 @@ export default (client: Client) => ({
                      * - `reference` (body, required, string): The reference to the OCI image to download.
                      * - `storage` (path, required, string): The storage identifier.
                      */
-                    oci_registry_pull: (args: PathContext<NodesAPI["/nodes/{node}/storage/{storage}/oci-registry-pull"]["POST"]['parameters']>) => client.request("/nodes/{node}/storage/{storage}/oci-registry-pull", "POST", {
-                        ...args,
+                    oci_registry_pull: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/storage/{storage}/oci-registry-pull"]["POST"]['parameters']>>) => client.request("/nodes/{node}/storage/{storage}/oci-registry-pull", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, storage}
                     }),
                     prunebackups: {
@@ -10438,8 +10439,8 @@ export default (client: Client) => ({
                          * - `type` (query, optional, "qemu" | "lxc"): Either 'qemu' or 'lxc'. Only consider backups for guests of this type.
                          * - `vmid` (query, optional, number): Only prune backups for this VM.
                          */
-                        delete: (args: PathContext<NodesAPI["/nodes/{node}/storage/{storage}/prunebackups"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/storage/{storage}/prunebackups", "DELETE", {
-                            ...args,
+                        delete: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/storage/{storage}/prunebackups"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/storage/{storage}/prunebackups", "DELETE", {
+                            ...((args[0]) as any),
                             $path: {node, storage}
                         }),
                         /**
@@ -10455,8 +10456,8 @@ export default (client: Client) => ({
                          * - `type` (query, optional, "qemu" | "lxc"): Either 'qemu' or 'lxc'. Only consider backups for guests of this type.
                          * - `vmid` (query, optional, number): Only consider backups for this guest.
                          */
-                        dryrun: (args: PathContext<NodesAPI["/nodes/{node}/storage/{storage}/prunebackups"]["GET"]['parameters']>) => client.request("/nodes/{node}/storage/{storage}/prunebackups", "GET", {
-                            ...args,
+                        dryrun: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/storage/{storage}/prunebackups"]["GET"]['parameters']>>) => client.request("/nodes/{node}/storage/{storage}/prunebackups", "GET", {
+                            ...((args[0]) as any),
                             $path: {node, storage}
                         }),
                     },
@@ -10473,8 +10474,8 @@ export default (client: Client) => ({
                      * - `storage` (path, required, string): The storage identifier.
                      * - `timeframe` (query, required, "hour" | "day" | "week" | "month" | "year"): Specify the time frame you are interested in.
                      */
-                    rrd: (args: PathContext<NodesAPI["/nodes/{node}/storage/{storage}/rrd"]["GET"]['parameters']>) => client.request("/nodes/{node}/storage/{storage}/rrd", "GET", {
-                        ...args,
+                    rrd: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/storage/{storage}/rrd"]["GET"]['parameters']>>) => client.request("/nodes/{node}/storage/{storage}/rrd", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, storage}
                     }),
                     /**
@@ -10489,8 +10490,8 @@ export default (client: Client) => ({
                      * - `storage` (path, required, string): The storage identifier.
                      * - `timeframe` (query, required, "hour" | "day" | "week" | "month" | "year"): Specify the time frame you are interested in.
                      */
-                    rrddata: (args: PathContext<NodesAPI["/nodes/{node}/storage/{storage}/rrddata"]["GET"]['parameters']>) => client.request("/nodes/{node}/storage/{storage}/rrddata", "GET", {
-                        ...args,
+                    rrddata: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/storage/{storage}/rrddata"]["GET"]['parameters']>>) => client.request("/nodes/{node}/storage/{storage}/rrddata", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, storage}
                     }),
                     /**
@@ -10503,8 +10504,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `storage` (path, required, string): The storage identifier.
                      */
-                    status: (args: PathContext<NodesAPI["/nodes/{node}/storage/{storage}/status"]["GET"]['parameters']>) => client.request("/nodes/{node}/storage/{storage}/status", "GET", {
-                        ...args,
+                    status: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/storage/{storage}/status"]["GET"]['parameters']>>) => client.request("/nodes/{node}/storage/{storage}/status", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, storage}
                     }),
                     /**
@@ -10522,8 +10523,8 @@ export default (client: Client) => ({
                      * - `storage` (path, required, string): The storage identifier.
                      * - `tmpfilename` (body, optional, string): The source file name. This parameter is usually set by the REST handler. You can only overwrite it when connecting to the trusted port on localhost.
                      */
-                    upload: (args: PathContext<NodesAPI["/nodes/{node}/storage/{storage}/upload"]["POST"]['parameters']>) => client.request("/nodes/{node}/storage/{storage}/upload", "POST", {
-                        ...args,
+                    upload: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/storage/{storage}/upload"]["POST"]['parameters']>>) => client.request("/nodes/{node}/storage/{storage}/upload", "POST", {
+                        ...((args[0]) as any),
                         $path: {node, storage}
                     }),
                 })
@@ -10538,8 +10539,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                delete: (args: PathContext<NodesAPI["/nodes/{node}/subscription"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/subscription", "DELETE", {
-                    ...args,
+                delete: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/subscription"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/subscription", "DELETE", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -10551,8 +10552,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                get: (args: PathContext<NodesAPI["/nodes/{node}/subscription"]["GET"]['parameters']>) => client.request("/nodes/{node}/subscription", "GET", {
-                    ...args,
+                get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/subscription"]["GET"]['parameters']>>) => client.request("/nodes/{node}/subscription", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -10565,8 +10566,8 @@ export default (client: Client) => ({
                  * - `force` (body, optional, boolean): Always connect to server, even if local cache is still valid.
                  * - `node` (path, required, string): The cluster node name.
                  */
-                update: (args: PathContext<NodesAPI["/nodes/{node}/subscription"]["POST"]['parameters']>) => client.request("/nodes/{node}/subscription", "POST", {
-                    ...args,
+                update: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/subscription"]["POST"]['parameters']>>) => client.request("/nodes/{node}/subscription", "POST", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -10579,8 +10580,8 @@ export default (client: Client) => ({
                  * - `key` (body, required, string): Proxmox VE subscription key
                  * - `node` (path, required, string): The cluster node name.
                  */
-                set: (args: PathContext<NodesAPI["/nodes/{node}/subscription"]["PUT"]['parameters']>) => client.request("/nodes/{node}/subscription", "PUT", {
-                    ...args,
+                set: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/subscription"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/subscription", "PUT", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
             },
@@ -10594,8 +10595,8 @@ export default (client: Client) => ({
              * - `node` (path, required, string): The cluster node name.
              * - `vms` (body, optional, string): Only consider Guests with these IDs.
              */
-            suspend_all: (args: PathContext<NodesAPI["/nodes/{node}/suspendall"]["POST"]['parameters']>) => client.request("/nodes/{node}/suspendall", "POST", {
-                ...args,
+            suspend_all: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/suspendall"]["POST"]['parameters']>>) => client.request("/nodes/{node}/suspendall", "POST", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             /**
@@ -10612,8 +10613,8 @@ export default (client: Client) => ({
              * - `start` (query, optional, number)
              * - `until` (query, optional, string): Display all log until this date-time string.
              */
-            syslog: (args: PathContext<NodesAPI["/nodes/{node}/syslog"]["GET"]['parameters']>) => client.request("/nodes/{node}/syslog", "GET", {
-                ...args,
+            syslog: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/syslog"]["GET"]['parameters']>>) => client.request("/nodes/{node}/syslog", "GET", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             tasks: {
@@ -10636,8 +10637,8 @@ export default (client: Client) => ({
                  * - `userfilter` (query, optional, string): Only list tasks from this user.
                  * - `vmid` (query, optional, number): Only list tasks for this VM.
                  */
-                list: (args: PathContext<NodesAPI["/nodes/{node}/tasks"]["GET"]['parameters']>) => client.request("/nodes/{node}/tasks", "GET", {
-                    ...args,
+                list: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/tasks"]["GET"]['parameters']>>) => client.request("/nodes/{node}/tasks", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 task: (upid: string) => ({
@@ -10651,8 +10652,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `upid` (path, required, string)
                      */
-                    stop: (args: PathContext<NodesAPI["/nodes/{node}/tasks/{upid}"]["DELETE"]['parameters']>) => client.request("/nodes/{node}/tasks/{upid}", "DELETE", {
-                        ...args,
+                    stop: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/tasks/{upid}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/tasks/{upid}", "DELETE", {
+                        ...((args[0]) as any),
                         $path: {node, upid}
                     }),
                     /**
@@ -10664,8 +10665,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `upid` (path, required, string)
                      */
-                    get: (args: PathContext<NodesAPI["/nodes/{node}/tasks/{upid}"]["GET"]['parameters']>) => client.request("/nodes/{node}/tasks/{upid}", "GET", {
-                        ...args,
+                    get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/tasks/{upid}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/tasks/{upid}", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, upid}
                     }),
                     /**
@@ -10681,8 +10682,8 @@ export default (client: Client) => ({
                      * - `start` (query, optional, number): Start at this line when reading the tasklog
                      * - `upid` (path, required, string): The task's unique ID.
                      */
-                    log: (args: PathContext<NodesAPI["/nodes/{node}/tasks/{upid}/log"]["GET"]['parameters']>) => client.request("/nodes/{node}/tasks/{upid}/log", "GET", {
-                        ...args,
+                    log: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/tasks/{upid}/log"]["GET"]['parameters']>>) => client.request("/nodes/{node}/tasks/{upid}/log", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, upid}
                     }),
                     /**
@@ -10695,8 +10696,8 @@ export default (client: Client) => ({
                      * - `node` (path, required, string): The cluster node name.
                      * - `upid` (path, required, string): The task's unique ID.
                      */
-                    status: (args: PathContext<NodesAPI["/nodes/{node}/tasks/{upid}/status"]["GET"]['parameters']>) => client.request("/nodes/{node}/tasks/{upid}/status", "GET", {
-                        ...args,
+                    status: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/tasks/{upid}/status"]["GET"]['parameters']>>) => client.request("/nodes/{node}/tasks/{upid}/status", "GET", {
+                        ...((args[0]) as any),
                         $path: {node, upid}
                     }),
                 })
@@ -10712,8 +10713,8 @@ export default (client: Client) => ({
              * - `cmd-opts` (body, optional, string): Add parameters to a command. Encoded as null terminated strings.
              * - `node` (path, required, string): The cluster node name.
              */
-            termproxy: (args: PathContext<NodesAPI["/nodes/{node}/termproxy"]["POST"]['parameters']>) => client.request("/nodes/{node}/termproxy", "POST", {
-                ...args,
+            termproxy: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/termproxy"]["POST"]['parameters']>>) => client.request("/nodes/{node}/termproxy", "POST", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             time: {
@@ -10726,8 +10727,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                get: (args: PathContext<NodesAPI["/nodes/{node}/time"]["GET"]['parameters']>) => client.request("/nodes/{node}/time", "GET", {
-                    ...args,
+                get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/time"]["GET"]['parameters']>>) => client.request("/nodes/{node}/time", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -10740,8 +10741,8 @@ export default (client: Client) => ({
                  * - `node` (path, required, string): The cluster node name.
                  * - `timezone` (body, required, string): Time zone. The file '/usr/share/zoneinfo/zone.tab' contains the list of valid names.
                  */
-                set_timezone: (args: PathContext<NodesAPI["/nodes/{node}/time"]["PUT"]['parameters']>) => client.request("/nodes/{node}/time", "PUT", {
-                    ...args,
+                set_timezone: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/time"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/time", "PUT", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
             },
@@ -10754,8 +10755,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `node` (path, required, string): The cluster node name.
              */
-            version: (args: PathContext<NodesAPI["/nodes/{node}/version"]["GET"]['parameters']>) => client.request("/nodes/{node}/version", "GET", {
-                ...args,
+            version: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/version"]["GET"]['parameters']>>) => client.request("/nodes/{node}/version", "GET", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             /**
@@ -10772,8 +10773,8 @@ export default (client: Client) => ({
              * - `websocket` (body, optional, boolean): use websocket instead of standard vnc.
              * - `width` (body, optional, number): sets the width of the console in pixels.
              */
-            vncshell: (args: PathContext<NodesAPI["/nodes/{node}/vncshell"]["POST"]['parameters']>) => client.request("/nodes/{node}/vncshell", "POST", {
-                ...args,
+            vncshell: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/vncshell"]["POST"]['parameters']>>) => client.request("/nodes/{node}/vncshell", "POST", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             /**
@@ -10787,8 +10788,8 @@ export default (client: Client) => ({
              * - `port` (query, required, number): Port number returned by previous vncproxy call.
              * - `vncticket` (query, required, string): Ticket from previous call to vncproxy.
              */
-            vncwebsocket: (args: PathContext<NodesAPI["/nodes/{node}/vncwebsocket"]["GET"]['parameters']>) => client.request("/nodes/{node}/vncwebsocket", "GET", {
-                ...args,
+            vncwebsocket: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/vncwebsocket"]["GET"]['parameters']>>) => client.request("/nodes/{node}/vncwebsocket", "GET", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
             vzdump: {
@@ -10834,8 +10835,8 @@ export default (client: Client) => ({
                  * - `vmid` (body, optional, string): The ID of the guest system you want to backup.
                  * - `zstd` (body, optional, number): Zstd threads. N=0 uses half of the available cores, if N is set to a value bigger than 0, N is used as thread count.
                  */
-                create: (args: PathContext<NodesAPI["/nodes/{node}/vzdump"]["POST"]['parameters']>) => client.request("/nodes/{node}/vzdump", "POST", {
-                    ...args,
+                create: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/vzdump"]["POST"]['parameters']>>) => client.request("/nodes/{node}/vzdump", "POST", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -10848,8 +10849,8 @@ export default (client: Client) => ({
                  * - `node` (path, required, string): The cluster node name.
                  * - `storage` (query, optional, string): The storage identifier.
                  */
-                defaults: (args: PathContext<NodesAPI["/nodes/{node}/vzdump/defaults"]["GET"]['parameters']>) => client.request("/nodes/{node}/vzdump/defaults", "GET", {
-                    ...args,
+                defaults: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/vzdump/defaults"]["GET"]['parameters']>>) => client.request("/nodes/{node}/vzdump/defaults", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
                 /**
@@ -10862,8 +10863,8 @@ export default (client: Client) => ({
                  * - `node` (path, required, string): The cluster node name.
                  * - `volume` (query, required, string): Volume identifier
                  */
-                extract_config: (args: PathContext<NodesAPI["/nodes/{node}/vzdump/extractconfig"]["GET"]['parameters']>) => client.request("/nodes/{node}/vzdump/extractconfig", "GET", {
-                    ...args,
+                extract_config: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/vzdump/extractconfig"]["GET"]['parameters']>>) => client.request("/nodes/{node}/vzdump/extractconfig", "GET", {
+                    ...((args[0]) as any),
                     $path: {node}
                 }),
             },
@@ -10876,8 +10877,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `node` (path, required, string): target node for wake on LAN packet
              */
-            wakeonlan: (args: PathContext<NodesAPI["/nodes/{node}/wakeonlan"]["POST"]['parameters']>) => client.request("/nodes/{node}/wakeonlan", "POST", {
-                ...args,
+            wakeonlan: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/wakeonlan"]["POST"]['parameters']>>) => client.request("/nodes/{node}/wakeonlan", "POST", {
+                ...((args[0]) as any),
                 $path: {node}
             }),
         }

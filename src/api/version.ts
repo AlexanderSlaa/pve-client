@@ -1,4 +1,5 @@
 import {Client} from "../index";
+import type {ArgsTuple} from "./index";
 
 export type VersionAPI = {
     "/version": {
@@ -21,5 +22,5 @@ export default (client: Client) => ({
      * @allowToken 1
      * @permissions {"user": "all"}
      */
-    version: (args: VersionAPI["/version"]["GET"]['parameters']) => client.request("/version", "GET", args)
+    version: (...args: ArgsTuple<VersionAPI["/version"]["GET"]['parameters']>) => client.request("/version", "GET", (args[0] ?? {}) as VersionAPI["/version"]["GET"]['parameters'])
 }) as const

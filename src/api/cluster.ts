@@ -1,4 +1,5 @@
 import { PathContext } from ".";
+import type {ArgsTuple} from "./index";
 import {Client} from "../index";
 
 export type ClusterAPI = {
@@ -3003,7 +3004,16 @@ export type ClusterAPI = {
     "/cluster/tasks": {
         "GET": {
             parameters: {}
-            return: { "upid": string }[]
+            return: {
+                upid: string;
+                node: string;
+                type: string;
+                user: string;
+                status?: string;
+                starttime?: number;
+                endtime?: number;
+                id: string;
+            }[]
         }
     },
 }
@@ -3015,7 +3025,7 @@ export default (client: Client) => ({
      * @allowToken 1
      * @permissions {"user": "all"}
      */
-    index: (args: ClusterAPI["/cluster"]["GET"]['parameters']) => client.request("/cluster", "GET", args),
+    index: (...args: ArgsTuple<ClusterAPI["/cluster"]["GET"]['parameters']>) => client.request("/cluster", "GET", (args[0] ?? {}) as ClusterAPI["/cluster"]["GET"]['parameters']),
     acme: {
         /**
          * ACMEAccount index.
@@ -3023,7 +3033,7 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"user": "all"}
          */
-        index: (args: ClusterAPI["/cluster/acme"]["GET"]['parameters']) => client.request("/cluster/acme", "GET", args),
+        index: (...args: ArgsTuple<ClusterAPI["/cluster/acme"]["GET"]['parameters']>) => client.request("/cluster/acme", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/acme"]["GET"]['parameters']),
         account: {
             /**
              * ACMEAccount index.
@@ -3031,7 +3041,7 @@ export default (client: Client) => ({
              * @allowToken 1
              * @permissions {"user": "all"}
              */
-            index: (args: ClusterAPI["/cluster/acme/account"]["GET"]['parameters']) => client.request("/cluster/acme/account", "GET", args),
+            index: (...args: ArgsTuple<ClusterAPI["/cluster/acme/account"]["GET"]['parameters']>) => client.request("/cluster/acme/account", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/acme/account"]["GET"]['parameters']),
             /**
              * Register a new ACME account with CA.
              * @endpoint POST /cluster/acme/account
@@ -3045,7 +3055,7 @@ export default (client: Client) => ({
              * - `name` (body, optional, string): ACME account config file name.
              * - `tos_url` (body, optional, string): URL of CA TermsOfService - setting this indicates agreement.
              */
-            register_account: (args: ClusterAPI["/cluster/acme/account"]["POST"]['parameters']) => client.request("/cluster/acme/account", "POST", args),
+            register_account: (...args: ArgsTuple<ClusterAPI["/cluster/acme/account"]["POST"]['parameters']>) => client.request("/cluster/acme/account", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/acme/account"]["POST"]['parameters']),
             name: (value: string) => ({
                 /**
                  * Deactivate existing ACME account at CA.
@@ -3055,8 +3065,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `name` (path, optional, string): ACME account config file name.
                  */
-                deactivate: (args: PathContext<ClusterAPI["/cluster/acme/account/{name}"]["DELETE"]['parameters']>) => client.request("/cluster/acme/account/{name}", "DELETE", {
-                    ...args,
+                deactivate: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/acme/account/{name}"]["DELETE"]['parameters']>>) => client.request("/cluster/acme/account/{name}", "DELETE", {
+                    ...((args[0]) as any),
                     $path: {"name": value}
                 }),
                 /**
@@ -3067,8 +3077,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `name` (path, optional, string): ACME account config file name.
                  */
-                get: (args: PathContext<ClusterAPI["/cluster/acme/account/{name}"]["GET"]['parameters']>) => client.request("/cluster/acme/account/{name}", "GET", {
-                    ...args,
+                get: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/acme/account/{name}"]["GET"]['parameters']>>) => client.request("/cluster/acme/account/{name}", "GET", {
+                    ...((args[0]) as any),
                     $path: {"name": value}
                 }),
                 /**
@@ -3080,8 +3090,8 @@ export default (client: Client) => ({
                  * - `contact` (body, optional, string): Contact email addresses.
                  * - `name` (path, optional, string): ACME account config file name.
                  */
-                update: (args: PathContext<ClusterAPI["/cluster/acme/account/{name}"]["PUT"]['parameters']>) => client.request("/cluster/acme/account/{name}", "PUT", {
-                    ...args,
+                update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/acme/account/{name}"]["PUT"]['parameters']>>) => client.request("/cluster/acme/account/{name}", "PUT", {
+                    ...((args[0]) as any),
                     $path: {"name": value}
                 })
             })
@@ -3092,14 +3102,14 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"user": "all"}
          */
-        challenges_chema: (args: ClusterAPI["/cluster/acme/challenge-schema"]["GET"]['parameters']) => client.request("/cluster/acme/challenge-schema", "GET", args),
+        challenges_chema: (...args: ArgsTuple<ClusterAPI["/cluster/acme/challenge-schema"]["GET"]['parameters']>) => client.request("/cluster/acme/challenge-schema", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/acme/challenge-schema"]["GET"]['parameters']),
         /**
          * Get named known ACME directory endpoints.
          * @endpoint GET /cluster/acme/directories
          * @allowToken 1
          * @permissions {"user": "all"}
          */
-        directories: (args: ClusterAPI["/cluster/acme/directories"]["GET"]['parameters']) => client.request("/cluster/acme/directories", "GET", args),
+        directories: (...args: ArgsTuple<ClusterAPI["/cluster/acme/directories"]["GET"]['parameters']>) => client.request("/cluster/acme/directories", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/acme/directories"]["GET"]['parameters']),
         /**
          * Retrieve ACME Directory Meta Information
          * @endpoint GET /cluster/acme/meta
@@ -3109,7 +3119,7 @@ export default (client: Client) => ({
          * Parameters:
          * - `directory` (query, optional, string): URL of ACME CA directory endpoint.
          */
-        meta: (args: ClusterAPI["/cluster/acme/meta"]["GET"]['parameters']) => client.request("/cluster/acme/meta", "GET", args),
+        meta: (...args: ArgsTuple<ClusterAPI["/cluster/acme/meta"]["GET"]['parameters']>) => client.request("/cluster/acme/meta", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/acme/meta"]["GET"]['parameters']),
         plugins: {
             /**
              * ACME plugin index.
@@ -3120,7 +3130,7 @@ export default (client: Client) => ({
              * Parameters:
              * - `type` (query, optional, "dns" | "standalone"): Only list ACME plugins of a specific type
              */
-            index: (args: ClusterAPI["/cluster/acme/plugins"]["GET"]['parameters']) => client.request("/cluster/acme/plugins", "GET", args),
+            index: (...args: ArgsTuple<ClusterAPI["/cluster/acme/plugins"]["GET"]['parameters']>) => client.request("/cluster/acme/plugins", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/acme/plugins"]["GET"]['parameters']),
             /**
              * Add ACME plugin configuration.
              * @endpoint POST /cluster/acme/plugins
@@ -3136,7 +3146,7 @@ export default (client: Client) => ({
              * - `type` (body, required, "dns" | "standalone"): ACME challenge type.
              * - `validation-delay` (body, optional, number): Extra delay in seconds to wait before requesting validation. Allows to cope with a long TTL of DNS records.
              */
-            add: (args: ClusterAPI["/cluster/acme/plugins"]["POST"]['parameters']) => client.request("/cluster/acme/plugins", "POST", args),
+            add: (...args: ArgsTuple<ClusterAPI["/cluster/acme/plugins"]["POST"]['parameters']>) => client.request("/cluster/acme/plugins", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/acme/plugins"]["POST"]['parameters']),
             id: (value: string | number) => ({
                 /**
                  * Delete ACME plugin configuration.
@@ -3147,8 +3157,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `id` (path, required, string): Unique identifier for ACME plugin instance.
                  */
-                delete: (args: PathContext<ClusterAPI["/cluster/acme/plugins/{id}"]["DELETE"]['parameters']>) => client.request("/cluster/acme/plugins/{id}", "DELETE", {
-                    ...args,
+                delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/acme/plugins/{id}"]["DELETE"]['parameters']>>) => client.request("/cluster/acme/plugins/{id}", "DELETE", {
+                    ...((args[0]) as any),
                     $path: {"id": value.toString()}
                 }),
                 /**
@@ -3160,8 +3170,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `id` (path, required, string): Unique identifier for ACME plugin instance.
                  */
-                get_config: (args: PathContext<ClusterAPI["/cluster/acme/plugins/{id}"]["GET"]['parameters']>) => client.request("/cluster/acme/plugins/{id}", "GET", {
-                    ...args,
+                get_config: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/acme/plugins/{id}"]["GET"]['parameters']>>) => client.request("/cluster/acme/plugins/{id}", "GET", {
+                    ...((args[0]) as any),
                     $path: {"id": value.toString()}
                 }),
                 /**
@@ -3180,8 +3190,8 @@ export default (client: Client) => ({
                  * - `nodes` (body, optional, string): List of cluster node names.
                  * - `validation-delay` (body, optional, number): Extra delay in seconds to wait before requesting validation. Allows to cope with a long TTL of DNS records.
                  */
-                update: (args: PathContext<ClusterAPI["/cluster/acme/plugins/{id}"]["PUT"]['parameters']>) => client.request("/cluster/acme/plugins/{id}", "PUT", {
-                    ...args,
+                update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/acme/plugins/{id}"]["PUT"]['parameters']>>) => client.request("/cluster/acme/plugins/{id}", "PUT", {
+                    ...((args[0]) as any),
                     $path: {"id": value.toString()}
                 }),
             })
@@ -3195,7 +3205,7 @@ export default (client: Client) => ({
          * Parameters:
          * - `directory` (query, optional, string): URL of ACME CA directory endpoint.
          */
-        tos: (args: ClusterAPI["/cluster/acme/tos"]["GET"]['parameters']) => client.request("/cluster/acme/tos", "GET", args)
+        tos: (...args: ArgsTuple<ClusterAPI["/cluster/acme/tos"]["GET"]['parameters']>) => client.request("/cluster/acme/tos", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/acme/tos"]["GET"]['parameters'])
 
     },
     backup: {
@@ -3205,7 +3215,7 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"check": ["perm", "/", ["Sys.Audit"]]}
          */
-        index: (args: ClusterAPI["/cluster/backup"]["GET"]['parameters']) => client.request("/cluster/backup", "GET", args),
+        index: (...args: ArgsTuple<ClusterAPI["/cluster/backup"]["GET"]['parameters']>) => client.request("/cluster/backup", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/backup"]["GET"]['parameters']),
         /**
          * Create new vzdump backup job.
          * @endpoint POST /cluster/backup
@@ -3253,7 +3263,7 @@ export default (client: Client) => ({
          * - `vmid` (body, optional, string): The ID of the guest system you want to backup.
          * - `zstd` (body, optional, number): Zstd threads. N=0 uses half of the available cores, if N is set to a value bigger than 0, N is used as thread count.
          */
-        create_job: (args: ClusterAPI["/cluster/backup"]["POST"]['parameters']) => client.request("/cluster/backup", "POST", args),
+        create_job: (...args: ArgsTuple<ClusterAPI["/cluster/backup"]["POST"]['parameters']>) => client.request("/cluster/backup", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/backup"]["POST"]['parameters']),
         job: (value: string | number) => ({
             /**
              * Delete vzdump backup job definition.
@@ -3264,8 +3274,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `id` (path, required, string): The job ID.
              */
-            delete: (args: PathContext<ClusterAPI["/cluster/backup/{id}"]["DELETE"]['parameters']>) => client.request("/cluster/backup/{id}", "DELETE", {
-                ...args,
+            delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/backup/{id}"]["DELETE"]['parameters']>>) => client.request("/cluster/backup/{id}", "DELETE", {
+                ...((args[0]) as any),
                 $path: {"id": value.toString()}
             }),
             /**
@@ -3277,8 +3287,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `id` (path, required, string): The job ID.
              */
-            read: (args: PathContext<ClusterAPI["/cluster/backup/{id}"]["GET"]['parameters']>) => client.request("/cluster/backup/{id}", "GET", {
-                ...args,
+            read: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/backup/{id}"]["GET"]['parameters']>>) => client.request("/cluster/backup/{id}", "GET", {
+                ...((args[0]) as any),
                 $path: {"id": value.toString()}
             }),
             /**
@@ -3329,8 +3339,8 @@ export default (client: Client) => ({
              * - `vmid` (body, optional, string): The ID of the guest system you want to backup.
              * - `zstd` (body, optional, number): Zstd threads. N=0 uses half of the available cores, if N is set to a value bigger than 0, N is used as thread count.
              */
-            update: (args: PathContext<ClusterAPI["/cluster/backup/{id}"]["PUT"]['parameters']>) => client.request("/cluster/backup/{id}", "PUT", {
-                ...args,
+            update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/backup/{id}"]["PUT"]['parameters']>>) => client.request("/cluster/backup/{id}", "PUT", {
+                ...((args[0]) as any),
                 $path: {"id": value.toString()}
             }),
             /**
@@ -3342,8 +3352,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `id` (path, required, string): The job ID.
              */
-            included_volumes: (args: PathContext<ClusterAPI["/cluster/backup/{id}/included_volumes"]["GET"]['parameters']>) => client.request("/cluster/backup/{id}/included_volumes", "GET", {
-                ...args,
+            included_volumes: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/backup/{id}/included_volumes"]["GET"]['parameters']>>) => client.request("/cluster/backup/{id}/included_volumes", "GET", {
+                ...((args[0]) as any),
                 $path: {"id": value.toString()}
             }),
         })
@@ -3354,7 +3364,7 @@ export default (client: Client) => ({
          * @endpoint GET /cluster/backup-info
          * @allowToken 1
          */
-        index: (args: ClusterAPI["/cluster/backup-info"]["GET"]['parameters']) => client.request("/cluster/backup-info", "GET", args),
+        index: (...args: ArgsTuple<ClusterAPI["/cluster/backup-info"]["GET"]['parameters']>) => client.request("/cluster/backup-info", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/backup-info"]["GET"]['parameters']),
         not_backed_up: {
             /**
              * Shows all guests which are not covered by any backup job.
@@ -3362,7 +3372,7 @@ export default (client: Client) => ({
              * @allowToken 1
              * @permissions {"check": ["perm", "/", ["Sys.Audit"]]}
              */
-            get_guests_not_in_backup: (args: ClusterAPI["/cluster/backup-info/not-backed-up"]["GET"]['parameters']) => client.request("/cluster/backup-info/not-backed-up", "GET", args)
+            get_guests_not_in_backup: (...args: ArgsTuple<ClusterAPI["/cluster/backup-info/not-backed-up"]["GET"]['parameters']>) => client.request("/cluster/backup-info/not-backed-up", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/backup-info/not-backed-up"]["GET"]['parameters'])
         }
     },
     bulk_action: {
@@ -3372,7 +3382,7 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"user": "all"}
          */
-        index: (args: ClusterAPI["/cluster/bulk-action"]["GET"]['parameters']) => client.request("/cluster/bulk-action", "GET", args),
+        index: (...args: ArgsTuple<ClusterAPI["/cluster/bulk-action"]["GET"]['parameters']>) => client.request("/cluster/bulk-action", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/bulk-action"]["GET"]['parameters']),
         guest: {
             /**
              * Bulk action index.
@@ -3380,7 +3390,7 @@ export default (client: Client) => ({
              * @allowToken 1
              * @permissions {"user": "all"}
              */
-            index: (args: ClusterAPI["/cluster/bulk-action/guest"]["GET"]['parameters']) => client.request("/cluster/bulk-action/guest", "GET", args),
+            index: (...args: ArgsTuple<ClusterAPI["/cluster/bulk-action/guest"]["GET"]['parameters']>) => client.request("/cluster/bulk-action/guest", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/bulk-action/guest"]["GET"]['parameters']),
             /**
              * Bulk migrate all guests on the cluster.
              * @endpoint POST /cluster/bulk-action/guest/migrate
@@ -3394,7 +3404,7 @@ export default (client: Client) => ({
              * - `vms` (body, optional, number[]): Only consider guests from this list of VMIDs.
              * - `with-local-disks` (body, optional, boolean): Enable live storage migration for local disk
              */
-            migrate: (args: ClusterAPI["/cluster/bulk-action/guest/migrate"]["POST"]['parameters']) => client.request("/cluster/bulk-action/guest/migrate", "POST", args),
+            migrate: (...args: ArgsTuple<ClusterAPI["/cluster/bulk-action/guest/migrate"]["POST"]['parameters']>) => client.request("/cluster/bulk-action/guest/migrate", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/bulk-action/guest/migrate"]["POST"]['parameters']),
             /**
              * Bulk shutdown all guests on the cluster.
              * @endpoint POST /cluster/bulk-action/guest/shutdown
@@ -3407,7 +3417,7 @@ export default (client: Client) => ({
              * - `timeout` (body, optional, number): Default shutdown timeout in seconds if none is configured for the guest.
              * - `vms` (body, optional, number[]): Only consider guests from this list of VMIDs.
              */
-            shutdown: (args: ClusterAPI["/cluster/bulk-action/guest/shutdown"]["POST"]['parameters']) => client.request("/cluster/bulk-action/guest/shutdown", "POST", args),
+            shutdown: (...args: ArgsTuple<ClusterAPI["/cluster/bulk-action/guest/shutdown"]["POST"]['parameters']>) => client.request("/cluster/bulk-action/guest/shutdown", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/bulk-action/guest/shutdown"]["POST"]['parameters']),
             /**
              * Bulk start or resume all guests on the cluster.
              * @endpoint POST /cluster/bulk-action/guest/start
@@ -3419,7 +3429,7 @@ export default (client: Client) => ({
              * - `timeout` (body, optional, number): Default start timeout in seconds. Only valid for VMs. (default depends on the guest configuration).
              * - `vms` (body, optional, number[]): Only consider guests from this list of VMIDs.
              */
-            start: (args: ClusterAPI["/cluster/bulk-action/guest/start"]["POST"]['parameters']) => client.request("/cluster/bulk-action/guest/start", "POST", args),
+            start: (...args: ArgsTuple<ClusterAPI["/cluster/bulk-action/guest/start"]["POST"]['parameters']>) => client.request("/cluster/bulk-action/guest/start", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/bulk-action/guest/start"]["POST"]['parameters']),
             /**
              * Bulk suspend all guests on the cluster.
              * @endpoint POST /cluster/bulk-action/guest/suspend
@@ -3432,7 +3442,7 @@ export default (client: Client) => ({
              * - `to-disk` (body, optional, boolean): If set, suspends the guests to disk. Will be resumed on next start.
              * - `vms` (body, optional, number[]): Only consider guests from this list of VMIDs.
              */
-            suspend: (args: ClusterAPI["/cluster/bulk-action/guest/suspend"]["POST"]['parameters']) => client.request("/cluster/bulk-action/guest/suspend", "POST", args)
+            suspend: (...args: ArgsTuple<ClusterAPI["/cluster/bulk-action/guest/suspend"]["POST"]['parameters']>) => client.request("/cluster/bulk-action/guest/suspend", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/bulk-action/guest/suspend"]["POST"]['parameters'])
         }
     },
     ceph: {
@@ -3442,7 +3452,7 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"user": "all"}
          */
-        index: (args: ClusterAPI["/cluster/ceph"]["GET"]['parameters']) => client.request("/cluster/ceph", "GET", args),
+        index: (...args: ArgsTuple<ClusterAPI["/cluster/ceph"]["GET"]['parameters']>) => client.request("/cluster/ceph", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/ceph"]["GET"]['parameters']),
         flags: {
             /**
              * get the status of all ceph flags
@@ -3450,7 +3460,7 @@ export default (client: Client) => ({
              * @allowToken 1
              * @permissions {"check": ["perm", "/", ["Sys.Audit"]]}
              */
-            get_all: (args: ClusterAPI["/cluster/ceph/flags"]["GET"]['parameters']) => client.request("/cluster/ceph/flags", "GET", args),
+            get_all: (...args: ArgsTuple<ClusterAPI["/cluster/ceph/flags"]["GET"]['parameters']>) => client.request("/cluster/ceph/flags", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/ceph/flags"]["GET"]['parameters']),
             /**
              * Set/Unset multiple ceph flags at once.
              * @endpoint PUT /cluster/ceph/flags
@@ -3470,7 +3480,7 @@ export default (client: Client) => ({
              * - `noup` (body, optional, boolean): OSDs are not allowed to start.
              * - `pause` (body, optional, boolean): Pauses read and writes.
              */
-            set: (args: ClusterAPI["/cluster/ceph/flags"]["PUT"]['parameters']) => client.request("/cluster/ceph/flags", "PUT", args),
+            set: (...args: ArgsTuple<ClusterAPI["/cluster/ceph/flags"]["PUT"]['parameters']>) => client.request("/cluster/ceph/flags", "PUT", (args[0] ?? {}) as ClusterAPI["/cluster/ceph/flags"]["PUT"]['parameters']),
             flag: (value: ClusterAPI["/cluster/ceph/flags/{flag}"]['GET']['parameters']['$path']['flag']) => ({
                 /**
                  * Get the status of a specific ceph flag.
@@ -3481,8 +3491,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `flag` (path, required, "nobackfill" | "nodeep-scrub" | "nodown" | "noin" | "noout" | "norebalance" | "norecover" | "noscrub" | "notieragent" | "noup" | "pause"): The name of the flag name to get.
                  */
-                get: (args: PathContext<ClusterAPI["/cluster/ceph/flags/{flag}"]["GET"]['parameters']>) => client.request("/cluster/ceph/flags/{flag}", "GET", {
-                    ...args,
+                get: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/ceph/flags/{flag}"]["GET"]['parameters']>>) => client.request("/cluster/ceph/flags/{flag}", "GET", {
+                    ...((args[0]) as any),
                     $path: {"flag": value}
                 }),
                 /**
@@ -3495,8 +3505,8 @@ export default (client: Client) => ({
                  * - `flag` (path, required, "nobackfill" | "nodeep-scrub" | "nodown" | "noin" | "noout" | "norebalance" | "norecover" | "noscrub" | "notieragent" | "noup" | "pause"): The ceph flag to update
                  * - `value` (body, required, boolean): The new value of the flag
                  */
-                update: (args: PathContext<ClusterAPI["/cluster/ceph/flags/{flag}"]["PUT"]['parameters']>) => client.request("/cluster/ceph/flags/{flag}", "PUT", {
-                    ...args,
+                update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/ceph/flags/{flag}"]["PUT"]['parameters']>>) => client.request("/cluster/ceph/flags/{flag}", "PUT", {
+                    ...((args[0]) as any),
                     $path: {"flag": value}
                 }),
             })
@@ -3510,14 +3520,14 @@ export default (client: Client) => ({
          * Parameters:
          * - `scope` (query, optional, "all" | "versions")
          */
-        metadata: (args: ClusterAPI["/cluster/ceph/metadata"]["GET"]['parameters']) => client.request("/cluster/ceph/metadata", "GET", args),
+        metadata: (...args: ArgsTuple<ClusterAPI["/cluster/ceph/metadata"]["GET"]['parameters']>) => client.request("/cluster/ceph/metadata", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/ceph/metadata"]["GET"]['parameters']),
         /**
          * Get ceph status.
          * @endpoint GET /cluster/ceph/status
          * @allowToken 1
          * @permissions {"check": ["perm", "/", ["Sys.Audit", "Datastore.Audit"], "any", 1]}
          */
-        status: (args: ClusterAPI["/cluster/ceph/status"]["GET"]['parameters']) => client.request("/cluster/ceph/status", "GET", args)
+        status: (...args: ArgsTuple<ClusterAPI["/cluster/ceph/status"]["GET"]['parameters']>) => client.request("/cluster/ceph/status", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/ceph/status"]["GET"]['parameters'])
     },
     config: {
         /**
@@ -3526,7 +3536,7 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"check": ["perm", "/", ["Sys.Audit"]]}
          */
-        index: (args: ClusterAPI["/cluster/config"]["GET"]['parameters']) => client.request("/cluster/config", "GET", args),
+        index: (...args: ArgsTuple<ClusterAPI["/cluster/config"]["GET"]['parameters']>) => client.request("/cluster/config", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/config"]["GET"]['parameters']),
         /**
          * Generate new cluster configuration. If no links given, default to local IP address as link0.
          * @endpoint POST /cluster/config
@@ -3538,7 +3548,7 @@ export default (client: Client) => ({
          * - `nodeid` (body, optional, number): Node id for this node.
          * - `votes` (body, optional, number): Number of votes for this node.
          */
-        create: (args: ClusterAPI["/cluster/config"]["POST"]['parameters']) => client.request("/cluster/config", "POST", args),
+        create: (...args: ArgsTuple<ClusterAPI["/cluster/config"]["POST"]['parameters']>) => client.request("/cluster/config", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/config"]["POST"]['parameters']),
         apiversion: {
             /**
              * Return the version of the cluster join API available on this node.
@@ -3546,7 +3556,7 @@ export default (client: Client) => ({
              * @allowToken 1
              * @permissions {"check": ["perm", "/", ["Sys.Audit"]]}
              */
-            join_api_version: (args: ClusterAPI["/cluster/config/apiversion"]["GET"]['parameters']) => client.request("/cluster/config/apiversion", "GET", args)
+            join_api_version: (...args: ArgsTuple<ClusterAPI["/cluster/config/apiversion"]["GET"]['parameters']>) => client.request("/cluster/config/apiversion", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/config/apiversion"]["GET"]['parameters'])
         },
         join: {
             /**
@@ -3558,7 +3568,7 @@ export default (client: Client) => ({
              * Parameters:
              * - `node` (query, optional, string): The node for which the joinee gets the nodeinfo.
              */
-            info: (args: ClusterAPI["/cluster/config/join"]["GET"]['parameters']) => client.request("/cluster/config/join", "GET", args),
+            info: (...args: ArgsTuple<ClusterAPI["/cluster/config/join"]["GET"]['parameters']>) => client.request("/cluster/config/join", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/config/join"]["GET"]['parameters']),
             /**
              * Joins this node into an existing cluster. If no links are given, default to IP resolved by node's hostname on single link (fallback fails for clusters with multiple links).
              * @endpoint POST /cluster/config/join
@@ -3573,7 +3583,7 @@ export default (client: Client) => ({
              * - `password` (body, required, string): Superuser (root) password of peer node.
              * - `votes` (body, optional, number): Number of votes for this node
              */
-            join: (args: ClusterAPI["/cluster/config/join"]["POST"]['parameters']) => client.request("/cluster/config/join", "POST", args)
+            join: (...args: ArgsTuple<ClusterAPI["/cluster/config/join"]["POST"]['parameters']>) => client.request("/cluster/config/join", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/config/join"]["POST"]['parameters'])
         },
         nodes: {
             /**
@@ -3582,7 +3592,7 @@ export default (client: Client) => ({
              * @allowToken 1
              * @permissions {"check": ["perm", "/", ["Sys.Audit"]]}
              */
-            nodes: (args: ClusterAPI["/cluster/config/nodes"]["GET"]['parameters']) => client.request("/cluster/config/nodes", "GET", args),
+            nodes: (...args: ArgsTuple<ClusterAPI["/cluster/config/nodes"]["GET"]['parameters']>) => client.request("/cluster/config/nodes", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/config/nodes"]["GET"]['parameters']),
             node: (value: string | number) => ({
                 /**
                  * Removes a node from the cluster configuration.
@@ -3592,8 +3602,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `node` (path, required, string): The cluster node name.
                  */
-                delete: (args: PathContext<ClusterAPI["/cluster/config/nodes/{node}"]["DELETE"]['parameters']>) => client.request("/cluster/config/nodes/{node}", "DELETE", {
-                    ...args,
+                delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/config/nodes/{node}"]["DELETE"]['parameters']>>) => client.request("/cluster/config/nodes/{node}", "DELETE", {
+                    ...((args[0]) as any),
                     $path: {"node": value.toString()}
                 }),
                 /**
@@ -3610,8 +3620,8 @@ export default (client: Client) => ({
                  * - `nodeid` (body, optional, number): Node id for this node.
                  * - `votes` (body, optional, number): Number of votes for this node
                  */
-                add: (args: ClusterAPI["/cluster/config/nodes/{node}"]["POST"]['parameters']) => client.request("/cluster/config/nodes/{node}", "POST", {
-                    ...args,
+                add: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/config/nodes/{node}"]["POST"]['parameters']>>) => client.request("/cluster/config/nodes/{node}", "POST", {
+                    ...((args[0]) as any),
                     $path: {node: value.toString()}
                 })
             })
@@ -3623,7 +3633,7 @@ export default (client: Client) => ({
              * @allowToken 1
              * @permissions {"check": ["perm", "/", ["Sys.Audit"]]}
              */
-            status: (args: ClusterAPI["/cluster/config/qdevice"]["GET"]['parameters']) => client.request("/cluster/config/qdevice", "GET", args)
+            status: (...args: ArgsTuple<ClusterAPI["/cluster/config/qdevice"]["GET"]['parameters']>) => client.request("/cluster/config/qdevice", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/config/qdevice"]["GET"]['parameters'])
         },
         /**
          * Get corosync totem protocol settings.
@@ -3631,7 +3641,7 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"check": ["perm", "/", ["Sys.Audit"]]}
          */
-        totem: (args: ClusterAPI["/cluster/config/totem"]["GET"]['parameters']) => client.request("/cluster/config/totem", "GET", args)
+        totem: (...args: ArgsTuple<ClusterAPI["/cluster/config/totem"]["GET"]['parameters']>) => client.request("/cluster/config/totem", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/config/totem"]["GET"]['parameters'])
     },
     firewall: {
         /**
@@ -3640,7 +3650,7 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"user": "all"}
          */
-        index: (args: ClusterAPI["/cluster/firewall"]["GET"]['parameters']) => client.request("/cluster/firewall", "GET", args),
+        index: (...args: ArgsTuple<ClusterAPI["/cluster/firewall"]["GET"]['parameters']>) => client.request("/cluster/firewall", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/firewall"]["GET"]['parameters']),
         aliases: {
             /**
              * List aliases
@@ -3648,7 +3658,7 @@ export default (client: Client) => ({
              * @allowToken 1
              * @permissions {"check": ["perm", "/", ["Sys.Audit"]]}
              */
-            get_aliases: (args: ClusterAPI["/cluster/firewall/aliases"]["GET"]['parameters']) => client.request("/cluster/firewall/aliases", "GET", args),
+            get_aliases: (...args: ArgsTuple<ClusterAPI["/cluster/firewall/aliases"]["GET"]['parameters']>) => client.request("/cluster/firewall/aliases", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/firewall/aliases"]["GET"]['parameters']),
             /**
              * Create IP or Network Alias.
              * @endpoint POST /cluster/firewall/aliases
@@ -3660,7 +3670,7 @@ export default (client: Client) => ({
              * - `comment` (body, optional, string)
              * - `name` (body, required, string): Alias name.
              */
-            create_alias: (args: ClusterAPI["/cluster/firewall/aliases"]["POST"]['parameters']) => client.request("/cluster/firewall/aliases", "POST", args),
+            create_alias: (...args: ArgsTuple<ClusterAPI["/cluster/firewall/aliases"]["POST"]['parameters']>) => client.request("/cluster/firewall/aliases", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/firewall/aliases"]["POST"]['parameters']),
             name: (value: string) => ({
                 /**
                  * Remove IP or Network alias.
@@ -3672,8 +3682,8 @@ export default (client: Client) => ({
                  * - `digest` (query, optional, string): Prevent changes if current configuration file has a different digest. This can be used to prevent concurrent modifications.
                  * - `name` (path, required, string): Alias name.
                  */
-                remove_alias: (args: PathContext<ClusterAPI["/cluster/firewall/aliases/{name}"]["DELETE"]['parameters']>) => client.request("/cluster/firewall/aliases/{name}", "DELETE", {
-                    ...args,
+                remove_alias: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/aliases/{name}"]["DELETE"]['parameters']>>) => client.request("/cluster/firewall/aliases/{name}", "DELETE", {
+                    ...((args[0]) as any),
                     $path: {name: value}
                 }),
                 /**
@@ -3685,8 +3695,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `name` (path, required, string): Alias name.
                  */
-                read_alias: (args: PathContext<ClusterAPI["/cluster/firewall/aliases/{name}"]["GET"]['parameters']>) => client.request("/cluster/firewall/aliases/{name}", "GET", {
-                    ...args,
+                read_alias: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/aliases/{name}"]["GET"]['parameters']>>) => client.request("/cluster/firewall/aliases/{name}", "GET", {
+                    ...((args[0]) as any),
                     $path: {name: value}
                 }),
                 /**
@@ -3702,8 +3712,8 @@ export default (client: Client) => ({
                  * - `name` (path, required, string): Alias name.
                  * - `rename` (body, optional, string): Rename an existing alias.
                  */
-                update_alias: (args: PathContext<ClusterAPI["/cluster/firewall/aliases/{name}"]["PUT"]['parameters']>) => client.request("/cluster/firewall/aliases/{name}", "PUT", {
-                    ...args,
+                update_alias: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/aliases/{name}"]["PUT"]['parameters']>>) => client.request("/cluster/firewall/aliases/{name}", "PUT", {
+                    ...((args[0]) as any),
                     $path: {name: value}
                 }),
             })
@@ -3715,7 +3725,7 @@ export default (client: Client) => ({
              * @allowToken 1
              * @permissions {"user": "all"}
              */
-            list_security_groups: (args: ClusterAPI["/cluster/firewall/groups"]["GET"]['parameters']) => client.request("/cluster/firewall/groups", "GET", args),
+            list_security_groups: (...args: ArgsTuple<ClusterAPI["/cluster/firewall/groups"]["GET"]['parameters']>) => client.request("/cluster/firewall/groups", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/firewall/groups"]["GET"]['parameters']),
             /**
              * Create new security group.
              * @endpoint POST /cluster/firewall/groups
@@ -3728,7 +3738,7 @@ export default (client: Client) => ({
              * - `group` (body, required, string): Security Group name.
              * - `rename` (body, optional, string): Rename/update an existing security group. You can set 'rename' to the same value as 'name' to update the 'comment' of an existing group.
              */
-            create_security_group: (args: ClusterAPI["/cluster/firewall/groups"]["POST"]['parameters']) => client.request("/cluster/firewall/groups", "POST", args),
+            create_security_group: (...args: ArgsTuple<ClusterAPI["/cluster/firewall/groups"]["POST"]['parameters']>) => client.request("/cluster/firewall/groups", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/firewall/groups"]["POST"]['parameters']),
             group: (group: string) => ({
                 /**
                  * Delete security group.
@@ -3739,8 +3749,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `group` (path, required, string): Security Group name.
                  */
-                delete_security_group: (args: PathContext<ClusterAPI["/cluster/firewall/groups/{group}"]["DELETE"]['parameters']>) => client.request("/cluster/firewall/groups/{group}", "DELETE", {
-                    ...args,
+                delete_security_group: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/groups/{group}"]["DELETE"]['parameters']>>) => client.request("/cluster/firewall/groups/{group}", "DELETE", {
+                    ...((args[0]) as any),
                     $path: {group}
                 }),
                 /**
@@ -3752,8 +3762,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `group` (path, required, string): Security Group name.
                  */
-                get_rules: (args: ClusterAPI["/cluster/firewall/groups/{group}"]["GET"]['parameters']) => client.request("/cluster/firewall/groups/{group}", "GET", {
-                    ...args,
+                get_rules: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/groups/{group}"]["GET"]['parameters']>>) => client.request("/cluster/firewall/groups/{group}", "GET", {
+                    ...((args[0]) as any),
                     $path: {group}
                 }),
                 /**
@@ -3780,8 +3790,8 @@ export default (client: Client) => ({
                  * - `sport` (body, optional, string): Restrict TCP/UDP source port. You can use service names or simple numbers (0-65535), as defined in '/etc/services'. Port ranges can be specified with '\d+:\d+', for example '80:85', and you can use comma separated list to match several ports or ranges.
                  * - `type` (body, required, "in" | "out" | "forward" | "group"): Rule type.
                  */
-                create_rule: (args: ClusterAPI["/cluster/firewall/groups/{group}"]["POST"]['parameters']) => client.request("/cluster/firewall/groups/{group}", "POST", {
-                    ...args,
+                create_rule: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/groups/{group}"]["POST"]['parameters']>>) => client.request("/cluster/firewall/groups/{group}", "POST", {
+                    ...((args[0]) as any),
                     $path: {group}
                 }),
                 pos: (value: number) => ({
@@ -3796,8 +3806,8 @@ export default (client: Client) => ({
                      * - `group` (path, required, string): Security Group name.
                      * - `pos` (path, optional, number): Update rule at position <pos>.
                      */
-                    delete_rule: (args: PathContext<ClusterAPI["/cluster/firewall/groups/{group}/{pos}"]["DELETE"]['parameters']>) => client.request("/cluster/firewall/groups/{group}/{pos}", "DELETE", {
-                        ...args,
+                    delete_rule: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/groups/{group}/{pos}"]["DELETE"]['parameters']>>) => client.request("/cluster/firewall/groups/{group}/{pos}", "DELETE", {
+                        ...((args[0]) as any),
                         $path: {group, pos: value}
                     }),
                     /**
@@ -3810,8 +3820,8 @@ export default (client: Client) => ({
                      * - `group` (path, required, string): Security Group name.
                      * - `pos` (path, optional, number): Update rule at position <pos>.
                      */
-                    get_rule: (args: PathContext<ClusterAPI["/cluster/firewall/groups/{group}/{pos}"]["GET"]['parameters']>) => client.request("/cluster/firewall/groups/{group}/{pos}", "GET", {
-                        ...args,
+                    get_rule: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/groups/{group}/{pos}"]["GET"]['parameters']>>) => client.request("/cluster/firewall/groups/{group}/{pos}", "GET", {
+                        ...((args[0]) as any),
                         $path: {group, pos: value}
                     }),
                     /**
@@ -3840,8 +3850,8 @@ export default (client: Client) => ({
                      * - `sport` (body, optional, string): Restrict TCP/UDP source port. You can use service names or simple numbers (0-65535), as defined in '/etc/services'. Port ranges can be specified with '\d+:\d+', for example '80:85', and you can use comma separated list to match several ports or ranges.
                      * - `type` (body, optional, "in" | "out" | "forward" | "group"): Rule type.
                      */
-                    update_rule: (args: PathContext<ClusterAPI["/cluster/firewall/groups/{group}/{pos}"]["PUT"]['parameters']>) => client.request("/cluster/firewall/groups/{group}/{pos}", "PUT", {
-                        ...args,
+                    update_rule: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/groups/{group}/{pos}"]["PUT"]['parameters']>>) => client.request("/cluster/firewall/groups/{group}/{pos}", "PUT", {
+                        ...((args[0]) as any),
                         $path: {group, pos: value}
                     }),
                 })
@@ -3854,7 +3864,7 @@ export default (client: Client) => ({
              * @allowToken 1
              * @permissions {"check": ["perm", "/", ["Sys.Audit"]]}
              */
-            index: (args: ClusterAPI["/cluster/firewall/ipset"]["GET"]['parameters']) => client.request("/cluster/firewall/ipset", "GET", args),
+            index: (...args: ArgsTuple<ClusterAPI["/cluster/firewall/ipset"]["GET"]['parameters']>) => client.request("/cluster/firewall/ipset", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/firewall/ipset"]["GET"]['parameters']),
             /**
              * Create new IPSet
              * @endpoint POST /cluster/firewall/ipset
@@ -3867,7 +3877,7 @@ export default (client: Client) => ({
              * - `name` (body, required, string): IP set name.
              * - `rename` (body, optional, string): Rename an existing IPSet. You can set 'rename' to the same value as 'name' to update the 'comment' of an existing IPSet.
              */
-            create: (args: ClusterAPI["/cluster/firewall/ipset"]["POST"]['parameters']) => client.request("/cluster/firewall/ipset", "POST", args),
+            create: (...args: ArgsTuple<ClusterAPI["/cluster/firewall/ipset"]["POST"]['parameters']>) => client.request("/cluster/firewall/ipset", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/firewall/ipset"]["POST"]['parameters']),
             name: (name: string) => ({
                 /**
                  * Delete IPSet
@@ -3879,8 +3889,8 @@ export default (client: Client) => ({
                  * - `force` (query, optional, boolean): Delete all members of the IPSet, if there are any.
                  * - `name` (path, required, string): IP set name.
                  */
-                delete: (args: PathContext<ClusterAPI["/cluster/firewall/ipset/{name}"]["DELETE"]['parameters']>) => client.request("/cluster/firewall/ipset/{name}", "DELETE", {
-                    ...args,
+                delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/ipset/{name}"]["DELETE"]['parameters']>>) => client.request("/cluster/firewall/ipset/{name}", "DELETE", {
+                    ...((args[0]) as any),
                     $path: {name}
                 }),
                 /**
@@ -3892,8 +3902,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `name` (path, required, string): IP set name.
                  */
-                get: (args: ClusterAPI["/cluster/firewall/ipset/{name}"]["GET"]['parameters']) => client.request("/cluster/firewall/ipset/{name}", "GET", {
-                    ...args,
+                get: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/ipset/{name}"]["GET"]['parameters']>>) => client.request("/cluster/firewall/ipset/{name}", "GET", {
+                    ...((args[0]) as any),
                     $path: {name}
                 }),
                 /**
@@ -3908,8 +3918,8 @@ export default (client: Client) => ({
                  * - `name` (path, required, string): IP set name.
                  * - `nomatch` (body, optional, boolean)
                  */
-                create_ip: (args: ClusterAPI["/cluster/firewall/ipset/{name}"]["POST"]['parameters']) => client.request("/cluster/firewall/ipset/{name}", "POST", {
-                    ...args,
+                create_ip: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/ipset/{name}"]["POST"]['parameters']>>) => client.request("/cluster/firewall/ipset/{name}", "POST", {
+                    ...((args[0]) as any),
                     $path: {name}
                 }),
                 cidr: (cidr: string) => ({
@@ -3924,8 +3934,8 @@ export default (client: Client) => ({
                      * - `digest` (query, optional, string): Prevent changes if current configuration file has a different digest. This can be used to prevent concurrent modifications.
                      * - `name` (path, required, string): IP set name.
                      */
-                    remove_ip: (args: PathContext<ClusterAPI["/cluster/firewall/ipset/{name}/{cidr}"]["DELETE"]['parameters']>) => client.request("/cluster/firewall/ipset/{name}/{cidr}", "DELETE", {
-                        ...args,
+                    remove_ip: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/ipset/{name}/{cidr}"]["DELETE"]['parameters']>>) => client.request("/cluster/firewall/ipset/{name}/{cidr}", "DELETE", {
+                        ...((args[0]) as any),
                         $path: {name, cidr}
                     }),
                     /**
@@ -3938,8 +3948,8 @@ export default (client: Client) => ({
                      * - `cidr` (path, required, string): Network/IP specification in CIDR format.
                      * - `name` (path, required, string): IP set name.
                      */
-                    read_ip: (args: PathContext<ClusterAPI["/cluster/firewall/ipset/{name}/{cidr}"]["GET"]['parameters']>) => client.request("/cluster/firewall/ipset/{name}/{cidr}", "GET", {
-                        ...args,
+                    read_ip: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/ipset/{name}/{cidr}"]["GET"]['parameters']>>) => client.request("/cluster/firewall/ipset/{name}/{cidr}", "GET", {
+                        ...((args[0]) as any),
                         $path: {name, cidr}
                     }),
                     /**
@@ -3955,8 +3965,8 @@ export default (client: Client) => ({
                      * - `name` (path, required, string): IP set name.
                      * - `nomatch` (body, optional, boolean)
                      */
-                    update_ip: (args: PathContext<ClusterAPI["/cluster/firewall/ipset/{name}/{cidr}"]["PUT"]['parameters']>) => client.request("/cluster/firewall/ipset/{name}/{cidr}", "PUT", {
-                        ...args,
+                    update_ip: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/ipset/{name}/{cidr}"]["PUT"]['parameters']>>) => client.request("/cluster/firewall/ipset/{name}/{cidr}", "PUT", {
+                        ...((args[0]) as any),
                         $path: {name, cidr}
                     }),
                 })
@@ -3968,7 +3978,7 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"user": "all"}
          */
-        macros: (args: ClusterAPI["/cluster/firewall/macros"]["GET"]['parameters']) => client.request("/cluster/firewall/macros", "GET", args),
+        macros: (...args: ArgsTuple<ClusterAPI["/cluster/firewall/macros"]["GET"]['parameters']>) => client.request("/cluster/firewall/macros", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/firewall/macros"]["GET"]['parameters']),
         options: {
             /**
              * Get Firewall options.
@@ -3976,7 +3986,7 @@ export default (client: Client) => ({
              * @allowToken 1
              * @permissions {"check": ["perm", "/", ["Sys.Audit"]]}
              */
-            get: (args: ClusterAPI["/cluster/firewall/options"]["GET"]['parameters']) => client.request("/cluster/firewall/options", "GET", args),
+            get: (...args: ArgsTuple<ClusterAPI["/cluster/firewall/options"]["GET"]['parameters']>) => client.request("/cluster/firewall/options", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/firewall/options"]["GET"]['parameters']),
             /**
              * Set Firewall options.
              * @endpoint PUT /cluster/firewall/options
@@ -3993,7 +4003,7 @@ export default (client: Client) => ({
              * - `policy_in` (body, optional, "ACCEPT" | "REJECT" | "DROP"): Input policy.
              * - `policy_out` (body, optional, "ACCEPT" | "REJECT" | "DROP"): Output policy.
              */
-            set: (args: ClusterAPI["/cluster/firewall/options"]["PUT"]['parameters']) => client.request("/cluster/firewall/options", "PUT", args)
+            set: (...args: ArgsTuple<ClusterAPI["/cluster/firewall/options"]["PUT"]['parameters']>) => client.request("/cluster/firewall/options", "PUT", (args[0] ?? {}) as ClusterAPI["/cluster/firewall/options"]["PUT"]['parameters'])
         },
         /**
          * Lists possible IPSet/Alias reference which are allowed in source/dest properties.
@@ -4004,7 +4014,7 @@ export default (client: Client) => ({
          * Parameters:
          * - `type` (query, optional, "alias" | "ipset"): Only list references of specified type.
          */
-        refs: (args: ClusterAPI["/cluster/firewall/refs"]["GET"]['parameters']) => client.request("/cluster/firewall/refs", "GET", args),
+        refs: (...args: ArgsTuple<ClusterAPI["/cluster/firewall/refs"]["GET"]['parameters']>) => client.request("/cluster/firewall/refs", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/firewall/refs"]["GET"]['parameters']),
         rules: {
             /**
              * List rules.
@@ -4012,7 +4022,7 @@ export default (client: Client) => ({
              * @allowToken 1
              * @permissions {"check": ["perm", "/", ["Sys.Audit"]]}
              */
-            get: (args: ClusterAPI["/cluster/firewall/rules"]["GET"]['parameters']) => client.request("/cluster/firewall/rules", "GET", args),
+            get: (...args: ArgsTuple<ClusterAPI["/cluster/firewall/rules"]["GET"]['parameters']>) => client.request("/cluster/firewall/rules", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/firewall/rules"]["GET"]['parameters']),
             /**
              * Create new rule.
              * @endpoint POST /cluster/firewall/rules
@@ -4036,7 +4046,7 @@ export default (client: Client) => ({
              * - `sport` (body, optional, string): Restrict TCP/UDP source port. You can use service names or simple numbers (0-65535), as defined in '/etc/services'. Port ranges can be specified with '\d+:\d+', for example '80:85', and you can use comma separated list to match several ports or ranges.
              * - `type` (body, required, "in" | "out" | "forward" | "group"): Rule type.
              */
-            create: (args: ClusterAPI["/cluster/firewall/rules"]["POST"]['parameters']) => client.request("/cluster/firewall/rules", "POST", args),
+            create: (...args: ArgsTuple<ClusterAPI["/cluster/firewall/rules"]["POST"]['parameters']>) => client.request("/cluster/firewall/rules", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/firewall/rules"]["POST"]['parameters']),
             pos: (value: number) => ({
                 /**
                  * Delete rule.
@@ -4048,8 +4058,8 @@ export default (client: Client) => ({
                  * - `digest` (query, optional, string): Prevent changes if current configuration file has a different digest. This can be used to prevent concurrent modifications.
                  * - `pos` (path, optional, number): Update rule at position <pos>.
                  */
-                delete: (args: PathContext<ClusterAPI["/cluster/firewall/rules/{pos}"]["DELETE"]['parameters']>) => client.request("/cluster/firewall/rules/{pos}", "DELETE", {
-                    ...args,
+                delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/rules/{pos}"]["DELETE"]['parameters']>>) => client.request("/cluster/firewall/rules/{pos}", "DELETE", {
+                    ...((args[0]) as any),
                     $path: {pos: value}
                 }),
                 /**
@@ -4061,8 +4071,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `pos` (path, optional, number): Update rule at position <pos>.
                  */
-                get: (args: PathContext<ClusterAPI["/cluster/firewall/rules/{pos}"]["GET"]['parameters']>) => client.request("/cluster/firewall/rules/{pos}", "GET", {
-                    ...args,
+                get: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/rules/{pos}"]["GET"]['parameters']>>) => client.request("/cluster/firewall/rules/{pos}", "GET", {
+                    ...((args[0]) as any),
                     $path: {pos: value}
                 }),
                 /**
@@ -4090,8 +4100,8 @@ export default (client: Client) => ({
                  * - `sport` (body, optional, string): Restrict TCP/UDP source port. You can use service names or simple numbers (0-65535), as defined in '/etc/services'. Port ranges can be specified with '\d+:\d+', for example '80:85', and you can use comma separated list to match several ports or ranges.
                  * - `type` (body, optional, "in" | "out" | "forward" | "group"): Rule type.
                  */
-                update: (args: PathContext<ClusterAPI["/cluster/firewall/rules/{pos}"]["PUT"]['parameters']>) => client.request("/cluster/firewall/rules/{pos}", "PUT", {
-                    ...args,
+                update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/rules/{pos}"]["PUT"]['parameters']>>) => client.request("/cluster/firewall/rules/{pos}", "PUT", {
+                    ...((args[0]) as any),
                     $path: {pos: value}
                 }),
             })
@@ -4104,7 +4114,7 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"check": ["perm", "/", ["Sys.Audit"]]}
          */
-        index: (args: ClusterAPI["/cluster/ha"]["GET"]['parameters']) => client.request("/cluster/ha", "GET", args),
+        index: (...args: ArgsTuple<ClusterAPI["/cluster/ha"]["GET"]['parameters']>) => client.request("/cluster/ha", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/ha"]["GET"]['parameters']),
         groups: {
             /**
              * Get HA groups. (deprecated in favor of HA rules)
@@ -4112,7 +4122,7 @@ export default (client: Client) => ({
              * @allowToken 1
              * @permissions {"check": ["perm", "/", ["Sys.Audit"]]}
              */
-            index: (args: ClusterAPI["/cluster/ha/groups"]["GET"]['parameters']) => client.request("/cluster/ha/groups", "GET", args),
+            index: (...args: ArgsTuple<ClusterAPI["/cluster/ha/groups"]["GET"]['parameters']>) => client.request("/cluster/ha/groups", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/ha/groups"]["GET"]['parameters']),
             /**
              * Create a new HA group. (deprecated in favor of HA rules)
              * @endpoint POST /cluster/ha/groups
@@ -4127,7 +4137,7 @@ export default (client: Client) => ({
              * - `restricted` (body, optional, boolean): Resources bound to restricted groups may only run on nodes defined by the group.
              * - `type` (body, optional, "group"): Group type.
              */
-            create: (args: ClusterAPI["/cluster/ha/groups"]["POST"]['parameters']) => client.request("/cluster/ha/groups", "POST", args),
+            create: (...args: ArgsTuple<ClusterAPI["/cluster/ha/groups"]["POST"]['parameters']>) => client.request("/cluster/ha/groups", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/ha/groups"]["POST"]['parameters']),
             group: (group: string) => ({
                 /**
                  * Delete ha group configuration. (deprecated in favor of HA rules)
@@ -4138,8 +4148,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `group` (path, required, string): The HA group identifier.
                  */
-                delete: (args: PathContext<ClusterAPI["/cluster/ha/groups/{group}"]["DELETE"]['parameters']>) => client.request("/cluster/ha/groups/{group}", "DELETE", {
-                    ...args,
+                delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/ha/groups/{group}"]["DELETE"]['parameters']>>) => client.request("/cluster/ha/groups/{group}", "DELETE", {
+                    ...((args[0]) as any),
                     $path: {group}
                 }),
                 /**
@@ -4151,8 +4161,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `group` (path, required, string): The HA group identifier.
                  */
-                read: (args: PathContext<ClusterAPI["/cluster/ha/groups/{group}"]["GET"]['parameters']>) => client.request("/cluster/ha/groups/{group}", "GET", {
-                    ...args,
+                read: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/ha/groups/{group}"]["GET"]['parameters']>>) => client.request("/cluster/ha/groups/{group}", "GET", {
+                    ...((args[0]) as any),
                     $path: {group}
                 }),
                 /**
@@ -4170,8 +4180,8 @@ export default (client: Client) => ({
                  * - `nofailback` (body, optional, boolean): The CRM tries to run services on the node with the highest priority. If a node with higher priority comes online, the CRM migrates the service to that node. Enabling nofailback prevents that behavior.
                  * - `restricted` (body, optional, boolean): Resources bound to restricted groups may only run on nodes defined by the group.
                  */
-                update: (args: PathContext<ClusterAPI["/cluster/ha/groups/{group}"]["PUT"]['parameters']>) => client.request("/cluster/ha/groups/{group}", "PUT", {
-                    ...args,
+                update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/ha/groups/{group}"]["PUT"]['parameters']>>) => client.request("/cluster/ha/groups/{group}", "PUT", {
+                    ...((args[0]) as any),
                     $path: {group}
                 }),
             })
@@ -4186,7 +4196,7 @@ export default (client: Client) => ({
              * Parameters:
              * - `type` (query, optional, "ct" | "vm"): Only list resources of specific type
              */
-            index: (args: ClusterAPI["/cluster/ha/resources"]["GET"]['parameters']) => client.request("/cluster/ha/resources", "GET", args),
+            index: (...args: ArgsTuple<ClusterAPI["/cluster/ha/resources"]["GET"]['parameters']>) => client.request("/cluster/ha/resources", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/ha/resources"]["GET"]['parameters']),
             /**
              * Create a new HA resource.
              * @endpoint POST /cluster/ha/resources
@@ -4203,7 +4213,7 @@ export default (client: Client) => ({
              * - `state` (body, optional, "started" | "stopped" | "enabled" | "disabled" | "ignored"): Requested resource state.
              * - `type` (body, optional, "ct" | "vm"): Resource type.
              */
-            create: (args: ClusterAPI["/cluster/ha/resources"]["POST"]['parameters']) => client.request("/cluster/ha/resources", "POST", args),
+            create: (...args: ArgsTuple<ClusterAPI["/cluster/ha/resources"]["POST"]['parameters']>) => client.request("/cluster/ha/resources", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/ha/resources"]["POST"]['parameters']),
             sid: (sid: string) => ({
                 /**
                  * Delete resource configuration.
@@ -4215,8 +4225,8 @@ export default (client: Client) => ({
                  * - `purge` (query, optional, boolean): Remove this resource from rules that reference it, deleting the rule if this resource is the only resource in the rule
                  * - `sid` (path, required, string): HA resource ID. This consists of a resource type followed by a resource specific name, separated with colon (example: vm:100 / ct:100). For virtual machines and containers, you can simply use the VM or CT id as a shortcut (example: 100).
                  */
-                delete: (args: PathContext<ClusterAPI["/cluster/ha/resources/{sid}"]["DELETE"]['parameters']>) => client.request("/cluster/ha/resources/{sid}", "DELETE", {
-                    ...args,
+                delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/ha/resources/{sid}"]["DELETE"]['parameters']>>) => client.request("/cluster/ha/resources/{sid}", "DELETE", {
+                    ...((args[0]) as any),
                     $path: {sid}
                 }),
                 /**
@@ -4228,8 +4238,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `sid` (path, required, string): HA resource ID. This consists of a resource type followed by a resource specific name, separated with colon (example: vm:100 / ct:100). For virtual machines and containers, you can simply use the VM or CT id as a shortcut (example: 100).
                  */
-                read: (args: PathContext<ClusterAPI["/cluster/ha/resources/{sid}"]["GET"]['parameters']>) => client.request("/cluster/ha/resources/{sid}", "GET", {
-                    ...args,
+                read: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/ha/resources/{sid}"]["GET"]['parameters']>>) => client.request("/cluster/ha/resources/{sid}", "GET", {
+                    ...((args[0]) as any),
                     $path: {sid}
                 }),
                 /**
@@ -4249,8 +4259,8 @@ export default (client: Client) => ({
                  * - `sid` (path, required, string): HA resource ID. This consists of a resource type followed by a resource specific name, separated with colon (example: vm:100 / ct:100). For virtual machines and containers, you can simply use the VM or CT id as a shortcut (example: 100).
                  * - `state` (body, optional, "started" | "stopped" | "enabled" | "disabled" | "ignored"): Requested resource state.
                  */
-                update: (args: PathContext<ClusterAPI["/cluster/ha/resources/{sid}"]["PUT"]['parameters']>) => client.request("/cluster/ha/resources/{sid}", "PUT", {
-                    ...args,
+                update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/ha/resources/{sid}"]["PUT"]['parameters']>>) => client.request("/cluster/ha/resources/{sid}", "PUT", {
+                    ...((args[0]) as any),
                     $path: {sid}
                 }),
                 /**
@@ -4263,8 +4273,8 @@ export default (client: Client) => ({
                  * - `node` (body, required, string): Target node.
                  * - `sid` (path, required, string): HA resource ID. This consists of a resource type followed by a resource specific name, separated with colon (example: vm:100 / ct:100). For virtual machines and containers, you can simply use the VM or CT id as a shortcut (example: 100).
                  */
-                migrate: (args: PathContext<ClusterAPI["/cluster/ha/resources/{sid}/migrate"]["POST"]['parameters']>) => client.request("/cluster/ha/resources/{sid}/migrate", "POST", {
-                    ...args,
+                migrate: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/ha/resources/{sid}/migrate"]["POST"]['parameters']>>) => client.request("/cluster/ha/resources/{sid}/migrate", "POST", {
+                    ...((args[0]) as any),
                     $path: {sid}
                 }),
                 /**
@@ -4277,8 +4287,8 @@ export default (client: Client) => ({
                  * - `node` (body, required, string): Target node.
                  * - `sid` (path, required, string): HA resource ID. This consists of a resource type followed by a resource specific name, separated with colon (example: vm:100 / ct:100). For virtual machines and containers, you can simply use the VM or CT id as a shortcut (example: 100).
                  */
-                relocate: (args: PathContext<ClusterAPI["/cluster/ha/resources/{sid}/relocate"]["POST"]['parameters']>) => client.request("/cluster/ha/resources/{sid}/relocate", "POST", {
-                    ...args,
+                relocate: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/ha/resources/{sid}/relocate"]["POST"]['parameters']>>) => client.request("/cluster/ha/resources/{sid}/relocate", "POST", {
+                    ...((args[0]) as any),
                     $path: {sid}
                 }),
             })
@@ -4294,7 +4304,7 @@ export default (client: Client) => ({
              * - `resource` (query, optional, string): Limit the returned list to rules affecting the specified resource.
              * - `type` (query, optional, "node-affinity" | "resource-affinity"): Limit the returned list to the specified rule type.
              */
-            index: (args: ClusterAPI["/cluster/ha/rules"]["GET"]['parameters']) => client.request("/cluster/ha/rules", "GET", args),
+            index: (...args: ArgsTuple<ClusterAPI["/cluster/ha/rules"]["GET"]['parameters']>) => client.request("/cluster/ha/rules", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/ha/rules"]["GET"]['parameters']),
             /**
              * Create HA rule.
              * @endpoint POST /cluster/ha/rules
@@ -4311,7 +4321,7 @@ export default (client: Client) => ({
              * - `strict` (body, optional, boolean): Describes whether the node affinity rule is strict or non-strict.
              * - `type` (body, required, "node-affinity" | "resource-affinity"): HA rule type.
              */
-            create_rule: (args: ClusterAPI["/cluster/ha/rules"]["POST"]['parameters']) => client.request("/cluster/ha/rules", "POST", args),
+            create_rule: (...args: ArgsTuple<ClusterAPI["/cluster/ha/rules"]["POST"]['parameters']>) => client.request("/cluster/ha/rules", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/ha/rules"]["POST"]['parameters']),
             rule: (rule: string) => ({
                 /**
                  * Delete HA rule.
@@ -4322,8 +4332,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `rule` (path, required, string): HA rule identifier.
                  */
-                delete: (args: PathContext<ClusterAPI["/cluster/ha/rules/{rule}"]["DELETE"]['parameters']>) => client.request("/cluster/ha/rules/{rule}", "DELETE", {
-                    ...args,
+                delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/ha/rules/{rule}"]["DELETE"]['parameters']>>) => client.request("/cluster/ha/rules/{rule}", "DELETE", {
+                    ...((args[0]) as any),
                     $path: {rule}
                 }),
                 /**
@@ -4335,8 +4345,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `rule` (path, required, string): HA rule identifier.
                  */
-                read: (args: PathContext<ClusterAPI["/cluster/ha/rules/{rule}"]["GET"]['parameters']>) => client.request("/cluster/ha/rules/{rule}", "GET", {
-                    ...args,
+                read: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/ha/rules/{rule}"]["GET"]['parameters']>>) => client.request("/cluster/ha/rules/{rule}", "GET", {
+                    ...((args[0]) as any),
                     $path: {rule}
                 }),
                 /**
@@ -4357,8 +4367,8 @@ export default (client: Client) => ({
                  * - `strict` (body, optional, boolean): Describes whether the node affinity rule is strict or non-strict.
                  * - `type` (body, required, "node-affinity" | "resource-affinity"): HA rule type.
                  */
-                update: (args: PathContext<ClusterAPI["/cluster/ha/rules/{rule}"]["PUT"]['parameters']>) => client.request("/cluster/ha/rules/{rule}", "PUT", {
-                    ...args,
+                update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/ha/rules/{rule}"]["PUT"]['parameters']>>) => client.request("/cluster/ha/rules/{rule}", "PUT", {
+                    ...((args[0]) as any),
                     $path: {rule}
                 }),
             })
@@ -4370,21 +4380,21 @@ export default (client: Client) => ({
              * @allowToken 1
              * @permissions {"user": "all"}
              */
-            index: (args: ClusterAPI["/cluster/ha/status"]["GET"]['parameters']) => client.request("/cluster/ha/status", "GET", args),
+            index: (...args: ArgsTuple<ClusterAPI["/cluster/ha/status"]["GET"]['parameters']>) => client.request("/cluster/ha/status", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/ha/status"]["GET"]['parameters']),
             /**
              * Get HA manger status.
              * @endpoint GET /cluster/ha/status/current
              * @allowToken 1
              * @permissions {"check": ["perm", "/", ["Sys.Audit"]]}
              */
-            current: (args: ClusterAPI["/cluster/ha/status/current"]["GET"]['parameters']) => client.request("/cluster/ha/status/current", "GET", args),
+            current: (...args: ArgsTuple<ClusterAPI["/cluster/ha/status/current"]["GET"]['parameters']>) => client.request("/cluster/ha/status/current", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/ha/status/current"]["GET"]['parameters']),
             /**
              * Get full HA manger status, including LRM status.
              * @endpoint GET /cluster/ha/status/manager_status
              * @allowToken 1
              * @permissions {"check": ["perm", "/", ["Sys.Audit"]]}
              */
-            manager_status: (args: ClusterAPI["/cluster/ha/status/manager_status"]["GET"]['parameters']) => client.request("/cluster/ha/status/manager_status", "GET", args)
+            manager_status: (...args: ArgsTuple<ClusterAPI["/cluster/ha/status/manager_status"]["GET"]['parameters']>) => client.request("/cluster/ha/status/manager_status", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/ha/status/manager_status"]["GET"]['parameters'])
         }
     },
     jobs: {
@@ -4394,7 +4404,7 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"user": "all"}
          */
-        index: (args: ClusterAPI["/cluster/jobs"]["GET"]['parameters']) => client.request("/cluster/jobs", "GET", args),
+        index: (...args: ArgsTuple<ClusterAPI["/cluster/jobs"]["GET"]['parameters']>) => client.request("/cluster/jobs", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/jobs"]["GET"]['parameters']),
         realm_sync: {
             /**
              * List configured realm-sync-jobs.
@@ -4402,7 +4412,7 @@ export default (client: Client) => ({
              * @allowToken 1
              * @permissions {"check": ["perm", "/", ["Sys.Audit"]]}
              */
-            index: (args: ClusterAPI["/cluster/jobs/realm-sync"]["GET"]['parameters']) => client.request("/cluster/jobs/realm-sync", "GET", args),
+            index: (...args: ArgsTuple<ClusterAPI["/cluster/jobs/realm-sync"]["GET"]['parameters']>) => client.request("/cluster/jobs/realm-sync", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/jobs/realm-sync"]["GET"]['parameters']),
             job: (id: string) => ({
                 /**
                  * Delete realm-sync job definition.
@@ -4413,8 +4423,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `id` (path, required, string)
                  */
-                delete: (args: PathContext<ClusterAPI["/cluster/jobs/realm-sync/{id}"]["DELETE"]['parameters']>) => client.request("/cluster/jobs/realm-sync/{id}", "DELETE", {
-                    ...args,
+                delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/jobs/realm-sync/{id}"]["DELETE"]['parameters']>>) => client.request("/cluster/jobs/realm-sync/{id}", "DELETE", {
+                    ...((args[0]) as any),
                     $path: {id}
                 }),
                 /**
@@ -4426,8 +4436,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `id` (path, required, string)
                  */
-                read: (args: PathContext<ClusterAPI["/cluster/jobs/realm-sync/{id}"]["GET"]['parameters']>) => client.request("/cluster/jobs/realm-sync/{id}", "GET", {
-                    ...args,
+                read: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/jobs/realm-sync/{id}"]["GET"]['parameters']>>) => client.request("/cluster/jobs/realm-sync/{id}", "GET", {
+                    ...((args[0]) as any),
                     $path: {id}
                 }),
                 /**
@@ -4446,8 +4456,8 @@ export default (client: Client) => ({
                  * - `schedule` (body, required, string): Backup schedule. The format is a subset of `systemd` calendar events.
                  * - `scope` (body, optional, "users" | "groups" | "both"): Select what to sync.
                  */
-                create: (args: PathContext<ClusterAPI["/cluster/jobs/realm-sync/{id}"]["POST"]['parameters']>) => client.request("/cluster/jobs/realm-sync/{id}", "POST", {
-                    ...args,
+                create: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/jobs/realm-sync/{id}"]["POST"]['parameters']>>) => client.request("/cluster/jobs/realm-sync/{id}", "POST", {
+                    ...((args[0]) as any),
                     $path: {id}
                 }),
                 /**
@@ -4466,8 +4476,8 @@ export default (client: Client) => ({
                  * - `schedule` (body, required, string): Backup schedule. The format is a subset of `systemd` calendar events.
                  * - `scope` (body, optional, "users" | "groups" | "both"): Select what to sync.
                  */
-                update: (args: PathContext<ClusterAPI["/cluster/jobs/realm-sync/{id}"]["PUT"]['parameters']>) => client.request("/cluster/jobs/realm-sync/{id}", "PUT", {
-                    ...args,
+                update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/jobs/realm-sync/{id}"]["PUT"]['parameters']>>) => client.request("/cluster/jobs/realm-sync/{id}", "PUT", {
+                    ...((args[0]) as any),
                     $path: {id}
                 }),
             })
@@ -4483,7 +4493,7 @@ export default (client: Client) => ({
          * - `schedule` (query, required, string): Job schedule. The format is a subset of `systemd` calendar events.
          * - `starttime` (query, optional, number): UNIX timestamp to start the calculation from. Defaults to the current time.
          */
-        schedule_analyze: (args: ClusterAPI["/cluster/jobs/schedule-analyze"]["GET"]['parameters']) => client.request("/cluster/jobs/schedule-analyze", "GET", args)
+        schedule_analyze: (...args: ArgsTuple<ClusterAPI["/cluster/jobs/schedule-analyze"]["GET"]['parameters']>) => client.request("/cluster/jobs/schedule-analyze", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/jobs/schedule-analyze"]["GET"]['parameters'])
     },
     /**
      * Read cluster log
@@ -4494,7 +4504,7 @@ export default (client: Client) => ({
      * Parameters:
      * - `max` (query, optional, number): Maximum number of entries.
      */
-    log: (args: ClusterAPI["/cluster/log"]["GET"]['parameters']) => client.request("/cluster/log", "GET", args),
+    log: (...args: ArgsTuple<ClusterAPI["/cluster/log"]["GET"]['parameters']>) => client.request("/cluster/log", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/log"]["GET"]['parameters']),
     mapping: {
         /**
          * List resource types.
@@ -4502,7 +4512,7 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"user": "all"}
          */
-        index: (args: ClusterAPI["/cluster/mapping"]["GET"]['parameters']) => client.request("/cluster/mapping", "GET", args),
+        index: (...args: ArgsTuple<ClusterAPI["/cluster/mapping"]["GET"]['parameters']>) => client.request("/cluster/mapping", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/mapping"]["GET"]['parameters']),
         dir: {
             /**
              * List directory mapping
@@ -4513,7 +4523,7 @@ export default (client: Client) => ({
              * Parameters:
              * - `check-node` (query, optional, string): If given, checks the configurations on the given node for correctness, and adds relevant diagnostics for the directory to the response.
              */
-            index: (args: ClusterAPI["/cluster/mapping/dir"]["GET"]['parameters']) => client.request("/cluster/mapping/dir", "GET", args),
+            index: (...args: ArgsTuple<ClusterAPI["/cluster/mapping/dir"]["GET"]['parameters']>) => client.request("/cluster/mapping/dir", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/mapping/dir"]["GET"]['parameters']),
             /**
              * Create a new directory mapping.
              * @endpoint POST /cluster/mapping/dir
@@ -4525,7 +4535,7 @@ export default (client: Client) => ({
              * - `id` (body, required, string): The ID of the directory mapping
              * - `map` (body, required, string[]): A list of maps for the cluster nodes.
              */
-            create: (args: ClusterAPI["/cluster/mapping/dir"]["POST"]['parameters']) => client.request("/cluster/mapping/dir", "POST", args),
+            create: (...args: ArgsTuple<ClusterAPI["/cluster/mapping/dir"]["POST"]['parameters']>) => client.request("/cluster/mapping/dir", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/mapping/dir"]["POST"]['parameters']),
             id: (id: string) => ({
                 /**
                  * Remove directory mapping.
@@ -4536,8 +4546,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `id` (path, required, string)
                  */
-                delete: (args: PathContext<ClusterAPI["/cluster/mapping/dir/{id}"]["DELETE"]['parameters']>) => client.request("/cluster/mapping/dir/{id}", "DELETE", {
-                    ...args,
+                delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/mapping/dir/{id}"]["DELETE"]['parameters']>>) => client.request("/cluster/mapping/dir/{id}", "DELETE", {
+                    ...((args[0]) as any),
                     $path: {id}
                 }),
                 /**
@@ -4549,8 +4559,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `id` (path, required, string)
                  */
-                get: (args: PathContext<ClusterAPI["/cluster/mapping/dir/{id}"]["GET"]['parameters']>) => client.request("/cluster/mapping/dir/{id}", "GET", {
-                    ...args,
+                get: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/mapping/dir/{id}"]["GET"]['parameters']>>) => client.request("/cluster/mapping/dir/{id}", "GET", {
+                    ...((args[0]) as any),
                     $path: {id}
                 }),
                 /**
@@ -4566,8 +4576,8 @@ export default (client: Client) => ({
                  * - `id` (path, required, string): The ID of the directory mapping
                  * - `map` (body, optional, string[]): A list of maps for the cluster nodes.
                  */
-                update: (args: PathContext<ClusterAPI["/cluster/mapping/dir/{id}"]["PUT"]['parameters']>) => client.request("/cluster/mapping/dir/{id}", "PUT", {
-                    ...args,
+                update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/mapping/dir/{id}"]["PUT"]['parameters']>>) => client.request("/cluster/mapping/dir/{id}", "PUT", {
+                    ...((args[0]) as any),
                     $path: {id}
                 }),
             })
@@ -4582,7 +4592,7 @@ export default (client: Client) => ({
              * Parameters:
              * - `check-node` (query, optional, string): If given, checks the configurations on the given node for correctness, and adds relevant diagnostics for the devices to the response.
              */
-            index: (args: ClusterAPI["/cluster/mapping/pci"]["GET"]['parameters']) => client.request("/cluster/mapping/pci", "GET", args),
+            index: (...args: ArgsTuple<ClusterAPI["/cluster/mapping/pci"]["GET"]['parameters']>) => client.request("/cluster/mapping/pci", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/mapping/pci"]["GET"]['parameters']),
             /**
              * Create a new hardware mapping.
              * @endpoint POST /cluster/mapping/pci
@@ -4596,7 +4606,7 @@ export default (client: Client) => ({
              * - `map` (body, required, string[]): A list of maps for the cluster nodes.
              * - `mdev` (body, optional, boolean): Marks the device(s) as being capable of providing mediated devices.
              */
-            create: (args: ClusterAPI["/cluster/mapping/pci"]["POST"]['parameters']) => client.request("/cluster/mapping/pci", "POST", args),
+            create: (...args: ArgsTuple<ClusterAPI["/cluster/mapping/pci"]["POST"]['parameters']>) => client.request("/cluster/mapping/pci", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/mapping/pci"]["POST"]['parameters']),
             id: (id: string) => ({
                 /**
                  * Remove Hardware Mapping.
@@ -4607,8 +4617,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `id` (path, required, string)
                  */
-                delete: (args: PathContext<ClusterAPI["/cluster/mapping/pci/{id}"]["DELETE"]['parameters']>) => client.request("/cluster/mapping/pci/{id}", "DELETE", {
-                    ...args,
+                delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/mapping/pci/{id}"]["DELETE"]['parameters']>>) => client.request("/cluster/mapping/pci/{id}", "DELETE", {
+                    ...((args[0]) as any),
                     $path: {id}
                 }),
                 /**
@@ -4620,8 +4630,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `id` (path, required, string)
                  */
-                get: (args: PathContext<ClusterAPI["/cluster/mapping/pci/{id}"]["GET"]['parameters']>) => client.request("/cluster/mapping/pci/{id}", "GET", {
-                    ...args,
+                get: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/mapping/pci/{id}"]["GET"]['parameters']>>) => client.request("/cluster/mapping/pci/{id}", "GET", {
+                    ...((args[0]) as any),
                     $path: {id}
                 }),
                 /**
@@ -4639,8 +4649,8 @@ export default (client: Client) => ({
                  * - `map` (body, optional, string[]): A list of maps for the cluster nodes.
                  * - `mdev` (body, optional, boolean): Marks the device(s) as being capable of providing mediated devices.
                  */
-                update: (args: PathContext<ClusterAPI["/cluster/mapping/pci/{id}"]["PUT"]['parameters']>) => client.request("/cluster/mapping/pci/{id}", "PUT", {
-                    ...args,
+                update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/mapping/pci/{id}"]["PUT"]['parameters']>>) => client.request("/cluster/mapping/pci/{id}", "PUT", {
+                    ...((args[0]) as any),
                     $path: {id}
                 }),
             })
@@ -4655,7 +4665,7 @@ export default (client: Client) => ({
              * Parameters:
              * - `check-node` (query, optional, string): If given, checks the configurations on the given node for correctness, and adds relevant errors to the devices.
              */
-            index: (args: ClusterAPI["/cluster/mapping/usb"]["GET"]['parameters']) => client.request("/cluster/mapping/usb", "GET", args),
+            index: (...args: ArgsTuple<ClusterAPI["/cluster/mapping/usb"]["GET"]['parameters']>) => client.request("/cluster/mapping/usb", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/mapping/usb"]["GET"]['parameters']),
             /**
              * Create a new hardware mapping.
              * @endpoint POST /cluster/mapping/usb
@@ -4667,7 +4677,7 @@ export default (client: Client) => ({
              * - `id` (body, required, string): The ID of the logical USB mapping.
              * - `map` (body, required, string[]): A list of maps for the cluster nodes.
              */
-            create: (args: ClusterAPI["/cluster/mapping/usb"]["POST"]['parameters']) => client.request("/cluster/mapping/usb", "POST", args),
+            create: (...args: ArgsTuple<ClusterAPI["/cluster/mapping/usb"]["POST"]['parameters']>) => client.request("/cluster/mapping/usb", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/mapping/usb"]["POST"]['parameters']),
             id: (id: string) => ({
                 /**
                  * Remove Hardware Mapping.
@@ -4678,8 +4688,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `id` (path, required, string)
                  */
-                delete: (args: PathContext<ClusterAPI["/cluster/mapping/usb/{id}"]["DELETE"]['parameters']>) => client.request("/cluster/mapping/usb/{id}", "DELETE", {
-                    ...args,
+                delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/mapping/usb/{id}"]["DELETE"]['parameters']>>) => client.request("/cluster/mapping/usb/{id}", "DELETE", {
+                    ...((args[0]) as any),
                     $path: {id}
                 }),
                 /**
@@ -4691,8 +4701,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `id` (path, required, string)
                  */
-                get: (args: PathContext<ClusterAPI["/cluster/mapping/usb/{id}"]["GET"]['parameters']>) => client.request("/cluster/mapping/usb/{id}", "GET", {
-                    ...args,
+                get: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/mapping/usb/{id}"]["GET"]['parameters']>>) => client.request("/cluster/mapping/usb/{id}", "GET", {
+                    ...((args[0]) as any),
                     $path: {id}
                 }),
                 /**
@@ -4708,8 +4718,8 @@ export default (client: Client) => ({
                  * - `id` (path, required, string): The ID of the logical USB mapping.
                  * - `map` (body, required, string[]): A list of maps for the cluster nodes.
                  */
-                update: (args: PathContext<ClusterAPI["/cluster/mapping/usb/{id}"]["PUT"]['parameters']>) => client.request("/cluster/mapping/usb/{id}", "PUT", {
-                    ...args,
+                update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/mapping/usb/{id}"]["PUT"]['parameters']>>) => client.request("/cluster/mapping/usb/{id}", "PUT", {
+                    ...((args[0]) as any),
                     $path: {id}
                 }),
             })
@@ -4722,7 +4732,7 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"user": "all"}
          */
-        index: (args: ClusterAPI["/cluster/metrics"]["GET"]['parameters']) => client.request("/cluster/metrics", "GET", args),
+        index: (...args: ArgsTuple<ClusterAPI["/cluster/metrics"]["GET"]['parameters']>) => client.request("/cluster/metrics", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/metrics"]["GET"]['parameters']),
         /**
          * Retrieve metrics of the cluster.
          * @endpoint GET /cluster/metrics/export
@@ -4735,7 +4745,7 @@ export default (client: Client) => ({
          * - `node-list` (query, optional, string): Only return metrics from nodes passed as comma-separated list
          * - `start-time` (query, optional, number): Only include metrics with a timestamp > start-time.
          */
-        export: (args: ClusterAPI["/cluster/metrics/export"]["GET"]['parameters']) => client.request("/cluster/metrics/export", "GET", args),
+        export: (...args: ArgsTuple<ClusterAPI["/cluster/metrics/export"]["GET"]['parameters']>) => client.request("/cluster/metrics/export", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/metrics/export"]["GET"]['parameters']),
         server: {
             /**
              * List configured metric servers.
@@ -4743,7 +4753,7 @@ export default (client: Client) => ({
              * @allowToken 1
              * @permissions {"check": ["perm", "/", ["Sys.Audit"]]}
              */
-            index: (args: ClusterAPI["/cluster/metrics/server"]["GET"]['parameters']) => client.request("/cluster/metrics/server", "GET", args),
+            index: (...args: ArgsTuple<ClusterAPI["/cluster/metrics/server"]["GET"]['parameters']>) => client.request("/cluster/metrics/server", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/metrics/server"]["GET"]['parameters']),
             id: (id: string) => ({
                 /**
                  * Remove Metric server.
@@ -4754,8 +4764,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `id` (path, required, string)
                  */
-                delete: (args: PathContext<ClusterAPI["/cluster/metrics/server/{id}"]["DELETE"]['parameters']>) => client.request("/cluster/metrics/server/{id}", "DELETE", {
-                    ...args,
+                delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/metrics/server/{id}"]["DELETE"]['parameters']>>) => client.request("/cluster/metrics/server/{id}", "DELETE", {
+                    ...((args[0]) as any),
                     $path: {id}
                 }),
                 /**
@@ -4767,8 +4777,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `id` (path, required, string)
                  */
-                read: (args: PathContext<ClusterAPI["/cluster/metrics/server/{id}"]["GET"]['parameters']>) => client.request("/cluster/metrics/server/{id}", "GET", {
-                    ...args,
+                read: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/metrics/server/{id}"]["GET"]['parameters']>>) => client.request("/cluster/metrics/server/{id}", "GET", {
+                    ...((args[0]) as any),
                     $path: {id}
                 }),
                 /**
@@ -4803,8 +4813,8 @@ export default (client: Client) => ({
                  * - `type` (body, required, "graphite" | "influxdb" | "opentelemetry"): Plugin type.
                  * - `verify-certificate` (body, optional, boolean): Set to 0 to disable certificate verification for https endpoints.
                  */
-                create: (args: PathContext<ClusterAPI["/cluster/metrics/server/{id}"]["POST"]['parameters']>) => client.request("/cluster/metrics/server/{id}", "POST", {
-                    ...args,
+                create: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/metrics/server/{id}"]["POST"]['parameters']>>) => client.request("/cluster/metrics/server/{id}", "POST", {
+                    ...((args[0]) as any),
                     $path: {id}
                 }),
                 /**
@@ -4840,8 +4850,8 @@ export default (client: Client) => ({
                  * - `token` (body, optional, string): The InfluxDB access token. Only necessary when using the http v2 api. If the v2 compatibility api is used, use 'user:password' instead.
                  * - `verify-certificate` (body, optional, boolean): Set to 0 to disable certificate verification for https endpoints.
                  */
-                update: (args: PathContext<ClusterAPI["/cluster/metrics/server/{id}"]["PUT"]['parameters']>) => client.request("/cluster/metrics/server/{id}", "PUT", {
-                    ...args,
+                update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/metrics/server/{id}"]["PUT"]['parameters']>>) => client.request("/cluster/metrics/server/{id}", "PUT", {
+                    ...((args[0]) as any),
                     $path: {id}
                 }),
             })
@@ -4856,7 +4866,7 @@ export default (client: Client) => ({
      * Parameters:
      * - `vmid` (query, optional, number): The (unique) ID of the VM.
      */
-    nextid: (args: ClusterAPI["/cluster/nextid"]["GET"]['parameters']) => client.request("/cluster/nextid", "GET", args),
+    nextid: (...args: ArgsTuple<ClusterAPI["/cluster/nextid"]["GET"]['parameters']>) => client.request("/cluster/nextid", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/nextid"]["GET"]['parameters']),
     notifications: {
         /**
          * Index for notification-related API endpoints.
@@ -4864,7 +4874,7 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"user": "all"}
          */
-        index: (args: ClusterAPI["/cluster/notifications"]["GET"]['parameters']) => client.request("/cluster/notifications", "GET", args),
+        index: (...args: ArgsTuple<ClusterAPI["/cluster/notifications"]["GET"]['parameters']>) => client.request("/cluster/notifications", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/notifications"]["GET"]['parameters']),
         endpoints: {
             /**
              * Index for all available endpoint types.
@@ -4872,7 +4882,7 @@ export default (client: Client) => ({
              * @allowToken 1
              * @permissions {"user": "all"}
              */
-            index: (args: ClusterAPI["/cluster/notifications/endpoints"]["GET"]['parameters']) => client.request("/cluster/notifications/endpoints", "GET", args),
+            index: (...args: ArgsTuple<ClusterAPI["/cluster/notifications/endpoints"]["GET"]['parameters']>) => client.request("/cluster/notifications/endpoints", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/notifications/endpoints"]["GET"]['parameters']),
             gotify: {
                 /**
                  * Returns a list of all gotify endpoints
@@ -4880,7 +4890,7 @@ export default (client: Client) => ({
                  * @allowToken 1
                  * @permissions {"check": ["perm", "/mapping/notifications", ["Mapping.Audit"]]}
                  */
-                get_endpoints: (args: ClusterAPI["/cluster/notifications/endpoints/gotify"]["GET"]['parameters']) => client.request("/cluster/notifications/endpoints/gotify", "GET", args),
+                get_endpoints: (...args: ArgsTuple<ClusterAPI["/cluster/notifications/endpoints/gotify"]["GET"]['parameters']>) => client.request("/cluster/notifications/endpoints/gotify", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/notifications/endpoints/gotify"]["GET"]['parameters']),
                 /**
                  * Create a new gotify endpoint
                  * @endpoint POST /cluster/notifications/endpoints/gotify
@@ -4894,7 +4904,7 @@ export default (client: Client) => ({
                  * - `server` (body, required, string): Server URL
                  * - `token` (body, required, string): Secret token
                  */
-                create_endpoint: (args: ClusterAPI["/cluster/notifications/endpoints/gotify"]["POST"]['parameters']) => client.request("/cluster/notifications/endpoints/gotify", "POST", args),
+                create_endpoint: (...args: ArgsTuple<ClusterAPI["/cluster/notifications/endpoints/gotify"]["POST"]['parameters']>) => client.request("/cluster/notifications/endpoints/gotify", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/notifications/endpoints/gotify"]["POST"]['parameters']),
                 endpoint: (name: string) => ({
                     /**
                      * Remove gotify endpoint
@@ -4905,8 +4915,8 @@ export default (client: Client) => ({
                      * Parameters:
                      * - `name` (path, required, string)
                      */
-                    delete: (args: PathContext<ClusterAPI["/cluster/notifications/endpoints/gotify/{name}"]["DELETE"]['parameters']>) => client.request("/cluster/notifications/endpoints/gotify/{name}", "DELETE", {
-                        ...args,
+                    delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/notifications/endpoints/gotify/{name}"]["DELETE"]['parameters']>>) => client.request("/cluster/notifications/endpoints/gotify/{name}", "DELETE", {
+                        ...((args[0]) as any),
                         $path: {name}
                     }),
                     /**
@@ -4918,8 +4928,8 @@ export default (client: Client) => ({
                      * Parameters:
                      * - `name` (path, required, string): Name of the endpoint.
                      */
-                    get: (args: PathContext<ClusterAPI["/cluster/notifications/endpoints/gotify/{name}"]["GET"]['parameters']>) => client.request("/cluster/notifications/endpoints/gotify/{name}", "GET", {
-                        ...args,
+                    get: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/notifications/endpoints/gotify/{name}"]["GET"]['parameters']>>) => client.request("/cluster/notifications/endpoints/gotify/{name}", "GET", {
+                        ...((args[0]) as any),
                         $path: {name}
                     }),
                     /**
@@ -4937,8 +4947,8 @@ export default (client: Client) => ({
                      * - `server` (body, optional, string): Server URL
                      * - `token` (body, optional, string): Secret token
                      */
-                    update: (args: PathContext<ClusterAPI["/cluster/notifications/endpoints/gotify/{name}"]["PUT"]['parameters']>) => client.request("/cluster/notifications/endpoints/gotify/{name}", "PUT", {
-                        ...args,
+                    update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/notifications/endpoints/gotify/{name}"]["PUT"]['parameters']>>) => client.request("/cluster/notifications/endpoints/gotify/{name}", "PUT", {
+                        ...((args[0]) as any),
                         $path: {name}
                     })
                 })
@@ -4950,7 +4960,7 @@ export default (client: Client) => ({
                  * @allowToken 1
                  * @permissions {"check": ["or", ["perm", "/mapping/notifications", ["Mapping.Modify"]], ["perm", "/mapping/notifications", ["Mapping.Audit"]]]}
                  */
-                get_endpoints: (args: ClusterAPI["/cluster/notifications/endpoints/sendmail"]["GET"]['parameters']) => client.request("/cluster/notifications/endpoints/sendmail", "GET", args),
+                get_endpoints: (...args: ArgsTuple<ClusterAPI["/cluster/notifications/endpoints/sendmail"]["GET"]['parameters']>) => client.request("/cluster/notifications/endpoints/sendmail", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/notifications/endpoints/sendmail"]["GET"]['parameters']),
                 /**
                  * Create a new sendmail endpoint
                  * @endpoint POST /cluster/notifications/endpoints/sendmail
@@ -4966,7 +4976,7 @@ export default (client: Client) => ({
                  * - `mailto-user` (body, optional, string[]): List of users
                  * - `name` (body, required, string): The name of the endpoint.
                  */
-                create_sendmail_endpoint: (args: ClusterAPI["/cluster/notifications/endpoints/sendmail"]["POST"]['parameters']) => client.request("/cluster/notifications/endpoints/sendmail", "POST", args),
+                create_sendmail_endpoint: (...args: ArgsTuple<ClusterAPI["/cluster/notifications/endpoints/sendmail"]["POST"]['parameters']>) => client.request("/cluster/notifications/endpoints/sendmail", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/notifications/endpoints/sendmail"]["POST"]['parameters']),
                 endpoint: (name: string) => ({
                     /**
                      * Remove sendmail endpoint
@@ -4977,8 +4987,8 @@ export default (client: Client) => ({
                      * Parameters:
                      * - `name` (path, required, string)
                      */
-                    delete: (args: PathContext<ClusterAPI["/cluster/notifications/endpoints/sendmail/{name}"]["DELETE"]['parameters']>) => client.request("/cluster/notifications/endpoints/sendmail/{name}", "DELETE", {
-                        ...args,
+                    delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/notifications/endpoints/sendmail/{name}"]["DELETE"]['parameters']>>) => client.request("/cluster/notifications/endpoints/sendmail/{name}", "DELETE", {
+                        ...((args[0]) as any),
                         $path: {name}
                     }),
                     /**
@@ -4990,8 +5000,8 @@ export default (client: Client) => ({
                      * Parameters:
                      * - `name` (path, required, string)
                      */
-                    get: (args: PathContext<ClusterAPI["/cluster/notifications/endpoints/sendmail/{name}"]["GET"]['parameters']>) => client.request("/cluster/notifications/endpoints/sendmail/{name}", "GET", {
-                        ...args,
+                    get: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/notifications/endpoints/sendmail/{name}"]["GET"]['parameters']>>) => client.request("/cluster/notifications/endpoints/sendmail/{name}", "GET", {
+                        ...((args[0]) as any),
                         $path: {name}
                     }),
                     /**
@@ -5011,8 +5021,8 @@ export default (client: Client) => ({
                      * - `mailto-user` (body, optional, string[]): List of users
                      * - `name` (path, required, string): The name of the endpoint.
                      */
-                    update: (args: PathContext<ClusterAPI["/cluster/notifications/endpoints/sendmail/{name}"]["PUT"]['parameters']>) => client.request("/cluster/notifications/endpoints/sendmail/{name}", "PUT", {
-                        ...args,
+                    update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/notifications/endpoints/sendmail/{name}"]["PUT"]['parameters']>>) => client.request("/cluster/notifications/endpoints/sendmail/{name}", "PUT", {
+                        ...((args[0]) as any),
                         $path: {name}
                     }),
                 })
@@ -5024,7 +5034,7 @@ export default (client: Client) => ({
                  * @allowToken 1
                  * @permissions {"check": ["or", ["perm", "/mapping/notifications", ["Mapping.Modify"]], ["perm", "/mapping/notifications", ["Mapping.Audit"]]]}
                  */
-                get_endpoints: (args: ClusterAPI["/cluster/notifications/endpoints/smtp"]["GET"]['parameters']) => client.request("/cluster/notifications/endpoints/smtp", "GET", args),
+                get_endpoints: (...args: ArgsTuple<ClusterAPI["/cluster/notifications/endpoints/smtp"]["GET"]['parameters']>) => client.request("/cluster/notifications/endpoints/smtp", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/notifications/endpoints/smtp"]["GET"]['parameters']),
                 /**
                  * Create a new smtp endpoint
                  * @endpoint POST /cluster/notifications/endpoints/smtp
@@ -5045,7 +5055,7 @@ export default (client: Client) => ({
                  * - `server` (body, required, string): The address of the SMTP server.
                  * - `username` (body, optional, string): Username for SMTP authentication
                  */
-                create_endpoint: (args: ClusterAPI["/cluster/notifications/endpoints/smtp"]["POST"]['parameters']) => client.request("/cluster/notifications/endpoints/smtp", "POST", args),
+                create_endpoint: (...args: ArgsTuple<ClusterAPI["/cluster/notifications/endpoints/smtp"]["POST"]['parameters']>) => client.request("/cluster/notifications/endpoints/smtp", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/notifications/endpoints/smtp"]["POST"]['parameters']),
                 endpoint: (name: string) => ({
                     /**
                      * Remove smtp endpoint
@@ -5056,8 +5066,8 @@ export default (client: Client) => ({
                      * Parameters:
                      * - `name` (path, required, string)
                      */
-                    delete: (args: PathContext<ClusterAPI["/cluster/notifications/endpoints/smtp/{name}"]["DELETE"]['parameters']>) => client.request("/cluster/notifications/endpoints/smtp/{name}", "DELETE", {
-                        ...args,
+                    delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/notifications/endpoints/smtp/{name}"]["DELETE"]['parameters']>>) => client.request("/cluster/notifications/endpoints/smtp/{name}", "DELETE", {
+                        ...((args[0]) as any),
                         $path: {name}
                     }),
                     /**
@@ -5069,8 +5079,8 @@ export default (client: Client) => ({
                      * Parameters:
                      * - `name` (path, required, string)
                      */
-                    get: (args: PathContext<ClusterAPI["/cluster/notifications/endpoints/smtp/{name}"]["GET"]['parameters']>) => client.request("/cluster/notifications/endpoints/smtp/{name}", "GET", {
-                        ...args,
+                    get: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/notifications/endpoints/smtp/{name}"]["GET"]['parameters']>>) => client.request("/cluster/notifications/endpoints/smtp/{name}", "GET", {
+                        ...((args[0]) as any),
                         $path: {name}
                     }),
                     /**
@@ -5095,8 +5105,8 @@ export default (client: Client) => ({
                      * - `server` (body, optional, string): The address of the SMTP server.
                      * - `username` (body, optional, string): Username for SMTP authentication
                      */
-                    update: (args: PathContext<ClusterAPI["/cluster/notifications/endpoints/smtp/{name}"]["PUT"]['parameters']>) => client.request("/cluster/notifications/endpoints/smtp/{name}", "PUT", {
-                        ...args,
+                    update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/notifications/endpoints/smtp/{name}"]["PUT"]['parameters']>>) => client.request("/cluster/notifications/endpoints/smtp/{name}", "PUT", {
+                        ...((args[0]) as any),
                         $path: {name}
                     }),
                 })
@@ -5108,7 +5118,7 @@ export default (client: Client) => ({
                  * @allowToken 1
                  * @permissions {"check": ["perm", "/mapping/notifications", ["Mapping.Audit"]]}
                  */
-                index: (args: ClusterAPI["/cluster/notifications/endpoints/webhook"]["GET"]['parameters']) => client.request("/cluster/notifications/endpoints/webhook", "GET", args),
+                index: (...args: ArgsTuple<ClusterAPI["/cluster/notifications/endpoints/webhook"]["GET"]['parameters']>) => client.request("/cluster/notifications/endpoints/webhook", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/notifications/endpoints/webhook"]["GET"]['parameters']),
                 /**
                  * Create a new webhook endpoint
                  * @endpoint POST /cluster/notifications/endpoints/webhook
@@ -5125,7 +5135,7 @@ export default (client: Client) => ({
                  * - `secret` (body, optional, string[]): Secrets to set. These have to be formatted as a property string in the format name=<name>,value=<base64 of value>
                  * - `url` (body, required, string): Server URL
                  */
-                create: (args: ClusterAPI["/cluster/notifications/endpoints/webhook"]["POST"]['parameters']) => client.request("/cluster/notifications/endpoints/webhook", "POST", args),
+                create: (...args: ArgsTuple<ClusterAPI["/cluster/notifications/endpoints/webhook"]["POST"]['parameters']>) => client.request("/cluster/notifications/endpoints/webhook", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/notifications/endpoints/webhook"]["POST"]['parameters']),
                 endpoint: (name: string) => ({
                     /**
                      * Remove webhook endpoint
@@ -5136,8 +5146,8 @@ export default (client: Client) => ({
                      * Parameters:
                      * - `name` (path, required, string)
                      */
-                    delete: (args: PathContext<ClusterAPI["/cluster/notifications/endpoints/webhook/{name}"]["DELETE"]['parameters']>) => client.request("/cluster/notifications/endpoints/webhook/{name}", "DELETE", {
-                        ...args,
+                    delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/notifications/endpoints/webhook/{name}"]["DELETE"]['parameters']>>) => client.request("/cluster/notifications/endpoints/webhook/{name}", "DELETE", {
+                        ...((args[0]) as any),
                         $path: {name}
                     }),
                     /**
@@ -5149,8 +5159,8 @@ export default (client: Client) => ({
                      * Parameters:
                      * - `name` (path, required, string): Name of the endpoint.
                      */
-                    get: (args: PathContext<ClusterAPI["/cluster/notifications/endpoints/webhook/{name}"]["GET"]['parameters']>) => client.request("/cluster/notifications/endpoints/webhook/{name}", "GET", {
-                        ...args,
+                    get: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/notifications/endpoints/webhook/{name}"]["GET"]['parameters']>>) => client.request("/cluster/notifications/endpoints/webhook/{name}", "GET", {
+                        ...((args[0]) as any),
                         $path: {name}
                     }),
                     /**
@@ -5171,8 +5181,8 @@ export default (client: Client) => ({
                      * - `secret` (body, optional, string[]): Secrets to set. These have to be formatted as a property string in the format name=<name>,value=<base64 of value>
                      * - `url` (body, optional, string): Server URL
                      */
-                    update: (args: PathContext<ClusterAPI["/cluster/notifications/endpoints/webhook/{name}"]["PUT"]['parameters']>) => client.request("/cluster/notifications/endpoints/webhook/{name}", "PUT", {
-                        ...args,
+                    update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/notifications/endpoints/webhook/{name}"]["PUT"]['parameters']>>) => client.request("/cluster/notifications/endpoints/webhook/{name}", "PUT", {
+                        ...((args[0]) as any),
                         $path: {name}
                     }),
                 })
@@ -5184,14 +5194,14 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"check": ["or", ["perm", "/mapping/notifications", ["Mapping.Modify"]], ["perm", "/mapping/notifications", ["Mapping.Audit"]]]}
          */
-        matcher_field_values: (args: ClusterAPI["/cluster/notifications/matcher-field-values"]["GET"]['parameters']) => client.request("/cluster/notifications/matcher-field-values", "GET", args),
+        matcher_field_values: (...args: ArgsTuple<ClusterAPI["/cluster/notifications/matcher-field-values"]["GET"]['parameters']>) => client.request("/cluster/notifications/matcher-field-values", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/notifications/matcher-field-values"]["GET"]['parameters']),
         /**
          * Returns known notification metadata fields
          * @endpoint GET /cluster/notifications/matcher-fields
          * @allowToken 1
          * @permissions {"check": ["or", ["perm", "/mapping/notifications", ["Mapping.Modify"]], ["perm", "/mapping/notifications", ["Mapping.Audit"]]]}
          */
-        matcher_fields: (args: ClusterAPI["/cluster/notifications/matcher-fields"]["GET"]['parameters']) => client.request("/cluster/notifications/matcher-fields", "GET", args),
+        matcher_fields: (...args: ArgsTuple<ClusterAPI["/cluster/notifications/matcher-fields"]["GET"]['parameters']>) => client.request("/cluster/notifications/matcher-fields", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/notifications/matcher-fields"]["GET"]['parameters']),
         matchers: {
             /**
              * Returns a list of all matchers
@@ -5199,7 +5209,7 @@ export default (client: Client) => ({
              * @allowToken 1
              * @permissions {"check": ["or", ["perm", "/mapping/notifications", ["Mapping.Modify"]], ["perm", "/mapping/notifications", ["Mapping.Audit"]], ["perm", "/mapping/notifications", ["Mapping.Use"]]]}
              */
-            index: (args: ClusterAPI["/cluster/notifications/matchers"]["GET"]['parameters']) => client.request("/cluster/notifications/matchers", "GET", args),
+            index: (...args: ArgsTuple<ClusterAPI["/cluster/notifications/matchers"]["GET"]['parameters']>) => client.request("/cluster/notifications/matchers", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/notifications/matchers"]["GET"]['parameters']),
             /**
              * Create a new matcher
              * @endpoint POST /cluster/notifications/matchers
@@ -5217,7 +5227,7 @@ export default (client: Client) => ({
              * - `name` (body, required, string): Name of the matcher.
              * - `target` (body, optional, string[]): Targets to notify on match
              */
-            create: (args: ClusterAPI["/cluster/notifications/matchers"]["POST"]['parameters']) => client.request("/cluster/notifications/matchers", "POST", args),
+            create: (...args: ArgsTuple<ClusterAPI["/cluster/notifications/matchers"]["POST"]['parameters']>) => client.request("/cluster/notifications/matchers", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/notifications/matchers"]["POST"]['parameters']),
             matcher: (name: string) => ({
                 /**
                  * Remove matcher
@@ -5228,8 +5238,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `name` (path, required, string)
                  */
-                delete: (args: PathContext<ClusterAPI["/cluster/notifications/matchers/{name}"]["DELETE"]['parameters']>) => client.request("/cluster/notifications/matchers/{name}", "DELETE", {
-                    ...args,
+                delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/notifications/matchers/{name}"]["DELETE"]['parameters']>>) => client.request("/cluster/notifications/matchers/{name}", "DELETE", {
+                    ...((args[0]) as any),
                     $path: {name}
                 }),
                 /**
@@ -5241,8 +5251,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `name` (path, required, string)
                  */
-                get: (args: PathContext<ClusterAPI["/cluster/notifications/matchers/{name}"]["GET"]['parameters']>) => client.request("/cluster/notifications/matchers/{name}", "GET", {
-                    ...args,
+                get: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/notifications/matchers/{name}"]["GET"]['parameters']>>) => client.request("/cluster/notifications/matchers/{name}", "GET", {
+                    ...((args[0]) as any),
                     $path: {name}
                 }),
                 /**
@@ -5264,8 +5274,8 @@ export default (client: Client) => ({
                  * - `name` (path, required, string): Name of the matcher.
                  * - `target` (body, optional, string[]): Targets to notify on match
                  */
-                update: (args: PathContext<ClusterAPI["/cluster/notifications/matchers/{name}"]["PUT"]['parameters']>) => client.request("/cluster/notifications/matchers/{name}", "PUT", {
-                    ...args,
+                update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/notifications/matchers/{name}"]["PUT"]['parameters']>>) => client.request("/cluster/notifications/matchers/{name}", "PUT", {
+                    ...((args[0]) as any),
                     $path: {name}
                 }),
             })
@@ -5277,7 +5287,7 @@ export default (client: Client) => ({
              * @allowToken 1
              * @permissions {"check": ["or", ["perm", "/mapping/notifications", ["Mapping.Modify"]], ["perm", "/mapping/notifications", ["Mapping.Audit"]], ["perm", "/mapping/notifications", ["Mapping.Use"]]]}
              */
-            get_all_targets: (args: ClusterAPI["/cluster/notifications/targets"]["GET"]['parameters']) => client.request("/cluster/notifications/targets", "GET", args),
+            get_all_targets: (...args: ArgsTuple<ClusterAPI["/cluster/notifications/targets"]["GET"]['parameters']>) => client.request("/cluster/notifications/targets", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/notifications/targets"]["GET"]['parameters']),
             name: (name: string) => ({
                 test: {
                     /**
@@ -5289,8 +5299,8 @@ export default (client: Client) => ({
                      * Parameters:
                      * - `name` (path, required, string): Name of the target.
                      */
-                    test_target: (args: PathContext<ClusterAPI["/cluster/notifications/targets/{name}/test"]["POST"]['parameters']>) => client.request("/cluster/notifications/targets/{name}/test", "POST", {
-                        ...args,
+                    test_target: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/notifications/targets/{name}/test"]["POST"]['parameters']>>) => client.request("/cluster/notifications/targets/{name}/test", "POST", {
+                        ...((args[0]) as any),
                         $path: {name}
                     }),
                 }
@@ -5304,7 +5314,7 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"check": ["perm", "/", ["Sys.Audit"]], "user": "all"}
          */
-        get_options: (args: ClusterAPI["/cluster/options"]["GET"]['parameters']) => client.request("/cluster/options", "GET", args),
+        get_options: (...args: ArgsTuple<ClusterAPI["/cluster/options"]["GET"]['parameters']>) => client.request("/cluster/options", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/options"]["GET"]['parameters']),
         /**
          * Set datacenter options.
          * @endpoint PUT /cluster/options
@@ -5339,7 +5349,7 @@ export default (client: Client) => ({
          * - `user-tag-access` (body, optional, string): Privilege options for user-settable tags
          * - `webauthn` (body, optional, string): webauthn configuration
          */
-        set_options: (args: ClusterAPI["/cluster/options"]["PUT"]['parameters']) => client.request("/cluster/options", "PUT", args)
+        set_options: (...args: ArgsTuple<ClusterAPI["/cluster/options"]["PUT"]['parameters']>) => client.request("/cluster/options", "PUT", (args[0] ?? {}) as ClusterAPI["/cluster/options"]["PUT"]['parameters'])
     },
     replication: {
         /**
@@ -5348,7 +5358,7 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"description": "Will only return replication jobs for which the calling user has VM.Audit permission on /vms/<vmid>.", "user": "all"}
          */
-        index: (args: ClusterAPI["/cluster/replication"]["GET"]['parameters']) => client.request("/cluster/replication", "GET", args),
+        index: (...args: ArgsTuple<ClusterAPI["/cluster/replication"]["GET"]['parameters']>) => client.request("/cluster/replication", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/replication"]["GET"]['parameters']),
         /**
          * Create a new replication job
          * @endpoint POST /cluster/replication
@@ -5366,7 +5376,7 @@ export default (client: Client) => ({
          * - `target` (body, required, string): Target node.
          * - `type` (body, required, "local"): Section type.
          */
-        create: (args: ClusterAPI["/cluster/replication"]["POST"]['parameters']) => client.request("/cluster/replication", "POST", args),
+        create: (...args: ArgsTuple<ClusterAPI["/cluster/replication"]["POST"]['parameters']>) => client.request("/cluster/replication", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/replication"]["POST"]['parameters']),
         id: (id: string) => ({
             /**
              * Mark replication job for removal.
@@ -5379,8 +5389,8 @@ export default (client: Client) => ({
              * - `id` (path, required, string): Replication Job ID. The ID is composed of a Guest ID and a job number, separated by a hyphen, i.e. '<GUEST>-<JOBNUM>'.
              * - `keep` (query, optional, boolean): Keep replicated data at target (do not remove).
              */
-            delete_: (args: PathContext<ClusterAPI["/cluster/replication/{id}"]["DELETE"]['parameters']>) => client.request("/cluster/replication/{id}", "DELETE", {
-                ...args,
+            delete_: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/replication/{id}"]["DELETE"]['parameters']>>) => client.request("/cluster/replication/{id}", "DELETE", {
+                ...((args[0]) as any),
                 $path: {id}
             }),
             /**
@@ -5392,8 +5402,8 @@ export default (client: Client) => ({
              * Parameters:
              * - `id` (path, required, string): Replication Job ID. The ID is composed of a Guest ID and a job number, separated by a hyphen, i.e. '<GUEST>-<JOBNUM>'.
              */
-            read: (args: PathContext<ClusterAPI["/cluster/replication/{id}"]["GET"]['parameters']>) => client.request("/cluster/replication/{id}", "GET", {
-                ...args,
+            read: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/replication/{id}"]["GET"]['parameters']>>) => client.request("/cluster/replication/{id}", "GET", {
+                ...((args[0]) as any),
                 $path: {id}
             }),
             /**
@@ -5413,8 +5423,8 @@ export default (client: Client) => ({
              * - `schedule` (body, optional, string): Storage replication schedule. The format is a subset of `systemd` calendar events.
              * - `source` (body, optional, string): For internal use, to detect if the guest was stolen.
              */
-            update: (args: PathContext<ClusterAPI["/cluster/replication/{id}"]["PUT"]['parameters']>) => client.request("/cluster/replication/{id}", "PUT", {
-                ...args,
+            update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/replication/{id}"]["PUT"]['parameters']>>) => client.request("/cluster/replication/{id}", "PUT", {
+                ...((args[0]) as any),
                 $path: {id}
             }),
         })
@@ -5429,7 +5439,7 @@ export default (client: Client) => ({
          * Parameters:
          * - `type` (query, optional, "vm" | "storage" | "node" | "sdn"): Resource type.
          */
-        resources: (args: ClusterAPI["/cluster/resources"]["GET"]['parameters']) => client.request("/cluster/resources", "GET", args)
+        resources: (...args: ArgsTuple<ClusterAPI["/cluster/resources"]["GET"]['parameters']>) => client.request("/cluster/resources", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/resources"]["GET"]['parameters'])
     },
     sdn: {
         /**
@@ -5438,7 +5448,7 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"check": ["perm", "/sdn", ["SDN.Audit"]]}
          */
-        index: (args: ClusterAPI["/cluster/sdn"]["GET"]['parameters']) => client.request("/cluster/sdn", "GET", args),
+        index: (...args: ArgsTuple<ClusterAPI["/cluster/sdn"]["GET"]['parameters']>) => client.request("/cluster/sdn", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/sdn"]["GET"]['parameters']),
         /**
          * Apply sdn controller changes && reload.
          * @endpoint PUT /cluster/sdn
@@ -5449,7 +5459,7 @@ export default (client: Client) => ({
          * - `lock-token` (body, optional, string): the token for unlocking the global SDN configuration
          * - `release-lock` (body, optional, boolean): When lock-token has been provided and configuration successfully commited, release the lock automatically afterwards
          */
-        reload: (args: ClusterAPI["/cluster/sdn"]["PUT"]['parameters']) => client.request("/cluster/sdn", "PUT", args),
+        reload: (...args: ArgsTuple<ClusterAPI["/cluster/sdn"]["PUT"]['parameters']>) => client.request("/cluster/sdn", "PUT", (args[0] ?? {}) as ClusterAPI["/cluster/sdn"]["PUT"]['parameters']),
         controllers: {
             /**
              * SDN controllers index.
@@ -5462,7 +5472,7 @@ export default (client: Client) => ({
              * - `running` (query, optional, boolean): Display running config.
              * - `type` (query, optional, "bgp" | "evpn" | "faucet" | "isis"): Only list sdn controllers of specific type
              */
-            index: (args: ClusterAPI["/cluster/sdn/controllers"]["GET"]['parameters']) => client.request("/cluster/sdn/controllers", "GET", args),
+            index: (...args: ArgsTuple<ClusterAPI["/cluster/sdn/controllers"]["GET"]['parameters']>) => client.request("/cluster/sdn/controllers", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/sdn/controllers"]["GET"]['parameters']),
             /**
              * Create a new sdn controller object.
              * @endpoint POST /cluster/sdn/controllers
@@ -5485,7 +5495,7 @@ export default (client: Client) => ({
              * - `peers` (body, optional, string): peers address list.
              * - `type` (body, required, "bgp" | "evpn" | "faucet" | "isis"): Plugin type.
              */
-            create: (args: ClusterAPI["/cluster/sdn/controllers"]["POST"]['parameters']) => client.request("/cluster/sdn/controllers", "POST", args),
+            create: (...args: ArgsTuple<ClusterAPI["/cluster/sdn/controllers"]["POST"]['parameters']>) => client.request("/cluster/sdn/controllers", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/sdn/controllers"]["POST"]['parameters']),
             controller: (controller: string) => ({
                 /**
                  * Delete sdn controller object configuration.
@@ -5497,8 +5507,8 @@ export default (client: Client) => ({
                  * - `controller` (path, required, string): The SDN controller object identifier.
                  * - `lock-token` (query, optional, string): the token for unlocking the global SDN configuration
                  */
-                delete_: (args: PathContext<ClusterAPI["/cluster/sdn/controllers/{controller}"]["DELETE"]['parameters']>) => client.request("/cluster/sdn/controllers/{controller}", "DELETE", {
-                    ...args,
+                delete_: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/controllers/{controller}"]["DELETE"]['parameters']>>) => client.request("/cluster/sdn/controllers/{controller}", "DELETE", {
+                    ...((args[0]) as any),
                     $path: {controller}
                 }),
                 /**
@@ -5512,8 +5522,8 @@ export default (client: Client) => ({
                  * - `pending` (query, optional, boolean): Display pending config.
                  * - `running` (query, optional, boolean): Display running config.
                  */
-                read: (args: PathContext<ClusterAPI["/cluster/sdn/controllers/{controller}"]["GET"]['parameters']>) => client.request("/cluster/sdn/controllers/{controller}", "GET", {
-                    ...args,
+                read: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/controllers/{controller}"]["GET"]['parameters']>>) => client.request("/cluster/sdn/controllers/{controller}", "GET", {
+                    ...((args[0]) as any),
                     $path: {controller}
                 }),
                 /**
@@ -5539,8 +5549,8 @@ export default (client: Client) => ({
                  * - `node` (body, optional, string): The cluster node name.
                  * - `peers` (body, optional, string): peers address list.
                  */
-                update: (args: PathContext<ClusterAPI["/cluster/sdn/controllers/{controller}"]["PUT"]['parameters']>) => client.request("/cluster/sdn/controllers/{controller}", "PUT", {
-                    ...args,
+                update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/controllers/{controller}"]["PUT"]['parameters']>>) => client.request("/cluster/sdn/controllers/{controller}", "PUT", {
+                    ...((args[0]) as any),
                     $path: {controller}
                 }),
             })
@@ -5555,7 +5565,7 @@ export default (client: Client) => ({
              * Parameters:
              * - `type` (query, optional, "powerdns"): Only list sdn dns of specific type
              */
-            index: (args: ClusterAPI["/cluster/sdn/dns"]["GET"]['parameters']) => client.request("/cluster/sdn/dns", "GET", args),
+            index: (...args: ArgsTuple<ClusterAPI["/cluster/sdn/dns"]["GET"]['parameters']>) => client.request("/cluster/sdn/dns", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/sdn/dns"]["GET"]['parameters']),
             /**
              * Create a new sdn dns object.
              * @endpoint POST /cluster/sdn/dns
@@ -5573,7 +5583,7 @@ export default (client: Client) => ({
              * - `type` (body, required, "powerdns"): Plugin type.
              * - `url` (body, required, string)
              */
-            create: (args: ClusterAPI["/cluster/sdn/dns"]["POST"]['parameters']) => client.request("/cluster/sdn/dns", "POST", args),
+            create: (...args: ArgsTuple<ClusterAPI["/cluster/sdn/dns"]["POST"]['parameters']>) => client.request("/cluster/sdn/dns", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/sdn/dns"]["POST"]['parameters']),
             dns: (dns: string) => ({
                 /**
                  * Delete sdn dns object configuration.
@@ -5585,8 +5595,8 @@ export default (client: Client) => ({
                  * - `dns` (path, required, string): The SDN dns object identifier.
                  * - `lock-token` (query, optional, string): the token for unlocking the global SDN configuration
                  */
-                delete_: (args: PathContext<ClusterAPI["/cluster/sdn/dns/{dns}"]["DELETE"]['parameters']>) => client.request("/cluster/sdn/dns/{dns}", "DELETE", {
-                    ...args,
+                delete_: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/dns/{dns}"]["DELETE"]['parameters']>>) => client.request("/cluster/sdn/dns/{dns}", "DELETE", {
+                    ...((args[0]) as any),
                     $path: {dns}
                 }),
                 /**
@@ -5598,8 +5608,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `dns` (path, required, string): The SDN dns object identifier.
                  */
-                read: (args: PathContext<ClusterAPI["/cluster/sdn/dns/{dns}"]["GET"]['parameters']>) => client.request("/cluster/sdn/dns/{dns}", "GET", {
-                    ...args,
+                read: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/dns/{dns}"]["GET"]['parameters']>>) => client.request("/cluster/sdn/dns/{dns}", "GET", {
+                    ...((args[0]) as any),
                     $path: {dns}
                 }),
                 /**
@@ -5619,8 +5629,8 @@ export default (client: Client) => ({
                  * - `ttl` (body, optional, number)
                  * - `url` (body, optional, string)
                  */
-                update: (args: PathContext<ClusterAPI["/cluster/sdn/dns/{dns}"]["PUT"]['parameters']>) => client.request("/cluster/sdn/dns/{dns}", "PUT", {
-                    ...args,
+                update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/dns/{dns}"]["PUT"]['parameters']>>) => client.request("/cluster/sdn/dns/{dns}", "PUT", {
+                    ...((args[0]) as any),
                     $path: {dns}
                 }),
             })
@@ -5632,7 +5642,7 @@ export default (client: Client) => ({
              * @allowToken 1
              * @permissions {"check": ["perm", "/sdn/fabrics", ["SDN.Audit"]]}
              */
-            index: (args: ClusterAPI["/cluster/sdn/fabrics"]["GET"]['parameters']) => client.request("/cluster/sdn/fabrics", "GET", args),
+            index: (...args: ArgsTuple<ClusterAPI["/cluster/sdn/fabrics"]["GET"]['parameters']>) => client.request("/cluster/sdn/fabrics", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/sdn/fabrics"]["GET"]['parameters']),
             /**
              * SDN Fabrics Index
              * @endpoint GET /cluster/sdn/fabrics/all
@@ -5643,7 +5653,7 @@ export default (client: Client) => ({
              * - `pending` (query, optional, boolean): Display pending config.
              * - `running` (query, optional, boolean): Display running config.
              */
-            all: (args: ClusterAPI["/cluster/sdn/fabrics/all"]["GET"]['parameters']) => client.request("/cluster/sdn/fabrics/all", "GET", args),
+            all: (...args: ArgsTuple<ClusterAPI["/cluster/sdn/fabrics/all"]["GET"]['parameters']>) => client.request("/cluster/sdn/fabrics/all", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/sdn/fabrics/all"]["GET"]['parameters']),
             fabric: {
                 /**
                  * SDN Fabrics Index
@@ -5655,7 +5665,7 @@ export default (client: Client) => ({
                  * - `pending` (query, optional, boolean): Display pending config.
                  * - `running` (query, optional, boolean): Display running config.
                  */
-                index: (args: ClusterAPI["/cluster/sdn/fabrics/fabric"]["GET"]['parameters']) => client.request("/cluster/sdn/fabrics/fabric", "GET", args),
+                index: (...args: ArgsTuple<ClusterAPI["/cluster/sdn/fabrics/fabric"]["GET"]['parameters']>) => client.request("/cluster/sdn/fabrics/fabric", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/sdn/fabrics/fabric"]["GET"]['parameters']),
                 /**
                  * Add a fabric
                  * @endpoint POST /cluster/sdn/fabrics/fabric
@@ -5673,7 +5683,7 @@ export default (client: Client) => ({
                  * - `lock-token` (body, optional, string): the token for unlocking the global SDN configuration
                  * - `protocol` (body, required, "openfabric" | "ospf"): Type of configuration entry in an SDN Fabric section config
                  */
-                add_fabric: (args: ClusterAPI["/cluster/sdn/fabrics/fabric"]["POST"]['parameters']) => client.request("/cluster/sdn/fabrics/fabric", "POST", args),
+                add_fabric: (...args: ArgsTuple<ClusterAPI["/cluster/sdn/fabrics/fabric"]["POST"]['parameters']>) => client.request("/cluster/sdn/fabrics/fabric", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/sdn/fabrics/fabric"]["POST"]['parameters']),
                 id: (id: string) => ({
                     /**
                      * Add a fabric
@@ -5684,8 +5694,8 @@ export default (client: Client) => ({
                      * Parameters:
                      * - `id` (path, required, string): Identifier for SDN fabrics
                      */
-                    delete: (args: PathContext<ClusterAPI["/cluster/sdn/fabrics/fabric/{id}"]["DELETE"]['parameters']>) => client.request("/cluster/sdn/fabrics/fabric/{id}", "DELETE", {
-                        ...args,
+                    delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/fabrics/fabric/{id}"]["DELETE"]['parameters']>>) => client.request("/cluster/sdn/fabrics/fabric/{id}", "DELETE", {
+                        ...((args[0]) as any),
                         $path: {id}
                     }),
                     /**
@@ -5697,8 +5707,8 @@ export default (client: Client) => ({
                      * Parameters:
                      * - `id` (path, required, string): Identifier for SDN fabrics
                      */
-                    get: (args: PathContext<ClusterAPI["/cluster/sdn/fabrics/fabric/{id}"]["GET"]['parameters']>) => client.request("/cluster/sdn/fabrics/fabric/{id}", "GET", {
-                        ...args,
+                    get: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/fabrics/fabric/{id}"]["GET"]['parameters']>>) => client.request("/cluster/sdn/fabrics/fabric/{id}", "GET", {
+                        ...((args[0]) as any),
                         $path: {id}
                     }),
                     /**
@@ -5719,8 +5729,8 @@ export default (client: Client) => ({
                      * - `lock-token` (body, optional, string): the token for unlocking the global SDN configuration
                      * - `protocol` (body, required, "openfabric" | "ospf"): Type of configuration entry in an SDN Fabric section config
                      */
-                    update: (args: PathContext<ClusterAPI["/cluster/sdn/fabrics/fabric/{id}"]["PUT"]['parameters']>) => client.request("/cluster/sdn/fabrics/fabric/{id}", "PUT", {
-                        ...args,
+                    update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/fabrics/fabric/{id}"]["PUT"]['parameters']>>) => client.request("/cluster/sdn/fabrics/fabric/{id}", "PUT", {
+                        ...((args[0]) as any),
                         $path: {id}
                     }),
                 })
@@ -5736,7 +5746,7 @@ export default (client: Client) => ({
                  * - `pending` (query, optional, boolean): Display pending config.
                  * - `running` (query, optional, boolean): Display running config.
                  */
-                list_nodes: (args: ClusterAPI["/cluster/sdn/fabrics/node"]["GET"]['parameters']) => client.request("/cluster/sdn/fabrics/node", "GET", args),
+                list_nodes: (...args: ArgsTuple<ClusterAPI["/cluster/sdn/fabrics/node"]["GET"]['parameters']>) => client.request("/cluster/sdn/fabrics/node", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/sdn/fabrics/node"]["GET"]['parameters']),
                 fabric_id: (fabric_id: string) => ({
                     /**
                      * SDN Fabrics Index
@@ -5749,8 +5759,8 @@ export default (client: Client) => ({
                      * - `pending` (query, optional, boolean): Display pending config.
                      * - `running` (query, optional, boolean): Display running config.
                      */
-                    list_nodes_fabric: (args: PathContext<ClusterAPI["/cluster/sdn/fabrics/node/{fabric_id}"]["GET"]['parameters']>) => client.request("/cluster/sdn/fabrics/node/{fabric_id}", "GET", {
-                        ...args,
+                    list_nodes_fabric: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/fabrics/node/{fabric_id}"]["GET"]['parameters']>>) => client.request("/cluster/sdn/fabrics/node/{fabric_id}", "GET", {
+                        ...((args[0]) as any),
                         $path: {fabric_id}
                     }),
                     /**
@@ -5769,8 +5779,8 @@ export default (client: Client) => ({
                      * - `node_id` (body, required, string): Identifier for nodes in an SDN fabric
                      * - `protocol` (body, required, "openfabric" | "ospf"): Type of configuration entry in an SDN Fabric section config
                      */
-                    add_node: (args: PathContext<ClusterAPI["/cluster/sdn/fabrics/node/{fabric_id}"]["POST"]['parameters']>) => client.request("/cluster/sdn/fabrics/node/{fabric_id}", "POST", {
-                        ...args,
+                    add_node: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/fabrics/node/{fabric_id}"]["POST"]['parameters']>>) => client.request("/cluster/sdn/fabrics/node/{fabric_id}", "POST", {
+                        ...((args[0]) as any),
                         $path: {fabric_id}
                     }),
                     node: (node_id: string) => ({
@@ -5784,8 +5794,8 @@ export default (client: Client) => ({
                          * - `fabric_id` (path, required, string): Identifier for SDN fabrics
                          * - `node_id` (path, required, string): Identifier for nodes in an SDN fabric
                          */
-                        delete: (args: PathContext<ClusterAPI["/cluster/sdn/fabrics/node/{fabric_id}/{node_id}"]["DELETE"]['parameters']>) => client.request("/cluster/sdn/fabrics/node/{fabric_id}/{node_id}", "DELETE", {
-                            ...args,
+                        delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/fabrics/node/{fabric_id}/{node_id}"]["DELETE"]['parameters']>>) => client.request("/cluster/sdn/fabrics/node/{fabric_id}/{node_id}", "DELETE", {
+                            ...((args[0]) as any),
                             $path: {
                                 node_id,
                                 fabric_id
@@ -5801,8 +5811,8 @@ export default (client: Client) => ({
                          * - `fabric_id` (path, required, string): Identifier for SDN fabrics
                          * - `node_id` (path, required, string): Identifier for nodes in an SDN fabric
                          */
-                        get: (args: PathContext<ClusterAPI["/cluster/sdn/fabrics/node/{fabric_id}/{node_id}"]["GET"]['parameters']>) => client.request("/cluster/sdn/fabrics/node/{fabric_id}/{node_id}", "GET", {
-                            ...args,
+                        get: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/fabrics/node/{fabric_id}/{node_id}"]["GET"]['parameters']>>) => client.request("/cluster/sdn/fabrics/node/{fabric_id}/{node_id}", "GET", {
+                            ...((args[0]) as any),
                             $path: {
                                 node_id,
                                 fabric_id
@@ -5825,8 +5835,8 @@ export default (client: Client) => ({
                          * - `node_id` (path, required, string): Identifier for nodes in an SDN fabric
                          * - `protocol` (body, required, "openfabric" | "ospf"): Type of configuration entry in an SDN Fabric section config
                          */
-                        update: (args: PathContext<ClusterAPI["/cluster/sdn/fabrics/node/{fabric_id}/{node_id}"]["PUT"]['parameters']>) => client.request("/cluster/sdn/fabrics/node/{fabric_id}/{node_id}", "PUT", {
-                            ...args,
+                        update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/fabrics/node/{fabric_id}/{node_id}"]["PUT"]['parameters']>>) => client.request("/cluster/sdn/fabrics/node/{fabric_id}/{node_id}", "PUT", {
+                            ...((args[0]) as any),
                             $path: {
                                 node_id,
                                 fabric_id
@@ -5846,7 +5856,7 @@ export default (client: Client) => ({
              * Parameters:
              * - `type` (query, optional, "netbox" | "phpipam" | "pve"): Only list sdn ipams of specific type
              */
-            index: (args: ClusterAPI["/cluster/sdn/ipams"]["GET"]['parameters']) => client.request("/cluster/sdn/ipams", "GET", args),
+            index: (...args: ArgsTuple<ClusterAPI["/cluster/sdn/ipams"]["GET"]['parameters']>) => client.request("/cluster/sdn/ipams", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/sdn/ipams"]["GET"]['parameters']),
             /**
              * Create a new sdn ipam object.
              * @endpoint POST /cluster/sdn/ipams
@@ -5862,7 +5872,7 @@ export default (client: Client) => ({
              * - `type` (body, required, "netbox" | "phpipam" | "pve"): Plugin type.
              * - `url` (body, optional, string)
              */
-            create: (args: ClusterAPI["/cluster/sdn/ipams"]["POST"]['parameters']) => client.request("/cluster/sdn/ipams", "POST", args),
+            create: (...args: ArgsTuple<ClusterAPI["/cluster/sdn/ipams"]["POST"]['parameters']>) => client.request("/cluster/sdn/ipams", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/sdn/ipams"]["POST"]['parameters']),
             ipam: (ipam: string) => ({
                 /**
                  * Delete sdn ipam object configuration.
@@ -5874,8 +5884,8 @@ export default (client: Client) => ({
                  * - `ipam` (path, required, string): The SDN ipam object identifier.
                  * - `lock-token` (query, optional, string): the token for unlocking the global SDN configuration
                  */
-                delete: (args: PathContext<ClusterAPI["/cluster/sdn/ipams/{ipam}"]["DELETE"]['parameters']>) => client.request("/cluster/sdn/ipams/{ipam}", "DELETE", {
-                    ...args,
+                delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/ipams/{ipam}"]["DELETE"]['parameters']>>) => client.request("/cluster/sdn/ipams/{ipam}", "DELETE", {
+                    ...((args[0]) as any),
                     $path: {ipam}
                 }),
                 /**
@@ -5887,8 +5897,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `ipam` (path, required, string): The SDN ipam object identifier.
                  */
-                read: (args: PathContext<ClusterAPI["/cluster/sdn/ipams/{ipam}"]["GET"]['parameters']>) => client.request("/cluster/sdn/ipams/{ipam}", "GET", {
-                    ...args,
+                read: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/ipams/{ipam}"]["GET"]['parameters']>>) => client.request("/cluster/sdn/ipams/{ipam}", "GET", {
+                    ...((args[0]) as any),
                     $path: {ipam}
                 }),
                 /**
@@ -5907,8 +5917,8 @@ export default (client: Client) => ({
                  * - `token` (body, optional, string)
                  * - `url` (body, optional, string)
                  */
-                update: (args: PathContext<ClusterAPI["/cluster/sdn/ipams/{ipam}"]["PUT"]['parameters']>) => client.request("/cluster/sdn/ipams/{ipam}", "PUT", {
-                    ...args,
+                update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/ipams/{ipam}"]["PUT"]['parameters']>>) => client.request("/cluster/sdn/ipams/{ipam}", "PUT", {
+                    ...((args[0]) as any),
                     $path: {ipam}
                 }),
                 /**
@@ -5920,8 +5930,8 @@ export default (client: Client) => ({
                  * Parameters:
                  * - `ipam` (path, required, string): The SDN ipam object identifier.
                  */
-                status: (args: PathContext<ClusterAPI["/cluster/sdn/ipams/{ipam}/status"]["GET"]['parameters']>) => client.request("/cluster/sdn/ipams/{ipam}/status", "GET", {
-                    ...args,
+                status: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/ipams/{ipam}/status"]["GET"]['parameters']>>) => client.request("/cluster/sdn/ipams/{ipam}/status", "GET", {
+                    ...((args[0]) as any),
                     $path: {ipam}
                 }),
             })
@@ -5937,7 +5947,7 @@ export default (client: Client) => ({
              * - `force` (query, optional, boolean): if true, allow releasing lock without providing the token
              * - `lock-token` (query, optional, string): the token for unlocking the global SDN configuration
              */
-            release_lock: (args: ClusterAPI["/cluster/sdn/lock"]["DELETE"]['parameters']) => client.request("/cluster/sdn/lock", "DELETE", args),
+            release_lock: (...args: ArgsTuple<ClusterAPI["/cluster/sdn/lock"]["DELETE"]['parameters']>) => client.request("/cluster/sdn/lock", "DELETE", (args[0] ?? {}) as ClusterAPI["/cluster/sdn/lock"]["DELETE"]['parameters']),
             /**
              * Acquire global lock for SDN configuration
              * @endpoint POST /cluster/sdn/lock
@@ -5947,7 +5957,7 @@ export default (client: Client) => ({
              * Parameters:
              * - `allow-pending` (body, optional, boolean): if true, allow acquiring lock even though there are pending changes
              */
-            lock: (args: ClusterAPI["/cluster/sdn/lock"]["POST"]['parameters']) => client.request("/cluster/sdn/lock", "POST", args)
+            lock: (...args: ArgsTuple<ClusterAPI["/cluster/sdn/lock"]["POST"]['parameters']>) => client.request("/cluster/sdn/lock", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/sdn/lock"]["POST"]['parameters'])
         },
         rollback: {
             /**
@@ -5960,7 +5970,7 @@ export default (client: Client) => ({
              * - `lock-token` (body, optional, string): the token for unlocking the global SDN configuration
              * - `release-lock` (body, optional, boolean): When lock-token has been provided and configuration successfully rollbacked, release the lock automatically afterwards
              */
-            rollback: (args: ClusterAPI["/cluster/sdn/rollback"]["POST"]['parameters']) => client.request("/cluster/sdn/rollback", "POST", args)
+            rollback: (...args: ArgsTuple<ClusterAPI["/cluster/sdn/rollback"]["POST"]['parameters']>) => client.request("/cluster/sdn/rollback", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/sdn/rollback"]["POST"]['parameters'])
         },
         vnets: {
             /**
@@ -5973,7 +5983,7 @@ export default (client: Client) => ({
              * - `pending` (query, optional, boolean): Display pending config.
              * - `running` (query, optional, boolean): Display running config.
              */
-            index: (args: ClusterAPI["/cluster/sdn/vnets"]["GET"]['parameters']) => client.request("/cluster/sdn/vnets", "GET", args),
+            index: (...args: ArgsTuple<ClusterAPI["/cluster/sdn/vnets"]["GET"]['parameters']>) => client.request("/cluster/sdn/vnets", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/sdn/vnets"]["GET"]['parameters']),
             /**
              * Create a new sdn vnet object.
              * @endpoint POST /cluster/sdn/vnets
@@ -5990,7 +6000,7 @@ export default (client: Client) => ({
              * - `vnet` (body, required, string): The SDN vnet object identifier.
              * - `zone` (body, required, string): Name of the zone this VNet belongs to.
              */
-            create: (args: ClusterAPI["/cluster/sdn/vnets"]["POST"]['parameters']) => client.request("/cluster/sdn/vnets", "POST", args),
+            create: (...args: ArgsTuple<ClusterAPI["/cluster/sdn/vnets"]["POST"]['parameters']>) => client.request("/cluster/sdn/vnets", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/sdn/vnets"]["POST"]['parameters']),
             vnet: (vnet: string) => ({
                 /**
                  * Delete sdn vnet object configuration.
@@ -6002,8 +6012,8 @@ export default (client: Client) => ({
                  * - `lock-token` (query, optional, string): the token for unlocking the global SDN configuration
                  * - `vnet` (path, required, string): The SDN vnet object identifier.
                  */
-                delete: (args: PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}"]["DELETE"]['parameters']>) => client.request("/cluster/sdn/vnets/{vnet}", "DELETE", {
-                    ...args,
+                delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}"]["DELETE"]['parameters']>>) => client.request("/cluster/sdn/vnets/{vnet}", "DELETE", {
+                    ...((args[0]) as any),
                     $path: {vnet}
                 }),
                 /**
@@ -6017,8 +6027,8 @@ export default (client: Client) => ({
                  * - `running` (query, optional, boolean): Display running config.
                  * - `vnet` (path, required, string): The SDN vnet object identifier.
                  */
-                read: (args: PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}"]["GET"]['parameters']>) => client.request("/cluster/sdn/vnets/{vnet}", "GET", {
-                    ...args,
+                read: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}"]["GET"]['parameters']>>) => client.request("/cluster/sdn/vnets/{vnet}", "GET", {
+                    ...((args[0]) as any),
                     $path: {vnet}
                 }),
                 /**
@@ -6038,8 +6048,8 @@ export default (client: Client) => ({
                  * - `vnet` (path, required, string): The SDN vnet object identifier.
                  * - `zone` (body, optional, string): Name of the zone this VNet belongs to.
                  */
-                update: (args: PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}"]["PUT"]['parameters']>) => client.request("/cluster/sdn/vnets/{vnet}", "PUT", {
-                    ...args,
+                update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}"]["PUT"]['parameters']>>) => client.request("/cluster/sdn/vnets/{vnet}", "PUT", {
+                    ...((args[0]) as any),
                     $path: {vnet}
                 }),
                 firewall: {
@@ -6051,8 +6061,8 @@ export default (client: Client) => ({
                      * Parameters:
                      * - `vnet` (path, required, string): The SDN vnet object identifier.
                      */
-                    index: (args: PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/firewall"]["GET"]['parameters']>) => client.request("/cluster/sdn/vnets/{vnet}/firewall", "GET", {
-                        ...args,
+                    index: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/firewall"]["GET"]['parameters']>>) => client.request("/cluster/sdn/vnets/{vnet}/firewall", "GET", {
+                        ...((args[0]) as any),
                         $path: {vnet}
                     }),
                     options: {
@@ -6065,8 +6075,8 @@ export default (client: Client) => ({
                          * Parameters:
                          * - `vnet` (path, required, string): The SDN vnet object identifier.
                          */
-                        get: (args: PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/firewall/options"]["GET"]['parameters']>) => client.request("/cluster/sdn/vnets/{vnet}/firewall/options", "GET", {
-                            ...args,
+                        get: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/firewall/options"]["GET"]['parameters']>>) => client.request("/cluster/sdn/vnets/{vnet}/firewall/options", "GET", {
+                            ...((args[0]) as any),
                             $path: {vnet}
                         }),
                         /**
@@ -6083,8 +6093,8 @@ export default (client: Client) => ({
                          * - `policy_forward` (body, optional, "ACCEPT" | "DROP"): Forward policy.
                          * - `vnet` (path, required, string): The SDN vnet object identifier.
                          */
-                        set: (args: ClusterAPI["/cluster/sdn/vnets/{vnet}/firewall/options"]["PUT"]['parameters']) => client.request("/cluster/sdn/vnets/{vnet}/firewall/options", "PUT", {
-                            ...args,
+                        set: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/firewall/options"]["PUT"]['parameters']>>) => client.request("/cluster/sdn/vnets/{vnet}/firewall/options", "PUT", {
+                            ...((args[0]) as any),
                             $path: {vnet}
                         }),
                     },
@@ -6098,8 +6108,8 @@ export default (client: Client) => ({
                          * Parameters:
                          * - `vnet` (path, required, string): The SDN vnet object identifier.
                          */
-                        list: (args: PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/firewall/rules"]["GET"]['parameters']>) => client.request("/cluster/sdn/vnets/{vnet}/firewall/rules", "GET", {
-                            ...args,
+                        list: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/firewall/rules"]["GET"]['parameters']>>) => client.request("/cluster/sdn/vnets/{vnet}/firewall/rules", "GET", {
+                            ...((args[0]) as any),
                             $path: {vnet}
                         }),
                         /**
@@ -6126,8 +6136,8 @@ export default (client: Client) => ({
                          * - `type` (body, required, "in" | "out" | "forward" | "group"): Rule type.
                          * - `vnet` (path, required, string): The SDN vnet object identifier.
                          */
-                        create: (args: PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/firewall/rules"]["POST"]['parameters']>) => client.request("/cluster/sdn/vnets/{vnet}/firewall/rules", "POST", {
-                            ...args,
+                        create: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/firewall/rules"]["POST"]['parameters']>>) => client.request("/cluster/sdn/vnets/{vnet}/firewall/rules", "POST", {
+                            ...((args[0]) as any),
                             $path: {vnet}
                         }),
                         rule: (pos: number) => ({
@@ -6142,8 +6152,8 @@ export default (client: Client) => ({
                              * - `pos` (path, optional, number): Update rule at position <pos>.
                              * - `vnet` (path, required, string): The SDN vnet object identifier.
                              */
-                            delete: (args: PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/firewall/rules/{pos}"]["DELETE"]['parameters']>) => client.request("/cluster/sdn/vnets/{vnet}/firewall/rules/{pos}", "DELETE", {
-                                ...args,
+                            delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/firewall/rules/{pos}"]["DELETE"]['parameters']>>) => client.request("/cluster/sdn/vnets/{vnet}/firewall/rules/{pos}", "DELETE", {
+                                ...((args[0]) as any),
                                 $path: {vnet, pos}
                             }),
                             /**
@@ -6156,8 +6166,8 @@ export default (client: Client) => ({
                              * - `pos` (path, optional, number): Update rule at position <pos>.
                              * - `vnet` (path, required, string): The SDN vnet object identifier.
                              */
-                            get: (args: PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/firewall/rules/{pos}"]["GET"]['parameters']>) => client.request("/cluster/sdn/vnets/{vnet}/firewall/rules/{pos}", "GET", {
-                                ...args,
+                            get: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/firewall/rules/{pos}"]["GET"]['parameters']>>) => client.request("/cluster/sdn/vnets/{vnet}/firewall/rules/{pos}", "GET", {
+                                ...((args[0]) as any),
                                 $path: {vnet, pos}
                             }),
                             /**
@@ -6186,8 +6196,8 @@ export default (client: Client) => ({
                              * - `type` (body, optional, "in" | "out" | "forward" | "group"): Rule type.
                              * - `vnet` (path, required, string): The SDN vnet object identifier.
                              */
-                            update: (args: PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/firewall/rules/{pos}"]["PUT"]['parameters']>) => client.request("/cluster/sdn/vnets/{vnet}/firewall/rules/{pos}", "PUT", {
-                                ...args,
+                            update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/firewall/rules/{pos}"]["PUT"]['parameters']>>) => client.request("/cluster/sdn/vnets/{vnet}/firewall/rules/{pos}", "PUT", {
+                                ...((args[0]) as any),
                                 $path: {vnet, pos}
                             }),
                         })
@@ -6206,8 +6216,8 @@ export default (client: Client) => ({
                      * - `vnet` (path, required, string): The SDN vnet object identifier.
                      * - `zone` (query, required, string): The SDN zone object identifier.
                      */
-                    delete: (args: PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/ips"]["DELETE"]['parameters']>) => client.request("/cluster/sdn/vnets/{vnet}/ips", "DELETE", {
-                        ...args,
+                    delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/ips"]["DELETE"]['parameters']>>) => client.request("/cluster/sdn/vnets/{vnet}/ips", "DELETE", {
+                        ...((args[0]) as any),
                         $path: {vnet}
                     }),
                     /**
@@ -6222,8 +6232,8 @@ export default (client: Client) => ({
                      * - `vnet` (path, required, string): The SDN vnet object identifier.
                      * - `zone` (body, required, string): The SDN zone object identifier.
                      */
-                    create: (args: PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/ips"]["POST"]['parameters']>) => client.request("/cluster/sdn/vnets/{vnet}/ips", "POST", {
-                        ...args,
+                    create: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/ips"]["POST"]['parameters']>>) => client.request("/cluster/sdn/vnets/{vnet}/ips", "POST", {
+                        ...((args[0]) as any),
                         $path: {vnet}
                     }),
                     /**
@@ -6239,8 +6249,8 @@ export default (client: Client) => ({
                      * - `vnet` (path, required, string): The SDN vnet object identifier.
                      * - `zone` (body, required, string): The SDN zone object identifier.
                      */
-                    update: (args: PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/ips"]["PUT"]['parameters']>) => client.request("/cluster/sdn/vnets/{vnet}/ips", "PUT", {
-                        ...args,
+                    update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/ips"]["PUT"]['parameters']>>) => client.request("/cluster/sdn/vnets/{vnet}/ips", "PUT", {
+                        ...((args[0]) as any),
                         $path: {vnet}
                     }),
                 },
@@ -6256,8 +6266,8 @@ export default (client: Client) => ({
                      * - `running` (query, optional, boolean): Display running config.
                      * - `vnet` (path, required, string): The SDN vnet object identifier.
                      */
-                    index: (args: PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/subnets"]["GET"]['parameters']>) => client.request("/cluster/sdn/vnets/{vnet}/subnets", "GET", {
-                        ...args,
+                    index: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/subnets"]["GET"]['parameters']>>) => client.request("/cluster/sdn/vnets/{vnet}/subnets", "GET", {
+                        ...((args[0]) as any),
                         $path: {vnet}
                     }),
                     /**
@@ -6277,8 +6287,8 @@ export default (client: Client) => ({
                      * - `type` (body, required, "subnet")
                      * - `vnet` (path, required, string): associated vnet
                      */
-                    create: (args: PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/subnets"]["POST"]['parameters']>) => client.request("/cluster/sdn/vnets/{vnet}/subnets", "POST", {
-                        ...args,
+                    create: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/subnets"]["POST"]['parameters']>>) => client.request("/cluster/sdn/vnets/{vnet}/subnets", "POST", {
+                        ...((args[0]) as any),
                         $path: {vnet}
                     }),
                     subnet: (subnet: string) => ({
@@ -6293,8 +6303,8 @@ export default (client: Client) => ({
                          * - `subnet` (path, required, string): The SDN subnet object identifier.
                          * - `vnet` (path, required, string): The SDN vnet object identifier.
                          */
-                        delete: (args: PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/subnets/{subnet}"]["DELETE"]['parameters']>) => client.request("/cluster/sdn/vnets/{vnet}/subnets/{subnet}", "DELETE", {
-                            ...args,
+                        delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/subnets/{subnet}"]["DELETE"]['parameters']>>) => client.request("/cluster/sdn/vnets/{vnet}/subnets/{subnet}", "DELETE", {
+                            ...((args[0]) as any),
                             $path: {vnet, subnet}
                         }),
                         /**
@@ -6309,8 +6319,8 @@ export default (client: Client) => ({
                          * - `subnet` (path, required, string): The SDN subnet object identifier.
                          * - `vnet` (path, required, string): The SDN vnet object identifier.
                          */
-                        read: (args: PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/subnets/{subnet}"]["GET"]['parameters']>) => client.request("/cluster/sdn/vnets/{vnet}/subnets/{subnet}", "GET", {
-                            ...args,
+                        read: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/subnets/{subnet}"]["GET"]['parameters']>>) => client.request("/cluster/sdn/vnets/{vnet}/subnets/{subnet}", "GET", {
+                            ...((args[0]) as any),
                             $path: {vnet, subnet}
                         }),
                         /**
@@ -6331,8 +6341,8 @@ export default (client: Client) => ({
                          * - `subnet` (path, required, string): The SDN subnet object identifier.
                          * - `vnet` (path, optional, string): associated vnet
                          */
-                        update: (args: PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/subnets/{subnet}"]["PUT"]['parameters']>) => client.request("/cluster/sdn/vnets/{vnet}/subnets/{subnet}", "PUT", {
-                            ...args,
+                        update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/vnets/{vnet}/subnets/{subnet}"]["PUT"]['parameters']>>) => client.request("/cluster/sdn/vnets/{vnet}/subnets/{subnet}", "PUT", {
+                            ...((args[0]) as any),
                             $path: {vnet, subnet}
                         }),
                     })
@@ -6351,7 +6361,7 @@ export default (client: Client) => ({
              * - `running` (query, optional, boolean): Display running config.
              * - `type` (query, optional, "evpn" | "faucet" | "qinq" | "simple" | "vlan" | "vxlan"): Only list SDN zones of specific type
              */
-            index: (args: ClusterAPI["/cluster/sdn/zones"]["GET"]['parameters']) => client.request("/cluster/sdn/zones", "GET", args),
+            index: (...args: ArgsTuple<ClusterAPI["/cluster/sdn/zones"]["GET"]['parameters']>) => client.request("/cluster/sdn/zones", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/sdn/zones"]["GET"]['parameters']),
             /**
              * Create a new sdn zone object.
              * @endpoint POST /cluster/sdn/zones
@@ -6387,7 +6397,7 @@ export default (client: Client) => ({
              * - `vxlan-port` (body, optional, number): UDP port that should be used for the VXLAN tunnel (default 4789).
              * - `zone` (body, required, string): The SDN zone object identifier.
              */
-            create: (args: ClusterAPI["/cluster/sdn/zones"]["POST"]['parameters']) => client.request("/cluster/sdn/zones", "POST", args),
+            create: (...args: ArgsTuple<ClusterAPI["/cluster/sdn/zones"]["POST"]['parameters']>) => client.request("/cluster/sdn/zones", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/sdn/zones"]["POST"]['parameters']),
             zone: (zone: string) => ({
                 /**
                  * Delete sdn zone object configuration.
@@ -6399,8 +6409,8 @@ export default (client: Client) => ({
                  * - `lock-token` (query, optional, string): the token for unlocking the global SDN configuration
                  * - `zone` (path, required, string): The SDN zone object identifier.
                  */
-                delete_: (args: PathContext<ClusterAPI["/cluster/sdn/zones/{zone}"]["DELETE"]['parameters']>) => client.request("/cluster/sdn/zones/{zone}", "DELETE", {
-                    ...args,
+                delete_: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/zones/{zone}"]["DELETE"]['parameters']>>) => client.request("/cluster/sdn/zones/{zone}", "DELETE", {
+                    ...((args[0]) as any),
                     $path: {zone}
                 }),
                 /**
@@ -6414,8 +6424,8 @@ export default (client: Client) => ({
                  * - `running` (query, optional, boolean): Display running config.
                  * - `zone` (path, required, string): The SDN zone object identifier.
                  */
-                read: (args: PathContext<ClusterAPI["/cluster/sdn/zones/{zone}"]["GET"]['parameters']>) => client.request("/cluster/sdn/zones/{zone}", "GET", {
-                    ...args,
+                read: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/zones/{zone}"]["GET"]['parameters']>>) => client.request("/cluster/sdn/zones/{zone}", "GET", {
+                    ...((args[0]) as any),
                     $path: {zone}
                 }),
                 /**
@@ -6454,8 +6464,8 @@ export default (client: Client) => ({
                  * - `vxlan-port` (body, optional, number): UDP port that should be used for the VXLAN tunnel (default 4789).
                  * - `zone` (path, required, string): The SDN zone object identifier.
                  */
-                update: (args: PathContext<ClusterAPI["/cluster/sdn/zones/{zone}"]["PUT"]['parameters']>) => client.request("/cluster/sdn/zones/{zone}", "PUT", {
-                    ...args,
+                update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/sdn/zones/{zone}"]["PUT"]['parameters']>>) => client.request("/cluster/sdn/zones/{zone}", "PUT", {
+                    ...((args[0]) as any),
                     $path: {zone}
                 }),
             })
@@ -6467,12 +6477,12 @@ export default (client: Client) => ({
      * @allowToken 1
      * @permissions {"check": ["perm", "/", ["Sys.Audit"]]}
      */
-    status: (args: ClusterAPI["/cluster/status"]["GET"]['parameters']) => client.request("/cluster/status", "GET", args),
+    status: (...args: ArgsTuple<ClusterAPI["/cluster/status"]["GET"]['parameters']>) => client.request("/cluster/status", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/status"]["GET"]['parameters']),
     /**
      * List recent tasks (cluster wide).
      * @endpoint GET /cluster/tasks
      * @allowToken 1
      * @permissions {"user": "all"}
      */
-    tasks: (args: ClusterAPI["/cluster/tasks"]["GET"]['parameters']) => client.request("/cluster/tasks", "GET", args)
+    tasks: (...args: ArgsTuple<ClusterAPI["/cluster/tasks"]["GET"]['parameters']>) => client.request("/cluster/tasks", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/tasks"]["GET"]['parameters'])
 }) as const

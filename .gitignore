@@ -142,6 +142,8 @@ vite.config.ts.timestamp-*
 .vscode
 res
 
+old
+
 # Generated stuff
 generated
 
