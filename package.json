@@ -24,7 +24,7 @@
     "example/auth": "tsx --env-file=.env examples/auth.ts",
     "example/terminal": "tsx --env-file=.env examples/terminal-local.ts",
     "example/tasks": "tsx --env-file=.env examples/tasks-live.ts",
-    "docs:build": "typedoc src/index.ts --out generated/docs --name \"pve-client 🔔\" --theme default --excludePrivate --excludeProtected"
+    "docs:build": "typedoc src/index.ts --out generated/docs --theme default --excludePrivate --excludeProtected"
   },
   "repository": {
     "type": "git",
