@@ -1,6 +1,6 @@
 {
   "name": "pve-client",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Proxmox Typescript API Client",
   "main": "./dist/index.es.js",
   "module": "./dist/index.es.js",
