@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/AlexanderSlaa/pve-client/compare/v1.0.0...v1.1.0) (2026-04-09)
+
+
+### Features
+
+* added lxc and qemu methods on node. ([3010e82](https://github.com/AlexanderSlaa/pve-client/commit/3010e8242c89742243ffde75375ce932230d7390))
+
 # 1.0.0 (2026-02-25)
 
 
