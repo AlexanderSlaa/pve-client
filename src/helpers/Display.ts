@@ -1,5 +1,4 @@
 import EventEmitter from "node:events";
-import type {ClusterAPI} from "../api/cluster";
 import type {Client} from "../index";
 import WS, {type RawData} from "ws";
 

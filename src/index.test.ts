@@ -37,7 +37,7 @@ describe("Client", () => {
                     headers: {"content-type": "application/json"},
                 }
             )
-        );
+        ) as typeof fetch;
         const client = new Client({
             baseUrl: "https://pve.local",
             username: "root",
@@ -144,6 +144,157 @@ describe("Client", () => {
         expect(() => client.helpers.terminal(101)).toThrow(
             "Terminal helper requires username/password auth in Proxmox and is not supported with API tokens."
         );
+    });
+
+    it("exposes create methods for both lxc and qemu nodes APIs", async () => {
+        const client = new Client({
+            baseUrl: "https://pve.local",
+            apiToken: "token",
+            fetch: vi.fn(),
+        });
+        const requestSpy = vi.spyOn(client, "request").mockResolvedValue("UPID:test" as never);
+
+        await client.api.nodes.get("pve1").lxc.create({
+            $body: {ostemplate: "local:vztmpl/debian.tar.zst", vmid: 100},
+        } as never);
+        await client.api.nodes.get("pve1").qemu.create({
+            $body: {vmid: 101},
+        } as never);
+
+        expect(requestSpy).toHaveBeenNthCalledWith(
+            1,
+            "/nodes/{node}/lxc",
+            "POST",
+            expect.objectContaining({
+                $path: {node: "pve1"},
+                $body: {ostemplate: "local:vztmpl/debian.tar.zst", vmid: 100},
+            })
+        );
+        expect(requestSpy).toHaveBeenNthCalledWith(
+            2,
+            "/nodes/{node}/qemu",
+            "POST",
+            expect.objectContaining({
+                $path: {node: "pve1"},
+                $body: {vmid: 101},
+            })
+        );
+    });
+
+    it("wires inline lxc node methods to the expected endpoints", async () => {
+        const client = new Client({
+            baseUrl: "https://pve.local",
+            apiToken: "token",
+            fetch: vi.fn(),
+        });
+        const requestSpy = vi.spyOn(client, "request").mockResolvedValue({} as never);
+        const lxc = client.api.nodes.get("pve1").lxc.id(100);
+
+        await lxc.destroy({$query: {force: true}} as never);
+        await lxc.diridx({} as never);
+        await lxc.clone({$body: {newid: 101}} as never);
+        await lxc.config.get({$query: {current: true}} as never);
+        await lxc.config.update({$body: {memory: 2048}} as never);
+        await lxc.interfaces({} as never);
+        await lxc.status.current({} as never);
+        await lxc.status.start({$body: {debug: true}} as never);
+        await lxc.termproxy({} as never);
+        await lxc.vncproxy({$body: {websocket: true}} as never);
+        await lxc.vncwebsocket({$query: {port: 5900, vncticket: "ticket"}} as never);
+
+        expect(requestSpy).toHaveBeenCalledWith("/nodes/{node}/lxc/{vmid}", "DELETE", expect.objectContaining({
+            $path: {node: "pve1", vmid: 100},
+        }));
+        expect(requestSpy).toHaveBeenCalledWith("/nodes/{node}/lxc/{vmid}", "GET", expect.objectContaining({
+            $path: {node: "pve1", vmid: 100},
+        }));
+        expect(requestSpy).toHaveBeenCalledWith("/nodes/{node}/lxc/{vmid}/clone", "POST", expect.objectContaining({
+            $path: {node: "pve1", vmid: 100},
+        }));
+        expect(requestSpy).toHaveBeenCalledWith("/nodes/{node}/lxc/{vmid}/config", "GET", expect.objectContaining({
+            $path: {node: "pve1", vmid: 100},
+        }));
+        expect(requestSpy).toHaveBeenCalledWith("/nodes/{node}/lxc/{vmid}/config", "PUT", expect.objectContaining({
+            $path: {node: "pve1", vmid: 100},
+        }));
+        expect(requestSpy).toHaveBeenCalledWith("/nodes/{node}/lxc/{vmid}/interfaces", "GET", expect.objectContaining({
+            $path: {node: "pve1", vmid: 100},
+        }));
+        expect(requestSpy).toHaveBeenCalledWith("/nodes/{node}/lxc/{vmid}/status/current", "GET", expect.objectContaining({
+            $path: {node: "pve1", vmid: 100},
+        }));
+        expect(requestSpy).toHaveBeenCalledWith("/nodes/{node}/lxc/{vmid}/status/start", "POST", expect.objectContaining({
+            $path: {node: "pve1", vmid: 100},
+        }));
+        expect(requestSpy).toHaveBeenCalledWith("/nodes/{node}/lxc/{vmid}/termproxy", "POST", expect.objectContaining({
+            $path: {node: "pve1", vmid: 100},
+        }));
+        expect(requestSpy).toHaveBeenCalledWith("/nodes/{node}/lxc/{vmid}/vncproxy", "POST", expect.objectContaining({
+            $path: {node: "pve1", vmid: 100},
+        }));
+        expect(requestSpy).toHaveBeenCalledWith("/nodes/{node}/lxc/{vmid}/vncwebsocket", "GET", expect.objectContaining({
+            $path: {node: "pve1", vmid: 100},
+        }));
+    });
+
+    it("wires inline qemu node methods to the expected endpoints", async () => {
+        const client = new Client({
+            baseUrl: "https://pve.local",
+            apiToken: "token",
+            fetch: vi.fn(),
+        });
+        const requestSpy = vi.spyOn(client, "request").mockResolvedValue({} as never);
+        const qemu = client.api.nodes.get("pve1").qemu.vmid(200);
+
+        await qemu.destroy({$query: {purge: true}} as never);
+        await qemu.diridx({} as never);
+        await qemu.agent.index({} as never);
+        await qemu.clone({$body: {newid: 201}} as never);
+        await qemu.config.get({} as never);
+        await qemu.config.update_async({$body: {memory: "4096"}} as never);
+        await qemu.config.update({$body: {name: "vm-200"}} as never);
+        await qemu.status.current({} as never);
+        await qemu.status.start({$body: {skiplock: true}} as never);
+        await qemu.termproxy({$body: {serial: "serial0"}} as never);
+        await qemu.vncproxy({$body: {websocket: true}} as never);
+        await qemu.vncwebsocket({$query: {port: 5901, vncticket: "ticket"}} as never);
+
+        expect(requestSpy).toHaveBeenCalledWith("/nodes/{node}/qemu/{vmid}", "DELETE", expect.objectContaining({
+            $path: {node: "pve1", vmid: 200},
+        }));
+        expect(requestSpy).toHaveBeenCalledWith("/nodes/{node}/qemu/{vmid}", "GET", expect.objectContaining({
+            $path: {node: "pve1", vmid: 200},
+        }));
+        expect(requestSpy).toHaveBeenCalledWith("/nodes/{node}/qemu/{vmid}/agent", "GET", expect.objectContaining({
+            $path: {node: "pve1", vmid: 200},
+        }));
+        expect(requestSpy).toHaveBeenCalledWith("/nodes/{node}/qemu/{vmid}/clone", "POST", expect.objectContaining({
+            $path: {node: "pve1", vmid: 200},
+        }));
+        expect(requestSpy).toHaveBeenCalledWith("/nodes/{node}/qemu/{vmid}/config", "GET", expect.objectContaining({
+            $path: {node: "pve1", vmid: 200},
+        }));
+        expect(requestSpy).toHaveBeenCalledWith("/nodes/{node}/qemu/{vmid}/config", "POST", expect.objectContaining({
+            $path: {node: "pve1", vmid: 200},
+        }));
+        expect(requestSpy).toHaveBeenCalledWith("/nodes/{node}/qemu/{vmid}/config", "PUT", expect.objectContaining({
+            $path: {node: "pve1", vmid: 200},
+        }));
+        expect(requestSpy).toHaveBeenCalledWith("/nodes/{node}/qemu/{vmid}/status/current", "GET", expect.objectContaining({
+            $path: {node: "pve1", vmid: 200},
+        }));
+        expect(requestSpy).toHaveBeenCalledWith("/nodes/{node}/qemu/{vmid}/status/start", "POST", expect.objectContaining({
+            $path: {node: "pve1", vmid: 200},
+        }));
+        expect(requestSpy).toHaveBeenCalledWith("/nodes/{node}/qemu/{vmid}/termproxy", "POST", expect.objectContaining({
+            $path: {node: "pve1", vmid: 200},
+        }));
+        expect(requestSpy).toHaveBeenCalledWith("/nodes/{node}/qemu/{vmid}/vncproxy", "POST", expect.objectContaining({
+            $path: {node: "pve1", vmid: 200},
+        }));
+        expect(requestSpy).toHaveBeenCalledWith("/nodes/{node}/qemu/{vmid}/vncwebsocket", "GET", expect.objectContaining({
+            $path: {node: "pve1", vmid: 200},
+        }));
     });
 
     it("caches event monitors and can stop all listeners", () => {

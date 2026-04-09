@@ -4652,6 +4652,8 @@ export type NodesAPI = {
     },
 }
 
+
+
 export default (client: Client) => ({
     /**
      * Cluster node index.
@@ -5692,6 +5694,623 @@ export default (client: Client) => ({
                 $path: {node}
             }),
         },
+        lxc: {
+            /**
+             * LXC container index (per node).
+             * @endpoint GET /nodes/{node}/lxc
+             * @allowToken 1
+             * @permissions {"description": "Only list CTs where you have VM.Audit permission on /vms/<vmid>.", "user": "all"}
+             *
+             * Parameters:
+             * - `node` (path, required, string): The cluster node name.
+             */
+            list: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc", "GET", {
+                ...((args[0]) as any),
+                $path: {node}
+            }),
+            /**
+             * Create or restore a container.
+             * @endpoint POST /nodes/{node}/lxc
+             * @allowToken 1
+             * @permissions {"description": "You need 'VM.Allocate' permission on /vms/{vmid} or on the VM pool /pool/{pool}. For restore, it is enough if the user has 'VM.Backup' permission and the VM already exists. You also need 'Datastore.AllocateSpace' permissions on the storage. For privileged containers, 'Sys.Modify' permissions on '/' are required.", "user": "all"}
+             *
+             * Parameters:
+             * - `node` (path, required, string): The cluster node name.
+             * - `vmid` (body, required, number): The (unique) ID of the VM.
+             */
+            create: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc", "POST", {
+                ...((args[0]) as any),
+                $path: {node}
+            }),
+            /**
+             * Create or restore a container.
+             * @endpoint POST /nodes/{node}/lxc
+             * @allowToken 1
+             * @permissions {"description": "You need 'VM.Allocate' permission on /vms/{vmid} or on the VM pool /pool/{pool}. For restore, it is enough if the user has 'VM.Backup' permission and the VM already exists. You also need 'Datastore.AllocateSpace' permissions on the storage. For privileged containers, 'Sys.Modify' permissions on '/' are required.", "user": "all"}
+             *
+             * Parameters:
+             * - `node` (path, required, string): The cluster node name.
+             * - `vmid` (body, required, number): The (unique) ID of the VM.
+             */
+            crate: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc", "POST", {
+                ...((args[0]) as any),
+                $path: {node}
+            }),
+            /**
+             * Access a container by VMID.
+             *
+             * Parameters:
+             * - `vmid` (path-like, required, number | string): The (unique) ID of the VM.
+             */
+            id: (vmid: number | string) => ({
+                /**
+                 * Destroy the container (also delete all used files).
+                 * @endpoint DELETE /nodes/{node}/lxc/{vmid}
+                 * @allowToken 1
+                 * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.Allocate"]]}
+                 *
+                 * Parameters:
+                 * - `node` (path, required, string): The cluster node name.
+                 * - `vmid` (path, required, number): The (unique) ID of the VM.
+                 */
+                destroy: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}", "DELETE", {
+                    ...((args[0]) as any),
+                    $path: {node, vmid: parseInt(vmid.toString())}
+                }),
+                /**
+                 * Directory index.
+                 * @endpoint GET /nodes/{node}/lxc/{vmid}
+                 * @allowToken 1
+                 * @permissions {"user": "all"}
+                 *
+                 * Parameters:
+                 * - `node` (path, required, string): The cluster node name.
+                 * - `vmid` (path, required, number): The (unique) ID of the VM.
+                 */
+                diridx: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}", "GET", {
+                    ...((args[0]) as any),
+                    $path: {node, vmid: parseInt(vmid.toString())}
+                }),
+                /**
+                 * Create a container clone/copy.
+                 * @endpoint POST /nodes/{node}/lxc/{vmid}/clone
+                 * @allowToken 1
+                 * @permissions {"check": ["and", ["perm", "/vms/{vmid}", ["VM.Clone"]], ["or", ["perm", "/vms/{newid}", ["VM.Allocate"]], ["perm", "/pool/{pool}", ["VM.Allocate"], "require_param", "pool"]]]}
+                 *
+                 * Parameters:
+                 * - `node` (path, required, string): The cluster node name.
+                 * - `vmid` (path, required, number): The (unique) ID of the VM.
+                 */
+                clone: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/clone"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/clone", "POST", {
+                    ...((args[0]) as any),
+                    $path: {node, vmid: parseInt(vmid.toString())}
+                }),
+                config: {
+                    /**
+                     * Get container configuration.
+                     * @endpoint GET /nodes/{node}/lxc/{vmid}/config
+                     * @allowToken 1
+                     * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.Audit"]]}
+                     *
+                     * Parameters:
+                     * - `node` (path, required, string): The cluster node name.
+                     * - `vmid` (path, required, number): The (unique) ID of the VM.
+                     */
+                    get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/config"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/config", "GET", {
+                        ...((args[0]) as any),
+                        $path: {node, vmid: parseInt(vmid.toString())}
+                    }),
+                    /**
+                     * Set container options.
+                     * @endpoint PUT /nodes/{node}/lxc/{vmid}/config
+                     * @allowToken 1
+                     * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.Config.Disk", "VM.Config.CPU", "VM.Config.Memory", "VM.Config.Network", "VM.Config.Options"], "any", 1]}
+                     *
+                     * Parameters:
+                     * - `node` (path, required, string): The cluster node name.
+                     * - `vmid` (path, required, number): The (unique) ID of the VM.
+                     */
+                    update: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/config"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/config", "PUT", {
+                        ...((args[0]) as any),
+                        $path: {node, vmid: parseInt(vmid.toString())}
+                    }),
+                },
+                /**
+                 * Get IP addresses of the specified container interface.
+                 * @endpoint GET /nodes/{node}/lxc/{vmid}/interfaces
+                 * @allowToken 1
+                 * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.Audit"]]}
+                 *
+                 * Parameters:
+                 * - `node` (path, required, string): The cluster node name.
+                 * - `vmid` (path, required, number): The (unique) ID of the VM.
+                 */
+                interfaces: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/interfaces"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/interfaces", "GET", {
+                    ...((args[0]) as any),
+                    $path: {node, vmid: parseInt(vmid.toString())}
+                }),
+                status: {
+                    /**
+                     * Directory index.
+                     * @endpoint GET /nodes/{node}/lxc/{vmid}/status
+                     * @allowToken 1
+                     * @permissions {"user": "all"}
+                     *
+                     * Parameters:
+                     * - `node` (path, required, string): The cluster node name.
+                     * - `vmid` (path, required, number): The (unique) ID of the VM.
+                     */
+                    get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/status"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/status", "GET", {
+                        ...((args[0]) as any),
+                        $path: {node, vmid: parseInt(vmid.toString())}
+                    }),
+                    /**
+                     * Get virtual machine status.
+                     * @endpoint GET /nodes/{node}/lxc/{vmid}/status/current
+                     * @allowToken 1
+                     * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.Audit"]]}
+                     *
+                     * Parameters:
+                     * - `node` (path, required, string): The cluster node name.
+                     * - `vmid` (path, required, number): The (unique) ID of the VM.
+                     */
+                    current: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/status/current"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/status/current", "GET", {
+                        ...((args[0]) as any),
+                        $path: {node, vmid: parseInt(vmid.toString())}
+                    }),
+                    /**
+                     * Reboot the container.
+                     * @endpoint POST /nodes/{node}/lxc/{vmid}/status/reboot
+                     * @allowToken 1
+                     * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.PowerMgmt"]]}
+                     *
+                     * Parameters:
+                     * - `node` (path, required, string): The cluster node name.
+                     * - `vmid` (path, required, number): The (unique) ID of the VM.
+                     */
+                    reboot: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/status/reboot"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/status/reboot", "POST", {
+                        ...((args[0]) as any),
+                        $path: {node, vmid: parseInt(vmid.toString())}
+                    }),
+                    /**
+                     * Resume the container.
+                     * @endpoint POST /nodes/{node}/lxc/{vmid}/status/resume
+                     * @allowToken 1
+                     * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.PowerMgmt"]]}
+                     *
+                     * Parameters:
+                     * - `node` (path, required, string): The cluster node name.
+                     * - `vmid` (path, required, number): The (unique) ID of the VM.
+                     */
+                    resume: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/status/resume"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/status/resume", "POST", {
+                        ...((args[0]) as any),
+                        $path: {node, vmid: parseInt(vmid.toString())}
+                    }),
+                    /**
+                     * Shutdown the container.
+                     * @endpoint POST /nodes/{node}/lxc/{vmid}/status/shutdown
+                     * @allowToken 1
+                     * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.PowerMgmt"]]}
+                     *
+                     * Parameters:
+                     * - `node` (path, required, string): The cluster node name.
+                     * - `vmid` (path, required, number): The (unique) ID of the VM.
+                     */
+                    shutdown: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/status/shutdown"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/status/shutdown", "POST", {
+                        ...((args[0]) as any),
+                        $path: {node, vmid: parseInt(vmid.toString())}
+                    }),
+                    /**
+                     * Start the container.
+                     * @endpoint POST /nodes/{node}/lxc/{vmid}/status/start
+                     * @allowToken 1
+                     * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.PowerMgmt"]]}
+                     *
+                     * Parameters:
+                     * - `node` (path, required, string): The cluster node name.
+                     * - `vmid` (path, required, number): The (unique) ID of the VM.
+                     */
+                    start: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/status/start"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/status/start", "POST", {
+                        ...((args[0]) as any),
+                        $path: {node, vmid: parseInt(vmid.toString())}
+                    }),
+                    /**
+                     * Stop the container.
+                     * @endpoint POST /nodes/{node}/lxc/{vmid}/status/stop
+                     * @allowToken 1
+                     * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.PowerMgmt"]]}
+                     *
+                     * Parameters:
+                     * - `node` (path, required, string): The cluster node name.
+                     * - `vmid` (path, required, number): The (unique) ID of the VM.
+                     */
+                    stop: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/status/stop"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/status/stop", "POST", {
+                        ...((args[0]) as any),
+                        $path: {node, vmid: parseInt(vmid.toString())}
+                    }),
+                    /**
+                     * Suspend the container.
+                     * @endpoint POST /nodes/{node}/lxc/{vmid}/status/suspend
+                     * @allowToken 1
+                     * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.PowerMgmt"]]}
+                     *
+                     * Parameters:
+                     * - `node` (path, required, string): The cluster node name.
+                     * - `vmid` (path, required, number): The (unique) ID of the VM.
+                     */
+                    suspend: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/status/suspend"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/status/suspend", "POST", {
+                        ...((args[0]) as any),
+                        $path: {node, vmid: parseInt(vmid.toString())}
+                    }),
+                },
+                /**
+                 * Creates a TCP proxy connection.
+                 * @endpoint POST /nodes/{node}/lxc/{vmid}/termproxy
+                 * @allowToken 1
+                 * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.Console"]]}
+                 *
+                 * Parameters:
+                 * - `node` (path, required, string): The cluster node name.
+                 * - `vmid` (path, required, number): The (unique) ID of the VM.
+                 */
+                termproxy: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/termproxy"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/termproxy", "POST", {
+                    ...((args[0]) as any),
+                    $path: {node, vmid: parseInt(vmid.toString())}
+                }),
+                /**
+                 * Creates a TCP VNC proxy connection.
+                 * @endpoint POST /nodes/{node}/lxc/{vmid}/vncproxy
+                 * @allowToken 1
+                 * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.Console"]]}
+                 *
+                 * Parameters:
+                 * - `node` (path, required, string): The cluster node name.
+                 * - `vmid` (path, required, number): The (unique) ID of the VM.
+                 */
+                vncproxy: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/vncproxy"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/vncproxy", "POST", {
+                    ...((args[0]) as any),
+                    $path: {node, vmid: parseInt(vmid.toString())}
+                }),
+                /**
+                 * Opens a websocket for VNC traffic.
+                 * @endpoint GET /nodes/{node}/lxc/{vmid}/vncwebsocket
+                 * @allowToken 1
+                 * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.Console"]], "description": "You also need to pass a valid ticket (vncticket)."}
+                 *
+                 * Parameters:
+                 * - `node` (path, required, string): The cluster node name.
+                 * - `vmid` (path, required, number): The (unique) ID of the VM.
+                 */
+                vncwebsocket: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc/{vmid}/vncwebsocket"]["GET"]['parameters']>>) => client.request("/nodes/{node}/lxc/{vmid}/vncwebsocket", "GET", {
+                    ...((args[0]) as any),
+                    $path: {node, vmid: parseInt(vmid.toString())}
+                }),
+            }),
+        },
+        qemu: {
+            /**
+             * Virtual machine index (per node).
+             * @endpoint GET /nodes/{node}/qemu
+             * @allowToken 1
+             * @permissions {"description": "Only list VMs where you have VM.Audit permissions on /vms/<vmid>.", "user": "all"}
+             *
+             * Parameters:
+             * - `full` (query, optional, boolean): Determine the full status of active VMs.
+             * - `node` (path, required, string): The cluster node name.
+             */
+            list: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu", "GET", {
+                ...((args[0]) as any),
+                $path: {node}
+            }),
+            /**
+             * Create or restore a virtual machine.
+             * @endpoint POST /nodes/{node}/qemu
+             * @allowToken 1
+             * @permissions {"description": "You need 'VM.Allocate' permissions on /vms/{vmid} or on the VM pool /pool/{pool}. For restore (option 'archive'), it is enough if the user has 'VM.Backup' permission and the VM already exists. If you create disks you need 'Datastore.AllocateSpace' on any used storage.If you use a bridge/vlan, you need 'SDN.Use' on any used bridge/vlan.", "user": "all"}
+             *
+             * Parameters:
+             * - `node` (path, required, string): The cluster node name.
+             * - `vmid` (body, required, number): The (unique) ID of the VM.
+             */
+            create: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu", "POST", {
+                ...((args[0]) as any),
+                $path: {node}
+            }),
+            /**
+             * Create or restore a virtual machine.
+             * @endpoint POST /nodes/{node}/qemu
+             * @allowToken 1
+             * @permissions {"description": "You need 'VM.Allocate' permissions on /vms/{vmid} or on the VM pool /pool/{pool}. For restore (option 'archive'), it is enough if the user has 'VM.Backup' permission and the VM already exists. If you create disks you need 'Datastore.AllocateSpace' on any used storage.If you use a bridge/vlan, you need 'SDN.Use' on any used bridge/vlan.", "user": "all"}
+             *
+             * Parameters:
+             * - `node` (path, required, string): The cluster node name.
+             * - `vmid` (body, required, number): The (unique) ID of the VM.
+             */
+            create_vm: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu", "POST", {
+                ...((args[0]) as any),
+                $path: {node}
+            }),
+            /**
+             * Access a virtual machine by VMID.
+             *
+             * Parameters:
+             * - `vmid` (path-like, required, number | string): The (unique) ID of the VM.
+             */
+            vmid: (vmid: string | number) => ({
+                /**
+                 * Destroy the VM and all used/owned volumes.
+                 * @endpoint DELETE /nodes/{node}/qemu/{vmid}
+                 * @allowToken 1
+                 * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.Allocate"]]}
+                 *
+                 * Parameters:
+                 * - `node` (path, required, string): The cluster node name.
+                 * - `vmid` (path, required, number): The (unique) ID of the VM.
+                 */
+                destroy: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}"]["DELETE"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}", "DELETE", {
+                    ...((args[0]) as any),
+                    $path: {node, vmid: parseInt(vmid.toString())}
+                }),
+                /**
+                 * Directory index.
+                 * @endpoint GET /nodes/{node}/qemu/{vmid}
+                 * @allowToken 1
+                 * @permissions {"user": "all"}
+                 *
+                 * Parameters:
+                 * - `node` (path, required, string): The cluster node name.
+                 * - `vmid` (path, required, number): The (unique) ID of the VM.
+                 */
+                diridx: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}", "GET", {
+                    ...((args[0]) as any),
+                    $path: {node, vmid: parseInt(vmid.toString())}
+                }),
+                agent: {
+                    /**
+                     * QEMU Guest Agent command index.
+                     * @endpoint GET /nodes/{node}/qemu/{vmid}/agent
+                     * @allowToken 1
+                     * @permissions {"user": "all"}
+                     *
+                     * Parameters:
+                     * - `node` (path, required, string): The cluster node name.
+                     * - `vmid` (path, required, number): The (unique) ID of the VM.
+                     */
+                    index: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/agent"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/agent", "GET", {
+                        ...((args[0]) as any),
+                        $path: {node, vmid: parseInt(vmid.toString())}
+                    }),
+                },
+                /**
+                 * Create a full copy or linked clone of a virtual machine.
+                 * @endpoint POST /nodes/{node}/qemu/{vmid}/clone
+                 * @allowToken 1
+                 * @permissions {"check": ["and", ["perm", "/vms/{vmid}", ["VM.Clone"]], ["or", ["perm", "/vms/{newid}", ["VM.Allocate"]], ["perm", "/pool/{pool}", ["VM.Allocate"], "require_param", "pool"]]]}
+                 *
+                 * Parameters:
+                 * - `node` (path, required, string): The cluster node name.
+                 * - `vmid` (path, required, number): The (unique) ID of the VM.
+                 */
+                clone: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/clone"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/clone", "POST", {
+                    ...((args[0]) as any),
+                    $path: {node, vmid: parseInt(vmid.toString())}
+                }),
+                config: {
+                    /**
+                     * Get virtual machine configuration.
+                     * @endpoint GET /nodes/{node}/qemu/{vmid}/config
+                     * @allowToken 1
+                     * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.Audit"]]}
+                     *
+                     * Parameters:
+                     * - `node` (path, required, string): The cluster node name.
+                     * - `vmid` (path, required, number): The (unique) ID of the VM.
+                     */
+                    get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/config"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/config", "GET", {
+                        ...((args[0]) as any),
+                        $path: {node, vmid: parseInt(vmid.toString())}
+                    }),
+                    /**
+                     * Set virtual machine options asynchronously.
+                     * @endpoint POST /nodes/{node}/qemu/{vmid}/config
+                     * @allowToken 1
+                     * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.Config.Disk", "VM.Config.CDROM", "VM.Config.CPU", "VM.Config.Memory", "VM.Config.Network", "VM.Config.HWType", "VM.Config.Options", "VM.Config.Cloudinit"], "any", 1]}
+                     *
+                     * Parameters:
+                     * - `node` (path, required, string): The cluster node name.
+                     * - `vmid` (path, required, number): The (unique) ID of the VM.
+                     */
+                    update_async: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/config"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/config", "POST", {
+                        ...((args[0]) as any),
+                        $path: {node, vmid: parseInt(vmid.toString())}
+                    }),
+                    /**
+                     * Set virtual machine options synchronously.
+                     * @endpoint PUT /nodes/{node}/qemu/{vmid}/config
+                     * @allowToken 1
+                     * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.Config.Disk", "VM.Config.CDROM", "VM.Config.CPU", "VM.Config.Memory", "VM.Config.Network", "VM.Config.HWType", "VM.Config.Options", "VM.Config.Cloudinit"], "any", 1]}
+                     *
+                     * Parameters:
+                     * - `node` (path, required, string): The cluster node name.
+                     * - `vmid` (path, required, number): The (unique) ID of the VM.
+                     */
+                    update: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/config"]["PUT"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/config", "PUT", {
+                        ...((args[0]) as any),
+                        $path: {node, vmid: parseInt(vmid.toString())}
+                    }),
+                },
+                status: {
+                    /**
+                     * Directory index.
+                     * @endpoint GET /nodes/{node}/qemu/{vmid}/status
+                     * @allowToken 1
+                     * @permissions {"user": "all"}
+                     *
+                     * Parameters:
+                     * - `node` (path, required, string): The cluster node name.
+                     * - `vmid` (path, required, number): The (unique) ID of the VM.
+                     */
+                    get: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/status", "GET", {
+                        ...((args[0]) as any),
+                        $path: {node, vmid: parseInt(vmid.toString())}
+                    }),
+                    /**
+                     * Get virtual machine status.
+                     * @endpoint GET /nodes/{node}/qemu/{vmid}/status/current
+                     * @allowToken 1
+                     * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.Audit"]]}
+                     *
+                     * Parameters:
+                     * - `node` (path, required, string): The cluster node name.
+                     * - `vmid` (path, required, number): The (unique) ID of the VM.
+                     */
+                    current: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status/current"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/status/current", "GET", {
+                        ...((args[0]) as any),
+                        $path: {node, vmid: parseInt(vmid.toString())}
+                    }),
+                    /**
+                     * Reboot virtual machine.
+                     * @endpoint POST /nodes/{node}/qemu/{vmid}/status/reboot
+                     * @allowToken 1
+                     * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.PowerMgmt"]]}
+                     *
+                     * Parameters:
+                     * - `node` (path, required, string): The cluster node name.
+                     * - `vmid` (path, required, number): The (unique) ID of the VM.
+                     */
+                    reboot: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status/reboot"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/status/reboot", "POST", {
+                        ...((args[0]) as any),
+                        $path: {node, vmid: parseInt(vmid.toString())}
+                    }),
+                    /**
+                     * Reset virtual machine.
+                     * @endpoint POST /nodes/{node}/qemu/{vmid}/status/reset
+                     * @allowToken 1
+                     * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.PowerMgmt"]]}
+                     *
+                     * Parameters:
+                     * - `node` (path, required, string): The cluster node name.
+                     * - `vmid` (path, required, number): The (unique) ID of the VM.
+                     */
+                    reset: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status/reset"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/status/reset", "POST", {
+                        ...((args[0]) as any),
+                        $path: {node, vmid: parseInt(vmid.toString())}
+                    }),
+                    /**
+                     * Resume virtual machine.
+                     * @endpoint POST /nodes/{node}/qemu/{vmid}/status/resume
+                     * @allowToken 1
+                     * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.PowerMgmt"]]}
+                     *
+                     * Parameters:
+                     * - `node` (path, required, string): The cluster node name.
+                     * - `vmid` (path, required, number): The (unique) ID of the VM.
+                     */
+                    resume: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status/resume"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/status/resume", "POST", {
+                        ...((args[0]) as any),
+                        $path: {node, vmid: parseInt(vmid.toString())}
+                    }),
+                    /**
+                     * Shutdown virtual machine.
+                     * @endpoint POST /nodes/{node}/qemu/{vmid}/status/shutdown
+                     * @allowToken 1
+                     * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.PowerMgmt"]]}
+                     *
+                     * Parameters:
+                     * - `node` (path, required, string): The cluster node name.
+                     * - `vmid` (path, required, number): The (unique) ID of the VM.
+                     */
+                    shutdown: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status/shutdown"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/status/shutdown", "POST", {
+                        ...((args[0]) as any),
+                        $path: {node, vmid: parseInt(vmid.toString())}
+                    }),
+                    /**
+                     * Start virtual machine.
+                     * @endpoint POST /nodes/{node}/qemu/{vmid}/status/start
+                     * @allowToken 1
+                     * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.PowerMgmt"]]}
+                     *
+                     * Parameters:
+                     * - `node` (path, required, string): The cluster node name.
+                     * - `vmid` (path, required, number): The (unique) ID of the VM.
+                     */
+                    start: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status/start"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/status/start", "POST", {
+                        ...((args[0]) as any),
+                        $path: {node, vmid: parseInt(vmid.toString())}
+                    }),
+                    /**
+                     * Stop virtual machine.
+                     * @endpoint POST /nodes/{node}/qemu/{vmid}/status/stop
+                     * @allowToken 1
+                     * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.PowerMgmt"]]}
+                     *
+                     * Parameters:
+                     * - `node` (path, required, string): The cluster node name.
+                     * - `vmid` (path, required, number): The (unique) ID of the VM.
+                     */
+                    stop: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status/stop"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/status/stop", "POST", {
+                        ...((args[0]) as any),
+                        $path: {node, vmid: parseInt(vmid.toString())}
+                    }),
+                    /**
+                     * Suspend virtual machine.
+                     * @endpoint POST /nodes/{node}/qemu/{vmid}/status/suspend
+                     * @allowToken 1
+                     * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.PowerMgmt"]]}
+                     *
+                     * Parameters:
+                     * - `node` (path, required, string): The cluster node name.
+                     * - `vmid` (path, required, number): The (unique) ID of the VM.
+                     */
+                    suspend: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/status/suspend"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/status/suspend", "POST", {
+                        ...((args[0]) as any),
+                        $path: {node, vmid: parseInt(vmid.toString())}
+                    }),
+                },
+                /**
+                 * Creates a TCP proxy connection.
+                 * @endpoint POST /nodes/{node}/qemu/{vmid}/termproxy
+                 * @allowToken 1
+                 * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.Console"]]}
+                 *
+                 * Parameters:
+                 * - `node` (path, required, string): The cluster node name.
+                 * - `vmid` (path, required, number): The (unique) ID of the VM.
+                 */
+                termproxy: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/termproxy"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/termproxy", "POST", {
+                    ...((args[0]) as any),
+                    $path: {node, vmid: parseInt(vmid.toString())}
+                }),
+                /**
+                 * Creates a TCP VNC proxy connection.
+                 * @endpoint POST /nodes/{node}/qemu/{vmid}/vncproxy
+                 * @allowToken 1
+                 * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.Console"]]}
+                 *
+                 * Parameters:
+                 * - `node` (path, required, string): The cluster node name.
+                 * - `vmid` (path, required, number): The (unique) ID of the VM.
+                 */
+                vncproxy: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/vncproxy"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/vncproxy", "POST", {
+                    ...((args[0]) as any),
+                    $path: {node, vmid: parseInt(vmid.toString())}
+                }),
+                /**
+                 * Opens a websocket for VNC traffic.
+                 * @endpoint GET /nodes/{node}/qemu/{vmid}/vncwebsocket
+                 * @allowToken 1
+                 * @permissions {"check": ["perm", "/vms/{vmid}", ["VM.Console"]], "description": "You also need to pass a valid ticket (vncticket)."}
+                 *
+                 * Parameters:
+                 * - `node` (path, required, string): The cluster node name.
+                 * - `vmid` (path, required, number): The (unique) ID of the VM.
+                 */
+                vncwebsocket: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu/{vmid}/vncwebsocket"]["GET"]['parameters']>>) => client.request("/nodes/{node}/qemu/{vmid}/vncwebsocket", "GET", {
+                    ...((args[0]) as any),
+                    $path: {node, vmid: parseInt(vmid.toString())}
+                }),
+            }),
+        },
         disks: {
             /**
              * Node index.
@@ -6405,6 +7024,10 @@ export default (client: Client) => ({
                  * - `unused[n]` (body, optional, string): Reference to unused volumes. This is used internally, and should not be modified manually.
                  * - `vmid` (body, required, number): The (unique) ID of the VM.
                  */
+                create: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc", "POST", {
+                    ...((args[0]) as any),
+                    $path: {node}
+                }),
                 crate: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/lxc"]["POST"]['parameters']>>) => client.request("/nodes/{node}/lxc", "POST", {
                     ...((args[0]) as any),
                     $path: {node}
@@ -7794,6 +8417,10 @@ export default (client: Client) => ({
                  * - `vmstatestorage` (body, optional, string): Default storage for VM state volumes/files.
                  * - `watchdog` (body, optional, string): Create a virtual hardware watchdog device.
                  */
+                create: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu", "POST", {
+                    ...((args[0]) as any),
+                    $path: {node}
+                }),
                 create_vm: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/qemu"]["POST"]['parameters']>>) => client.request("/nodes/{node}/qemu", "POST", {
                     ...((args[0]) as any),
                     $path: {node}
@@ -10881,6 +11508,7 @@ export default (client: Client) => ({
                 ...((args[0]) as any),
                 $path: {node}
             }),
-        }
+        },
+        //TODO: LXC en Qemu hier toevoegen.
     })
 }) as const
