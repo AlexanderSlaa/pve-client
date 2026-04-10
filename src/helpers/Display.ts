@@ -71,7 +71,7 @@ export class DisplaySession extends EventEmitter<{
         });
     }
 
-    write(data: string | Buffer | Uint8Array) {
+    write(data: string | Buffer | Uint8Array): boolean {
         if (this.socket.readyState !== WS.OPEN) return false;
         this.socket.send(data);
         return true;
@@ -104,7 +104,7 @@ export class Display {
     ) {
     }
 
-    get ticket() {
+    get ticket(): DisplayTicket | undefined {
         return this.cachedTicket;
     }
 

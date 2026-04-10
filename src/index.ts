@@ -58,6 +58,15 @@ export type TaskSubscription = {
     readonly stopped: boolean;
 };
 
+export type APIClient = {
+    access: ReturnType<typeof Access>;
+    cluster: ReturnType<typeof Cluster>;
+    nodes: ReturnType<typeof Nodes>;
+    pools: ReturnType<typeof Pools>;
+    storage: ReturnType<typeof Storage>;
+    version: ReturnType<typeof Version>;
+};
+
 
 export class Client {
     private readonly baseUrl: string;
@@ -167,7 +176,7 @@ export class Client {
             upid: string,
             handler: TaskUpdateHandler = async () => undefined,
             checkInterval = 2000
-        ) =>
+        ): Promise<string[]> =>
             new Promise<string[]>((resolve, reject) => {
                 const subscription = this.task.listen(
                     upid,
@@ -196,7 +205,7 @@ export class Client {
     };
 
     public readonly helpers = {
-        terminal: (vmid: string | number) => {
+        terminal: (vmid: string | number): Terminal => {
             if ("apiToken" in this.opts) {
                 throw new Error(
                     "Terminal helper requires username/password auth in Proxmox and is not supported with API tokens."
@@ -204,7 +213,7 @@ export class Client {
             }
             return new Terminal(vmid, this);
         },
-        display: (vmid: string | number) => new Display(vmid, this),
+        display: (vmid: string | number): Display => new Display(vmid, this),
     };
 
     public readonly events = {
@@ -247,7 +256,7 @@ export class Client {
             return monitor;
         },
 
-        stopListening: () => {
+        stopListening: (): void => {
             for (const monitor of this.eventMonitors.values()) {
                 monitor.destroy();
             }
@@ -259,7 +268,15 @@ export class Client {
         this.opts = options;
         this.baseUrl = options.baseUrl.replace(/\/+$/, "");
         this.apiPath = (options.apiPath ?? "/api2/json").replace(/\/+$/, "");
-        this.fetchImpl = options.fetch ?? (options.agent ? native_fetch : globalThis.fetch.bind(globalThis));
+        if (options.fetch) {
+            this.fetchImpl = options.fetch;
+        } else if (options.agent) {
+            this.fetchImpl = native_fetch;
+        } else if (typeof globalThis.fetch === "function") {
+            this.fetchImpl = globalThis.fetch.bind(globalThis);
+        } else {
+            this.fetchImpl = native_fetch;
+        }
         this.api = createAPI(this);
     }
 
@@ -277,6 +294,10 @@ export class Client {
         const data: any = await this.request("/access/ticket", 'POST', {
             $body: {username: this.opts.username, password: this.opts.password, realm} as any,
         } as any);
+
+        if (!data?.ticket || !data?.CSRFPreventionToken) {
+            throw new Error("Invalid login response: missing ticket or CSRFPreventionToken.");
+        }
 
         this.auth.ticket = data?.ticket;
         this.auth.csrf = data?.CSRFPreventionToken;
@@ -358,6 +379,11 @@ export class Client {
             }
         }
 
+        const unresolvedPathParams = urlPath.match(/\{[^}]+\}/g);
+        if (unresolvedPathParams) {
+            throw new Error(`Missing path parameters for ${String(path)}: ${unresolvedPathParams.join(", ")}`);
+        }
+
         const url = this.buildUrl(urlPath, a.$query);
         const headers = this.authHeaders(a.$headers);
 
@@ -408,9 +434,7 @@ export class Client {
 
 }
 
-export type APIClient = ReturnType<typeof createAPI>;
-
-export function createAPI(client: Client) {
+export function createAPI(client: Client): APIClient {
     return (
         {
             access: Access(client),

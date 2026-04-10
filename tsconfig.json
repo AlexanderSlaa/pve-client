@@ -10,6 +10,7 @@
       "DOM.Iterable"
     ],
     "declaration": true,
+    "emitDeclarationOnly": true,
     "sourceMap": true,
     "outDir": "dist",
     "rootDir": "src",

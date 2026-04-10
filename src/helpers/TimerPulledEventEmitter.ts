@@ -62,7 +62,7 @@ export class TimerPulledEventEmitter<T extends EventValueMap> extends EventEmitt
         this.start();
     }
 
-    get interval() {
+    get interval(): number {
         return this.pollInterval;
     }
 

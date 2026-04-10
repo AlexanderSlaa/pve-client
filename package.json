@@ -2,9 +2,13 @@
   "name": "pve-client",
   "version": "1.1.0",
   "description": "Proxmox Typescript API Client",
-  "main": "./dist/index.es.js",
+  "main": "./dist/index.cjs.js",
   "module": "./dist/index.es.js",
   "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -56,6 +60,7 @@
     "@semantic-release/git": "^10.0.1",
     "@semantic-release/npm": "^13.1.4",
     "@semantic-release/release-notes-generator": "^14.1.0",
+    "@sourceregistry/semantic-release-jsr": "^1.1.1",
     "@types/node": "^25.3.0",
     "@types/ws": "^8.18.1",
     "@vitest/coverage-v8": "^4.0.18",
@@ -63,7 +68,7 @@
     "tsx": "^4.20.4",
     "typedoc": "^0.28.17",
     "typescript": "^5.9.3",
-    "vite": "^7.3.0",
+    "vite": "^8.0.8",
     "vite-plugin-dts": "^4.5.4",
     "vitest": "^4.0.18"
   },
@@ -76,11 +81,13 @@
       "@semantic-release/release-notes-generator",
       "@semantic-release/changelog",
       "@semantic-release/npm",
+      "@sourceregistry/semantic-release-jsr",
       [
         "@semantic-release/git",
         {
           "assets": [
             "package.json",
+            "jsr.json",
             "CHANGELOG.md"
           ],
           "message": "pve-client(release): 🚀 ${nextRelease.version} \n\n${nextRelease.notes}"

@@ -37,7 +37,7 @@ describe("Client", () => {
                     headers: {"content-type": "application/json"},
                 }
             )
-        ) as typeof fetch;
+        ) as typeof globalThis.fetch;
         const client = new Client({
             baseUrl: "https://pve.local",
             username: "root",
@@ -53,6 +53,24 @@ describe("Client", () => {
         expect(init.method).toBe("POST");
         expect((init.headers as Record<string, string>)["Content-Type"]).toBe("application/x-www-form-urlencoded");
         expect(String(init.body)).toContain("realm=pam");
+    });
+
+    it("fails login when ticket response is malformed", async () => {
+        const client = new Client({
+            baseUrl: "https://pve.local",
+            username: "root",
+            password: "pass",
+            fetch: vi.fn(async () =>
+                new Response(JSON.stringify({data: {ticket: "ticket-only"}}), {
+                    status: 200,
+                    headers: {"content-type": "application/json"},
+                })
+            ) as typeof fetch,
+        });
+
+        await expect(client.login()).rejects.toThrow(
+            "Invalid login response: missing ticket or CSRFPreventionToken."
+        );
     });
 
     it("throws on unsuccessful HTTP responses", async () => {
@@ -89,6 +107,20 @@ describe("Client", () => {
 
         expect(json).toEqual({release: "8.2"});
         expect(text).toBe("plain-text");
+    });
+
+    it("throws when path placeholders remain unresolved", async () => {
+        const client = new Client({
+            baseUrl: "https://pve.local",
+            apiToken: "token",
+            fetch: vi.fn(),
+        });
+
+        await expect(
+            client.request("/nodes/{node}/tasks/{upid}/status", "GET", {
+                $path: {node: "pve1"},
+            } as never)
+        ).rejects.toThrow("Missing path parameters for /nodes/{node}/tasks/{upid}/status: {upid}");
     });
 
     it("waits for task completion and resolves merged logs", async () => {

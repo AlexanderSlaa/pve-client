@@ -1,4 +1,4 @@
-import { PathContext } from ".";
+import {PathContext} from "./index";
 import type {ArgsTuple} from "./index";
 import {Client} from "../index";
 
