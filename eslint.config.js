@@ -11,7 +11,7 @@ export default [
     languageOptions: {
       parser: tsparser,
       parserOptions: {
-        project: "./tsconfig.json",
+        project: "./tsconfig.eslint.json",
         sourceType: "module",
         ecmaVersion: "latest"
       },
@@ -24,5 +24,28 @@ export default [
       "@typescript-eslint/no-unused-vars": "warn",
       "@typescript-eslint/explicit-module-boundary-types": "off"
     },
+  },
+  {
+    files: ["examples/*.ts"],
+    languageOptions: {
+      parser: tsparser,
+      parserOptions: {
+        project: "./tsconfig.eslint.json",
+        sourceType: "module",
+        ecmaVersion: "latest"
+      },
+      globals: {
+        process: "readonly",
+        console: "readonly",
+        require: "readonly",
+        __dirname: "readonly",
+        module: "readonly",
+        Buffer: "readonly",
+        setInterval: "readonly",
+        NodeJS: "readonly",
+        fetch: "readonly"
+      }
+    },
+    rules: {}
   },
 ];

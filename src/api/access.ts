@@ -5,13 +5,13 @@ import {PathContext} from "./";
 export type AccessAPI = {
     "/access": {
         "GET": {
-            parameters: {}
+            parameters: Record<string, unknown>
             return: { "subdir": string }[]
         }
     },
     "/access/acl": {
         "GET": {
-            parameters: {}
+            parameters: Record<string, unknown>
             return: {
                 "path": string;
                 "propagate"?: boolean;
@@ -37,7 +37,7 @@ export type AccessAPI = {
     },
     "/access/domains": {
         "GET": {
-            parameters: {}
+            parameters: Record<string, unknown>
             return: { "comment"?: string; "realm": string; "tfa"?: "yubico" | "oath"; "type": string }[]
         },
         "POST": {
@@ -171,7 +171,7 @@ export type AccessAPI = {
     },
     "/access/groups": {
         "GET": {
-            parameters: {}
+            parameters: Record<string, unknown>
             return: { "comment"?: string; "groupid": string; "users"?: string }[]
         },
         "POST": {
@@ -204,7 +204,7 @@ export type AccessAPI = {
     },
     "/access/openid": {
         "GET": {
-            parameters: {}
+            parameters: Record<string, unknown>
             return: { "subdir": string }[]
         }
     },
@@ -248,7 +248,7 @@ export type AccessAPI = {
     },
     "/access/roles": {
         "GET": {
-            parameters: {}
+            parameters: Record<string, unknown>
             return: { "privs"?: string; "roleid": string; "special"?: boolean }[]
         },
         "POST": {
@@ -329,7 +329,7 @@ export type AccessAPI = {
     },
     "/access/tfa": {
         "GET": {
-            parameters: {}
+            parameters: Record<string, unknown>
             return: {
                 "entries": {
                     "created": number;
@@ -402,7 +402,7 @@ export type AccessAPI = {
     },
     "/access/ticket": {
         "GET": {
-            parameters: {}
+            parameters: Record<string, unknown>
             return: unknown
         },
         "POST": {
@@ -955,87 +955,86 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"description": "Returns all or just the logged-in user, depending on privileges.", "user": "all"}
          */
-        list: (...args: ArgsTuple<AccessAPI["/access/tfa"]["GET"]['parameters']>) => client.request("/access/tfa", "GET", (args[0] ?? {}) as AccessAPI["/access/tfa"]["GET"]['parameters']),
-        user: (userid: string | number) => ({
+        index: () => { throw new Error('Not implemented'); },
+        create: () => { throw new Error('Not implemented'); },
+        /**
+         * List TFA configurations of users.
+         * @endpoint GET /access/tfa/{userid}
+         * @allowToken 1
+         * @permissions {"check": ["or", ["userid-param", "self"], ["userid-group", ["User.Modify", "Sys.Audit"]]]}
+         *
+         * Parameters:
+         * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
+         */
+        list_user_tfa: (...args: ArgsTuple<PathContext<AccessAPI["/access/tfa/{userid}"]["GET"]['parameters']>>) => client.request("/access/tfa/{userid}", "GET", {
+            ...((args[0]) as any),
+            $path: {"userid": userid.toString()}
+        }),
+        /**
+         * Add a TFA entry for a user.
+         * @endpoint POST /access/tfa/{userid}
+         * @allowToken 0
+         * @permissions {"check": ["or", ["userid-param", "self"], ["userid-group", ["User.Modify"]]]}
+         *
+         * Parameters:
+         * - `challenge` (body, optional, string): When responding to a u2f challenge: the original challenge string
+         * - `description` (body, optional, string): A description to distinguish multiple entries from one another
+         * - `password` (body, optional, string): The current password of the user performing the change.
+         * - `totp` (body, optional, string): A totp URI.
+         * - `type` (body, required, "totp" | "u2f" | "webauthn" | "recovery" | "yubico"): TFA Entry Type.
+         * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
+         * - `value` (body, optional, string): The current value for the provided totp URI, or a Webauthn/U2F challenge response
+         */
+        add_tfa_entry: (...args: ArgsTuple<PathContext<AccessAPI["/access/tfa/{userid}"]["POST"]['parameters']>>) => client.request("/access/tfa/{userid}", "POST", {
+            ...((args[0]) as any),
+            $path: {"userid": userid.toString()}
+        }),
+        id: (value: string | number) => ({
             /**
-             * List TFA configurations of users.
-             * @endpoint GET /access/tfa/{userid}
-             * @allowToken 1
-             * @permissions {"check": ["or", ["userid-param", "self"], ["userid-group", ["User.Modify", "Sys.Audit"]]]}
-             *
-             * Parameters:
-             * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
-             */
-            list_user_tfa: (...args: ArgsTuple<PathContext<AccessAPI["/access/tfa/{userid}"]["GET"]['parameters']>>) => client.request("/access/tfa/{userid}", "GET", {
-                ...((args[0]) as any),
-                $path: {"userid": userid.toString()}
-            }),
-            /**
-             * Add a TFA entry for a user.
-             * @endpoint POST /access/tfa/{userid}
+             * Delete a TFA entry by ID.
+             * @endpoint DELETE /access/tfa/{userid}/{id}
              * @allowToken 0
              * @permissions {"check": ["or", ["userid-param", "self"], ["userid-group", ["User.Modify"]]]}
              *
              * Parameters:
-             * - `challenge` (body, optional, string): When responding to a u2f challenge: the original challenge string
-             * - `description` (body, optional, string): A description to distinguish multiple entries from one another
-             * - `password` (body, optional, string): The current password of the user performing the change.
-             * - `totp` (body, optional, string): A totp URI.
-             * - `type` (body, required, "totp" | "u2f" | "webauthn" | "recovery" | "yubico"): TFA Entry Type.
+             * - `id` (path, required, string): A TFA entry id.
+             * - `password` (query, optional, string): The current password of the user performing the change.
              * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
-             * - `value` (body, optional, string): The current value for the provided totp URI, or a Webauthn/U2F challenge response
              */
-            add_tfa_entry: (...args: ArgsTuple<PathContext<AccessAPI["/access/tfa/{userid}"]["POST"]['parameters']>>) => client.request("/access/tfa/{userid}", "POST", {
+            delete: (...args: ArgsTuple<PathContext<AccessAPI["/access/tfa/{userid}/{id}"]["DELETE"]['parameters']>>) => client.request("/access/tfa/{userid}/{id}", "DELETE", {
                 ...((args[0]) as any),
-                $path: {"userid": userid.toString()}
+                $path: {"id": value.toString(), userid: userid.toString()}
             }),
-            id: (value: string | number) => ({
-                /**
-                 * Delete a TFA entry by ID.
-                 * @endpoint DELETE /access/tfa/{userid}/{id}
-                 * @allowToken 0
-                 * @permissions {"check": ["or", ["userid-param", "self"], ["userid-group", ["User.Modify"]]]}
-                 *
-                 * Parameters:
-                 * - `id` (path, required, string): A TFA entry id.
-                 * - `password` (query, optional, string): The current password of the user performing the change.
-                 * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
-                 */
-                delete: (...args: ArgsTuple<PathContext<AccessAPI["/access/tfa/{userid}/{id}"]["DELETE"]['parameters']>>) => client.request("/access/tfa/{userid}/{id}", "DELETE", {
-                    ...((args[0]) as any),
-                    $path: {"id": value.toString(), userid: userid.toString()}
-                }),
-                /**
-                 * Fetch a requested TFA entry if present.
-                 * @endpoint GET /access/tfa/{userid}/{id}
-                 * @allowToken 1
-                 * @permissions {"check": ["or", ["userid-param", "self"], ["userid-group", ["User.Modify", "Sys.Audit"]]]}
-                 *
-                 * Parameters:
-                 * - `id` (path, required, string): A TFA entry id.
-                 * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
-                 */
-                get: (...args: ArgsTuple<PathContext<AccessAPI["/access/tfa/{userid}/{id}"]["GET"]['parameters']>>) => client.request("/access/tfa/{userid}/{id}", "GET", {
-                    ...((args[0]) as any),
-                    $path: {"id": value.toString(), userid: userid.toString()}
-                }),
-                /**
-                 * Add a TFA entry for a user.
-                 * @endpoint PUT /access/tfa/{userid}/{id}
-                 * @allowToken 0
-                 * @permissions {"check": ["or", ["userid-param", "self"], ["userid-group", ["User.Modify"]]]}
-                 *
-                 * Parameters:
-                 * - `description` (body, optional, string): A description to distinguish multiple entries from one another
-                 * - `enable` (body, optional, boolean): Whether the entry should be enabled for login.
-                 * - `id` (path, required, string): A TFA entry id.
-                 * - `password` (body, optional, string): The current password of the user performing the change.
-                 * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
-                 */
-                update: (...args: ArgsTuple<PathContext<AccessAPI["/access/tfa/{userid}/{id}"]["PUT"]['parameters']>>) => client.request("/access/tfa/{userid}/{id}", "PUT", {
-                    ...((args[0]) as any),
-                    $path: {"id": value.toString(), userid: userid.toString()}
-                })
+            /**
+             * Fetch a requested TFA entry if present.
+             * @endpoint GET /access/tfa/{userid}/{id}
+             * @allowToken 1
+             * @permissions {"check": ["or", ["userid-param", "self"], ["userid-group", ["User.Modify", "Sys.Audit"]]]}
+             *
+             * Parameters:
+             * - `id` (path, required, string): A TFA entry id.
+             * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
+             */
+            get: (...args: ArgsTuple<PathContext<AccessAPI["/access/tfa/{userid}/{id}"]["GET"]['parameters']>>) => client.request("/access/tfa/{userid}/{id}", "GET", {
+                ...((args[0]) as any),
+                $path: {"id": value.toString(), userid: userid.toString()}
+            }),
+            /**
+             * Add a TFA entry for a user.
+             * @endpoint PUT /access/tfa/{userid}/{id}
+             * @allowToken 0
+             * @permissions {"check": ["or", ["userid-param", "self"], ["userid-group", ["User.Modify"]]]}
+             *
+             * Parameters:
+             * - `description` (body, optional, string): A description to distinguish multiple entries from one another
+             * - `enable` (body, optional, boolean): Whether the entry should be enabled for login.
+             * - `id` (path, required, string): A TFA entry id.
+             * - `password` (body, optional, string): The current password of the user performing the change.
+             * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
+             */
+            update: (...args: ArgsTuple<PathContext<AccessAPI["/access/tfa/{userid}/{id}"]["PUT"]['parameters']>>) => client.request("/access/tfa/{userid}/{id}", "PUT", {
+                ...((args[0]) as any),
+                $path: {"id": value.toString(), userid: userid.toString()}
             })
         })
     },

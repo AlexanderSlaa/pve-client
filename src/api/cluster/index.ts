@@ -1,0 +1,16 @@
+export { acmeFactory } from "./acme.js";
+export { backupFactory } from "./backup.js";
+export { cephFactory } from "./ceph.js";
+export { firewallFactory } from "./firewall.js";
+export { haFactory } from "./ha.js";
+export { configFactory } from "./config.js";
+export { jobsFactory } from "./jobs.js";
+export { mappingFactory } from "./mapping.js";
+export { metricsFactory } from "./metrics.js";
+export { notificationsFactory } from "./notifications.js";
+export { optionsFactory } from "./options.js";
+export { replicationFactory } from "./replication.js";
+export { resourcesFactory } from "./resources.js";
+export { sdnFactory } from "./sdn.js";
+export { statusFactory } from "./status.js";
+export { tasksFactory } from "./tasks.js";
