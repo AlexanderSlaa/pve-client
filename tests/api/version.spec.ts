@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import Version from '../../src/api/version';
 import type { Client } from '../../src/index';
-import { Client } from '../../src/index';
 
 describe('Version API', () => {
   it('should export a function', () => {
@@ -15,7 +14,6 @@ describe('Version API', () => {
   });
 
   it('should handle missing client gracefully', () => {
-    import type { Client } from '../../src/index';
     expect(() => Version(undefined as unknown as Client)).not.toThrow();
   });
 
