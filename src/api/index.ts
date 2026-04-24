@@ -1,10 +1,10 @@
 // ----------------- API Mapping -----------------
-import {AccessAPI} from "./access";
-import {ClusterAPI} from "./cluster";
+import {AccessAPI} from "./access.js";
+import {ClusterAPI} from "./cluster/types.js";
 import {NodesAPI} from "./nodes/types.js";
-import {PoolsAPI} from "./pools";
-import {StorageAPI} from "./storage";
-import {VersionAPI} from "./version";
+import {PoolsAPI} from "./pools.js";
+import {StorageAPI} from "./storage.js";
+import {VersionAPI} from "./version.js";
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 

@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-import type {ArgsTuple} from "./index";
-import {PathContext} from "./index";
+import type {ArgsTuple} from "./index.js";
+import {PathContext} from "./index.js";
 
 export type StorageAPI = {
     "/storage": {

@@ -1,6 +1,6 @@
-import {Client} from "../index";
-import type {ArgsTuple} from "./index";
-import {PathContext} from "./";
+import {Client} from "../index.js";
+import type {ArgsTuple} from "./index.js";
+import type {PathContext} from "./index.js";
 
 export type AccessAPI = {
     "/access": {
@@ -966,10 +966,13 @@ export default (client: Client) => ({
          * Parameters:
          * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
          */
-        list_user_tfa: (...args: ArgsTuple<PathContext<AccessAPI["/access/tfa/{userid}"]["GET"]['parameters']>>) => client.request("/access/tfa/{userid}", "GET", {
-            ...((args[0]) as any),
-            $path: {"userid": userid.toString()}
-        }),
+        list_user_tfa: (...args: ArgsTuple<PathContext<AccessAPI["/access/tfa/{userid}"]["GET"]['parameters']>>) => {
+            const { $path } = (args[0] ?? {}) as any;
+            return client.request("/access/tfa/{userid}", "GET", {
+                ...((args[0]) as any),
+                $path: {"userid": $path?.userid?.toString() ?? ""}
+            });
+        },
         /**
          * Add a TFA entry for a user.
          * @endpoint POST /access/tfa/{userid}
@@ -985,11 +988,14 @@ export default (client: Client) => ({
          * - `userid` (path, required, string): Full User ID, in the `name@realm` format.
          * - `value` (body, optional, string): The current value for the provided totp URI, or a Webauthn/U2F challenge response
          */
-        add_tfa_entry: (...args: ArgsTuple<PathContext<AccessAPI["/access/tfa/{userid}"]["POST"]['parameters']>>) => client.request("/access/tfa/{userid}", "POST", {
-            ...((args[0]) as any),
-            $path: {"userid": userid.toString()}
-        }),
-        id: (value: string | number) => ({
+        add_tfa_entry: (...args: ArgsTuple<PathContext<AccessAPI["/access/tfa/{userid}"]["POST"]['parameters']>>) => {
+            const { $path } = (args[0] ?? {}) as any;
+            return client.request("/access/tfa/{userid}", "POST", {
+                ...((args[0]) as any),
+                $path: {"userid": $path?.userid?.toString() ?? ""}
+            });
+        },
+        id: (value: string | number, userid: string | number) => ({
             /**
              * Delete a TFA entry by ID.
              * @endpoint DELETE /access/tfa/{userid}/{id}
