@@ -1,4 +1,4 @@
-import type { ClusterAPI } from "../cluster/index.js";
+import type { ClusterAPI } from "./types.js";
 import type { ArgsTuple, PathContext } from "../index.js";
 import { Client } from "../../index.js";
 
@@ -9,7 +9,14 @@ export function configFactory(client: Client) {
     nodes: {
       index: (...args: ArgsTuple<ClusterAPI["/cluster/config/nodes"]["GET"]['parameters']>) => client.request("/cluster/config/nodes", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/config/nodes"]["GET"]['parameters']),
       node: (node: string) => ({
-        get: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/config/nodes/{node}"]["GET"]['parameters']>>) => client.request("/cluster/config/nodes/{node}", "GET", { ...((args[0]) as any), $path: { node } }),
+        get: (
+          ...args: ArgsTuple<PathContext<ClusterAPI["/cluster/config/nodes/{node}"]["GET"]['parameters']>>
+        ) =>
+          client.request(
+            "/cluster/config/nodes/{node}",
+            "GET",
+            { ...((args[0] ?? {}) as PathContext<ClusterAPI["/cluster/config/nodes/{node}"]["GET"]['parameters']>), $path: { node } }
+          ),
         // Add more node endpoints as needed
       })
     },

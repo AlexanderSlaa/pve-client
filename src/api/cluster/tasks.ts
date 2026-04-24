@@ -1,4 +1,9 @@
-// Placeholder for tasks group splitting. Add actual logic as needed.
-export function tasksFactory() {
-    throw new Error('Not implemented');
+import type { Client } from "../../index.js";
+import type { ClusterAPI } from "./types.js";
+import type { ArgsTuple } from "../index.js";
+
+export function tasksFactory(client: Client) {
+    return {
+        // Placeholder: implement endpoints as needed
+    };
 }
