@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import Storage from '../../src/api/storage';
-import type { Client } from '../../src/index';
-import { Client } from '../../src/index';
+import { Client } from '../../src/index.js';
 
 describe('Storage API', () => {
   it('should export a function', () => {
@@ -17,7 +16,6 @@ describe('Storage API', () => {
   });
 
   it('should handle missing client gracefully', () => {
-    import type { Client } from '../../src/index';
     expect(() => Storage(undefined as unknown as Client)).not.toThrow();
   });
 

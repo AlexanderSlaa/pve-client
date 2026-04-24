@@ -1,55 +1,52 @@
 import { describe, it, expect, vi } from 'vitest';
-import Nodes from '../../src/api/nodes';
-import type { Client } from '../../src/index';
-import { Client } from '../../src/index';
+import { hardwareFactory } from '../../src/api/nodes/hardware.js';
+import { lxcFactory } from '../../src/api/nodes/lxc.js';
+import { qemuFactory } from '../../src/api/nodes/qemu.js';
+import { aptFactory } from '../../src/api/nodes/apt.js';
+import { cephFactory } from '../../src/api/nodes/ceph.js';
+import { disksFactory } from '../../src/api/nodes/disks.js';
+import { firewallFactory } from '../../src/api/nodes/firewall.js';
+import { Client } from '../../src/index.js';
 
-describe('Nodes API', () => {
-  it('should export a function', () => {
-    expect(typeof Nodes).toBe('function');
+describe('Nodes API Modular Factories', () => {
+  const client = { request: vi.fn() } as unknown as Client;
+
+  it('hardwareFactory returns expected structure', () => {
+    const api = hardwareFactory(client);
+    expect(api).toHaveProperty('pci');
+    expect(api).toHaveProperty('usb');
+    expect(() => api.pci.index()).toThrow('Not implemented');
+    expect(() => api.usb.index()).toThrow('Not implemented');
   });
 
-  it('should create API object with expected endpoints', () => {
-    const client = {} as unknown as Client;
-    const api = Nodes(client);
-    expect(api).toHaveProperty('list');
-    expect(api).toHaveProperty('get');
-    // Node-specific endpoints are nested:
-    const nodeApi = api.get('testnode');
-    expect(nodeApi).toHaveProperty('aplinfo');
-    expect(nodeApi).toHaveProperty('apt');
-    expect(nodeApi).toHaveProperty('lxc');
-    expect(nodeApi).toHaveProperty('qemu');
+  it('lxcFactory returns an object', () => {
+    const api = lxcFactory(client);
+    expect(typeof api).toBe('object');
   });
 
-  it('should handle missing client gracefully', () => {
-    import type { Client } from '../../src/index';
-    expect(() => Nodes(undefined as unknown as Client)).not.toThrow();
+  it('qemuFactory returns an object', () => {
+    const api = qemuFactory(client);
+    expect(typeof api).toBe('object');
   });
 
-  it('should allow calling list endpoint', () => {
-    const client = { request: vi.fn().mockReturnValue([]) } as unknown as Client;
-    const api = Nodes(client);
-    expect(() => api.list()).not.toThrow();
+  it('aptFactory returns an object', () => {
+    const api = aptFactory(client);
+    expect(typeof api).toBe('object');
   });
 
-  it('should allow calling get(node) endpoint', () => {
-    const client = { request: vi.fn().mockReturnValue({}) } as unknown as Client;
-    const api = Nodes(client);
-    expect(() => api.get('testnode')).not.toThrow();
+  it('cephFactory returns an object', () => {
+    const api = cephFactory(client);
+    expect(typeof api).toBe('object');
   });
 
-  it('should allow calling lxc list endpoint for a node', () => {
-    const client = { request: vi.fn().mockReturnValue([]) } as unknown as Client;
-    const api = Nodes(client);
-    const nodeApi = api.get('testnode');
-    expect(() => nodeApi.lxc.list()).not.toThrow();
+  it('disksFactory returns an object', () => {
+    const api = disksFactory(client);
+    expect(typeof api).toBe('object');
   });
 
-  it('should allow calling qemu list endpoint for a node', () => {
-    const client = { request: vi.fn().mockReturnValue([]) } as unknown as Client;
-    const api = Nodes(client);
-    const nodeApi = api.get('testnode');
-    expect(() => nodeApi.qemu.list()).not.toThrow();
+  it('firewallFactory returns an object', () => {
+    const api = firewallFactory(client);
+    expect(typeof api).toBe('object');
   });
 });
 

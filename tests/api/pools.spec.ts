@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import Pools from '../../src/api/pools';
-import type { Client } from '../../src/index';
-import { Client } from '../../src/index';
+import { Client } from '../../src/index.js';
 
 describe('Pools API', () => {
   it('should export a function', () => {
@@ -20,7 +19,6 @@ describe('Pools API', () => {
   });
 
   it('should handle missing client gracefully', () => {
-    import type { Client } from '../../src/index';
     expect(() => Pools(undefined as unknown as Client)).not.toThrow();
   });
 

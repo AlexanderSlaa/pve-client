@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import Cluster from '../../src/api/cluster';
-import type { Client } from '../../src/index';
-import { Client } from '../../src/index';
+import { Client } from '../../src/index.js';
 
 describe('Cluster API', () => {
   it('should export a function', () => {
@@ -21,7 +20,6 @@ describe('Cluster API', () => {
   });
 
   it('should handle missing client gracefully', () => {
-    import type { Client } from '../../src/index';
     expect(() => Cluster(undefined as unknown as Client)).not.toThrow();
   });
 
