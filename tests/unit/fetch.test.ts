@@ -10,7 +10,7 @@ describe("native_fetch", () => {
 	});
 
 	it("sends body buffers and sets content-length automatically", async () => {
-		const requestSpy = vi.spyOn(http, "request").mockImplementation((options: any, callback: any) => {
+		const requestSpy = vi.spyOn(http, "request").mockImplementation((options: Record<string, unknown>, callback: (res: unknown) => void) => {
 			const req = new PassThrough() as PassThrough & {
 				destroy: (error?: Error) => void;
 				write: (chunk: Buffer | string) => boolean;
@@ -52,17 +52,17 @@ describe("native_fetch", () => {
 			headers: {"x-test": "yes"},
 			body: new Uint8Array([65, 66]) as unknown as BodyInit,
 		});
-		const data = await response.json() as Record<string, any>;
+		const data = await response.json() as Record<string, unknown>;
 
 		expect(data.method).toBe("POST");
 		expect(data.body).toBe("AB");
-		expect(data.headers["x-test"]).toBe("yes");
+		expect((data.headers as Record<string, unknown>)["x-test"]).toBe("yes");
 		expect(data.headers["content-length"]).toBe("2");
 		expect(requestSpy).toHaveBeenCalledOnce();
 	});
 
 	it("merges Request and init values while preferring init method/body", async () => {
-		vi.spyOn(http, "request").mockImplementation((options: any, callback: any) => {
+		vi.spyOn(http, "request").mockImplementation((options: Record<string, unknown>, callback: (res: unknown) => void) => {
 			const req = new PassThrough() as PassThrough & {
 				destroy: (error?: Error) => void;
 				write: (chunk: Buffer | string) => boolean;
@@ -111,13 +111,13 @@ describe("native_fetch", () => {
 			headers: {"x-from-init": "i1"},
 			body: "init-body",
 		});
-		const data = await response.json() as Record<string, any>;
+	const data = await response.json() as Record<string, unknown>;
 
-		expect(data.method).toBe("PUT");
-		expect(data.body).toBe("init-body");
-		expect(data.path).toBe("/merged?x=1");
-		expect(data.headers["x-from-request"]).toBe("r1");
-		expect(data.headers["x-from-init"]).toBe("i1");
+	expect(data.method).toBe("PUT");
+	expect(data.body).toBe("init-body");
+	expect(data.path).toBe("/merged?x=1");
+	expect((data.headers as Record<string, unknown>)["x-from-request"]).toBe("r1");
+	expect((data.headers as Record<string, unknown>)["x-from-init"]).toBe("i1");
 	});
 
 	it("supports abort signals", async () => {
