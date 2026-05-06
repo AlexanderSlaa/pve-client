@@ -955,8 +955,14 @@ export default (client: Client) => ({
          * @allowToken 1
          * @permissions {"description": "Returns all or just the logged-in user, depending on privileges.", "user": "all"}
          */
-        index: () => { throw new Error('Not implemented'); },
-        create: () => { throw new Error('Not implemented'); },
+        index: (...args: ArgsTuple<AccessAPI["/access/tfa"]["GET"]['parameters']>) => client.request("/access/tfa", "GET", (args[0] ?? {}) as AccessAPI["/access/tfa"]["GET"]['parameters']),
+        create: (...args: ArgsTuple<PathContext<AccessAPI["/access/tfa/{userid}"]["POST"]['parameters']>>) => {
+            const { $path } = (args[0] ?? {}) as any;
+            return client.request("/access/tfa/{userid}", "POST", {
+                ...((args[0]) as any),
+                $path: {"userid": $path?.userid?.toString() ?? ""}
+            });
+        },
         /**
          * List TFA configurations of users.
          * @endpoint GET /access/tfa/{userid}

@@ -19,8 +19,8 @@ export function acmeFactory(client: Client) {
         meta: (...args: ArgsTuple<ClusterAPI["/cluster/acme/meta"]["GET"]['parameters']>) => client.request("/cluster/acme/meta", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/acme/meta"]["GET"]['parameters']),
         plugins: {
             options: {
-                index: () => { throw new Error('Not implemented'); },
-                update: () => { throw new Error('Not implemented'); }
+                index: (...args: ArgsTuple<ClusterAPI["/cluster/acme/plugins"]["GET"]['parameters']>) => client.request("/cluster/acme/plugins", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/acme/plugins"]["GET"]['parameters']),
+                update: (...args: ArgsTuple<ClusterAPI["/cluster/acme/plugins"]["POST"]['parameters']>) => client.request("/cluster/acme/plugins", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/acme/plugins"]["POST"]['parameters'])
             },
             add: (...args: ArgsTuple<ClusterAPI["/cluster/acme/plugins"]["POST"]['parameters']>) => client.request("/cluster/acme/plugins", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/acme/plugins"]["POST"]['parameters']),
             id: (value: string | number) => ({
