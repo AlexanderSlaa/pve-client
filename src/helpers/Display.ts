@@ -118,12 +118,12 @@ export class Display {
             {
                 $path: {
                     node: vm.node,
-                    vmid: vm.vmid,
+                    vmid: typeof vm.vmid === "string" ? parseInt(vm.vmid, 10) : vm.vmid,
                 },
                 $body: {
                     websocket: true,
                 },
-            } as any
+            }
         );
         this.cachedTicket = ticket as DisplayTicket;
         return this.cachedTicket;

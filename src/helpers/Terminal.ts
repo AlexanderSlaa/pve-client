@@ -257,9 +257,9 @@ export class Terminal {
             {
                 $path: {
                     node: vm.node,
-                    vmid: vm.vmid,
+                    vmid: typeof vm.vmid === "string" ? parseInt(vm.vmid, 10) : vm.vmid,
                 },
-            } as any
+            }
         );
         this.cachedTicket = ticket as TerminalTicket;
         return this.cachedTicket;
@@ -327,7 +327,7 @@ export class Terminal {
     private async getRunningVm(): Promise<{ vmid: number; node: string; type: VMType }> {
         const resources = await this.client.request("/cluster/resources", "GET", {
             $query: {type: "vm"},
-        } as any);
+        }) as ClusterResource[];
 
         const vm = (resources as ClusterResource[]).find(
             (resource) => resource.vmid?.toString() === this.vmid.toString()

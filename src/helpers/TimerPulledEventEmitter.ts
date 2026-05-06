@@ -105,22 +105,22 @@ export class TimerPulledEventEmitter<T extends EventValueMap> extends EventEmitt
 
     on<K extends ManagedEventKey<T>>(eventName: K, listener: (value: T[K]) => void): this;
     on(eventName: "error", listener: (error: Error) => void): this;
-    on(eventName: EventKey, listener: (...args: any[]) => void): this {
-        super.on(eventName, listener);
+    on(eventName: EventKey, listener: ((...args: unknown[]) => void) | ((error: Error) => void)): this {
+        super.on(eventName, listener as (...args: unknown[]) => void);
         return this;
     }
 
     once<K extends ManagedEventKey<T>>(eventName: K, listener: (value: T[K]) => void): this;
     once(eventName: "error", listener: (error: Error) => void): this;
-    once(eventName: EventKey, listener: (...args: any[]) => void): this {
-        super.once(eventName, listener);
+    once(eventName: EventKey, listener: ((...args: unknown[]) => void) | ((error: Error) => void)): this {
+        super.once(eventName, listener as (...args: unknown[]) => void);
         return this;
     }
 
     off<K extends ManagedEventKey<T>>(eventName: K, listener: (value: T[K]) => void): this;
     off(eventName: "error", listener: (error: Error) => void): this;
-    off(eventName: EventKey, listener: (...args: any[]) => void): this {
-        super.off(eventName, listener);
+    off(eventName: EventKey, listener: ((...args: unknown[]) => void) | ((error: Error) => void)): this {
+        super.off(eventName, listener as (...args: unknown[]) => void);
         return this;
     }
 
