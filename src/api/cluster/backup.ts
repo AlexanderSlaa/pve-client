@@ -1,5 +1,3 @@
-
-import type { ArgsTuple, PathContext } from "../index.js";
 import { Client } from "../../index.js";
 
 export function backupFactory(client: Client) {

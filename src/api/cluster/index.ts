@@ -32,8 +32,9 @@ import { resourcesFactory } from "./resources.js";
 import { sdnFactory } from "./sdn.js";
 import { statusFactory } from "./status.js";
 import { tasksFactory } from "./tasks.js";
+import type { Client } from "../../index.js";
 
-function Cluster(client) {
+function Cluster(client: Client) {
 	return {
 		acme: acmeFactory(client),
 		backup: backupFactory(client),
@@ -54,7 +55,7 @@ function Cluster(client) {
 		// Add index and other endpoints as needed
 		index: () => client.request("/cluster", "GET", {}),
 		backup_info: () => client.request("/cluster/backup-info", "GET", {}),
-		bulk_action: () => client.request("/cluster/bulk-action", "POST", {}),
+		bulk_action: () => client.request("/cluster/bulk-action", "GET", {}),
 	};
 }
 

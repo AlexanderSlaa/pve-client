@@ -28,7 +28,7 @@ export function qemuFactory(client: Client) {
             client.request(
                 "/nodes/{node}/qemu",
                 "POST",
-                { $path: { node }, ...stripPath(args[0]) }
+                { $path: { node }, ...stripPath(args[0]) } as NodesAPI["/nodes/{node}/qemu"]["POST"]["parameters"]
             ),
         get: (
             node: string,
@@ -69,7 +69,7 @@ export function qemuFactory(client: Client) {
                 client.request(
                     "/nodes/{node}/qemu/{vmid}/config",
                     "PUT",
-                    { $path: { node, vmid }, ...stripPath(args[0]) }
+                    { $path: { node, vmid }, ...stripPath(args[0]) } as NodesAPI["/nodes/{node}/qemu/{vmid}/config"]["PUT"]["parameters"]
                 ),
         },
         clone: (
@@ -80,7 +80,7 @@ export function qemuFactory(client: Client) {
             client.request(
                 "/nodes/{node}/qemu/{vmid}/clone",
                 "POST",
-                { $path: { node, vmid }, ...stripPath(args[0]) }
+                { $path: { node, vmid }, ...stripPath(args[0]) } as NodesAPI["/nodes/{node}/qemu/{vmid}/clone"]["POST"]["parameters"]
             ),
         // ...repeat for all other endpoints under /nodes/{node}/qemu
         // For brevity, only a representative sample is shown here. Continue this pattern for all endpoints.

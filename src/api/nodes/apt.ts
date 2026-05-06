@@ -2,7 +2,7 @@
 import { Client } from "../../index.js";
 
 import type { NodesAPI } from "./types.js";
-import type { ArgsTuple, PathContext } from "../index.js";
+import type { ArgsTuple } from "../index.js";
 export function aptFactory(client: Client) {
     function stripPath<T extends { $path?: any }>(obj: T | undefined): Omit<T, "$path"> | undefined {
         if (!obj) return obj;
@@ -46,7 +46,7 @@ export function aptFactory(client: Client) {
                 client.request(
                     "/nodes/{node}/apt/repositories",
                     "POST",
-                    { $path: { node }, ...stripPath(args[0]) }
+                    { $path: { node }, ...stripPath(args[0]) } as NodesAPI["/nodes/{node}/apt/repositories"]["POST"]["parameters"]
                 ),
             put: (
                 node: string,
@@ -55,7 +55,7 @@ export function aptFactory(client: Client) {
                 client.request(
                     "/nodes/{node}/apt/repositories",
                     "PUT",
-                    { $path: { node }, ...stripPath(args[0]) }
+                    { $path: { node }, ...stripPath(args[0]) } as NodesAPI["/nodes/{node}/apt/repositories"]["PUT"]["parameters"]
                 ),
         },
         update: {
@@ -75,7 +75,7 @@ export function aptFactory(client: Client) {
                 client.request(
                     "/nodes/{node}/apt/update",
                     "POST",
-                    { $path: { node }, ...stripPath(args[0]) }
+                    { $path: { node }, ...stripPath(args[0]) } as NodesAPI["/nodes/{node}/apt/update"]["POST"]["parameters"]
                 ),
         },
         versions: (

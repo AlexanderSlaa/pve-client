@@ -1,6 +1,5 @@
 // Redirect all D:/Temp and /Temp references to c:/temp/vite for Vitest
 import { beforeAll } from 'vitest';
-import path from 'node:path';
 
 beforeAll(() => {
   // Patch process.env.TEMP, TMP, and TMPDIR
@@ -14,7 +13,9 @@ beforeAll(() => {
     if (os && typeof os.tmpdir === 'function') {
       os.tmpdir = () => 'c:/temp/vite';
     }
-  } catch {}
+  } catch (error) {
+    void error;
+  }
 
   // Patch globalThis if any test code uses it
   if (globalThis && typeof globalThis === 'object') {

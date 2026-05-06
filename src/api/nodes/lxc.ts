@@ -28,7 +28,7 @@ export function lxcFactory(client: Client) {
             client.request(
                 "/nodes/{node}/lxc",
                 "POST",
-                { $path: { node }, ...stripPath(args[0]) }
+                { $path: { node }, ...stripPath(args[0]) } as NodesAPI["/nodes/{node}/lxc"]["POST"]["parameters"]
             ),
         get: (
             node: string,
@@ -69,7 +69,7 @@ export function lxcFactory(client: Client) {
                 client.request(
                     "/nodes/{node}/lxc/{vmid}/config",
                     "PUT",
-                    { $path: { node, vmid }, ...stripPath(args[0]) }
+                    { $path: { node, vmid }, ...stripPath(args[0]) } as NodesAPI["/nodes/{node}/lxc/{vmid}/config"]["PUT"]["parameters"]
                 ),
         },
         clone: (
@@ -80,7 +80,7 @@ export function lxcFactory(client: Client) {
             client.request(
                 "/nodes/{node}/lxc/{vmid}/clone",
                 "POST",
-                { $path: { node, vmid }, ...stripPath(args[0]) }
+                { $path: { node, vmid }, ...stripPath(args[0]) } as NodesAPI["/nodes/{node}/lxc/{vmid}/clone"]["POST"]["parameters"]
             ),
         // ...repeat for all other endpoints under /nodes/{node}/lxc
         // For brevity, only a representative sample is shown here. Continue this pattern for all endpoints.

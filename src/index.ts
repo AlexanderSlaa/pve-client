@@ -3,19 +3,19 @@
  * - Generates TSDoc for every endpoint function (description + @endpoint + parameter list)
  */
 import {Agent} from "node:https";
-import native_fetch from "./fetch";
-import Access from "./api/access";
-import type {ClusterAPI} from "./api/cluster";
-import Cluster from "./api/cluster";
-import type {NodesAPI} from "./api/nodes";
-import Nodes from "./api/nodes";
-import Pools from "./api/pools";
-import Storage from "./api/storage";
-import type {AnyArgs, API, MethodKey, Params, Ret} from "./api";
-import Version from "./api/version";
-import {Display} from "./helpers/Display";
-import {Terminal} from "./helpers/Terminal";
-import {TimerPulledEventEmitter} from "./helpers/TimerPulledEventEmitter";
+import native_fetch from "./fetch.js";
+import Access from "./api/access.js";
+import type {ClusterAPI} from "./api/cluster/types.js";
+import Cluster from "./api/cluster/index.js";
+import type {NodesAPI} from "./api/nodes/types.js";
+import Nodes from "./api/nodes/index.js";
+import Pools from "./api/pools.js";
+import Storage from "./api/storage.js";
+import type {AnyArgs, API, MethodKey, Params, Ret} from "./api/index.js";
+import Version from "./api/version.js";
+import {Display} from "./helpers/Display.js";
+import {Terminal} from "./helpers/Terminal.js";
+import {TimerPulledEventEmitter} from "./helpers/TimerPulledEventEmitter.js";
 
 
 export type FetchLike<Input extends string | URL | Request = string | URL, Init extends RequestInit = RequestInit, Out extends Request = Request> = (input: Input, init?: Init) => Promise<Out>;
@@ -221,7 +221,7 @@ export class Client {
             const existing = this.eventMonitors.get("resources");
             if (existing) return existing as TimerPulledEventEmitter<Record<string, ClusterResource>>;
 
-            const monitor = new TimerPulledEventEmitter<Record<string, ClusterResource>>(async ({publish}) => {
+            const monitor = new TimerPulledEventEmitter<Record<string, ClusterResource>>(async ({publish}: { publish: <K extends string>(key: K, value: ClusterResource) => boolean }) => {
                 const resources = await this.request("/cluster/resources", "GET", {
                     $query: {type: "vm"},
                 } as any) as ClusterResource[];
@@ -238,7 +238,7 @@ export class Client {
             const existing = this.eventMonitors.get("tasks");
             if (existing) return existing as TimerPulledEventEmitter<Record<string, ClusterTask> & {task: ClusterTask}>;
 
-            const monitor = new TimerPulledEventEmitter<Record<string, ClusterTask> & {task: ClusterTask}>(async ({publish}) => {
+            const monitor = new TimerPulledEventEmitter<Record<string, ClusterTask> & {task: ClusterTask}>(async ({publish}: { publish: <K extends string>(key: K, value: ClusterTask) => boolean }) => {
                 const tasks = await this.request("/cluster/tasks", "GET", {} as any) as ClusterTask[];
                 for (const task of tasks) {
                     if (!task.upid) continue;
@@ -248,7 +248,7 @@ export class Client {
             // Convenience event: subscribe to all task updates with a single event name.
             monitor.filter(
                 () => true,
-                (task) => {
+                (task: ClusterTask) => {
                     monitor.emit("task", task);
                 }
             );
@@ -344,7 +344,7 @@ export class Client {
     }
 
     private authHeaders(extra?: Record<string, string | undefined> | undefined): Record<string, string> {
-        let h: Record<string, string> = Object.fromEntries(Object.entries(extra ?? {}).filter(([_, v]) => v !== undefined)) as Record<string, string>
+        let h: Record<string, string> = Object.fromEntries(Object.entries(extra ?? {}).filter(([, v]) => v !== undefined)) as Record<string, string>
 
         if ("apiToken" in this.opts) {
             h["Authorization"] = this.opts.apiToken?.startsWith("PVEAPIToken=")

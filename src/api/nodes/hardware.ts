@@ -11,7 +11,7 @@ export function hardwareFactory(client: Client) {
         ) => client.request(
             "/nodes/{node}/hardware",
             "GET",
-            { $path: { node }, ...(args[0] ?? {}) }
+            { ...(args[0] ?? {}), $path: { node } }
         ),
         pci: {
             get: (
@@ -20,7 +20,7 @@ export function hardwareFactory(client: Client) {
             ) => client.request(
                 "/nodes/{node}/hardware/pci",
                 "GET",
-                { $path: { node }, ...(args[0] ?? {}) }
+                { ...(args[0] ?? {}), $path: { node } }
             ),
         },
         usb: {
@@ -30,7 +30,7 @@ export function hardwareFactory(client: Client) {
             ) => client.request(
                 "/nodes/{node}/hardware/usb",
                 "GET",
-                { $path: { node }, ...(args[0] ?? {}) }
+                { ...(args[0] ?? {}), $path: { node } }
             ),
         }
         // ...repeat for all other endpoints under /nodes/{node}/hardware

@@ -1,8 +1,4 @@
 // Shared ClusterAPI type for all cluster endpoint factories
-import { PathContext } from "../index.js";
-import type { ArgsTuple } from "../index.js";
-import { Client } from "../../index.js";
-
 // --- BEGIN ClusterAPI type definition ---
 // (Copy-paste from cluster.ts, lines 4-3187)
 

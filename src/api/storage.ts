@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 import type {ArgsTuple} from "./index.js";
 import {PathContext} from "./index.js";
 

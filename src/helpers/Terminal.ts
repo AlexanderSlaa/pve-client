@@ -1,6 +1,6 @@
 import EventEmitter from "node:events";
-import type {ClusterAPI} from "../api/cluster";
-import type {Client} from "../index";
+import type {ClusterAPI} from "../api/cluster/types.js";
+import type {Client} from "../index.js";
 import WS, {type RawData} from "ws";
 
 type VMType = "qemu" | "lxc";

@@ -1,8 +1,10 @@
 import EventEmitter from "node:events";
-import type {Client} from "../index";
+import type { ClusterAPI } from "../api/cluster/types.js";
+import type {Client} from "../index.js";
 import WS, {type RawData} from "ws";
 
 type VMType = "qemu" | "lxc";
+type ClusterResource = ClusterAPI["/cluster/resources"]["GET"]["return"][number];
 
 export type DisplayTicket = {
     cert: string;
@@ -182,9 +184,9 @@ export class Display {
     private async getRunningVm(): Promise<{ vmid: number; node: string; type: VMType }> {
         const resources = await this.client.request("/cluster/resources", "GET", {
             $query: {type: "vm"},
-        });
+        }) as ClusterResource[];
 
-        const vm = resources.find((resource) => resource.vmid?.toString() === this.vmid.toString());
+        const vm = resources.find((resource: ClusterResource) => resource.vmid?.toString() === this.vmid.toString());
 
         if (!vm) throw new Error(`Unable to find virtual machine with id(${this.vmid}).`);
         if (vm.status !== "running") throw new Error(`Virtual machine ${this.vmid} is not running.`);

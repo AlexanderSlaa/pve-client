@@ -1,32 +1,16 @@
-// ESLint flat config for TypeScript projects (ESLint v9+)
 import js from "@eslint/js";
 import tseslint from "@typescript-eslint/eslint-plugin";
 import tsparser from "@typescript-eslint/parser";
+import globals from "globals";
 
-/** @type {import('eslint').Linter.FlatConfig[]} */
+/** @type {import("eslint").Linter.FlatConfig[]} */
 export default [
+  {
+    ignores: ["dist/**", "node_modules/**", "jsr/**", "generated/**", "vite.config.ts", "eslint.config.js"]
+  },
   js.configs.recommended,
   {
-    files: ["**/*.ts", "**/*.tsx"],
-    languageOptions: {
-      parser: tsparser,
-      parserOptions: {
-        project: "./tsconfig.eslint.json",
-        sourceType: "module",
-        ecmaVersion: "latest"
-      },
-    },
-    plugins: {
-      "@typescript-eslint": tseslint,
-    },
-    rules: {
-      ...tseslint.configs.recommended.rules,
-      "@typescript-eslint/no-unused-vars": "warn",
-      "@typescript-eslint/explicit-module-boundary-types": "off"
-    },
-  },
-  {
-    files: ["examples/*.ts"],
+    files: ["**/*.ts", "**/*.tsx", "**/*.js"],
     languageOptions: {
       parser: tsparser,
       parserOptions: {
@@ -35,17 +19,23 @@ export default [
         ecmaVersion: "latest"
       },
       globals: {
-        process: "readonly",
-        console: "readonly",
-        require: "readonly",
-        __dirname: "readonly",
-        module: "readonly",
-        Buffer: "readonly",
-        setInterval: "readonly",
-        NodeJS: "readonly",
-        fetch: "readonly"
+        ...globals.node,
+        ...globals.browser,
+        NodeJS: "readonly"
       }
     },
-    rules: {}
-  },
+    plugins: {
+      "@typescript-eslint": tseslint,
+    },
+    rules: {
+      ...tseslint.configs.recommended.rules,
+      "no-dupe-class-members": "off",
+      "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/explicit-module-boundary-types": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-empty-object-type": "off",
+      "@typescript-eslint/no-require-imports": "off",
+      "no-empty": "warn"
+    },
+  }
 ];
