@@ -2,7 +2,7 @@ import http from "node:http";
 import https from "node:https";
 import {PassThrough} from "node:stream";
 import {afterEach, describe, expect, it, vi} from "vitest";
-import native_fetch from "./fetch";
+import native_fetch from "../../src/fetch.js";
 
 describe("native_fetch", () => {
 	afterEach(() => {

@@ -15,8 +15,8 @@ describe('Nodes API Modular Factories', () => {
     const api = hardwareFactory(client);
     expect(api).toHaveProperty('pci');
     expect(api).toHaveProperty('usb');
-    expect(() => api.pci.index()).toThrow('Not implemented');
-    expect(() => api.usb.index()).toThrow('Not implemented');
+    expect(() => api.pci.get('pve')).not.toThrow();
+    expect(() => api.usb.get('pve')).not.toThrow();
   });
 
   it('lxcFactory returns an object', () => {

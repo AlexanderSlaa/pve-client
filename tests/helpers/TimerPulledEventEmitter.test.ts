@@ -1,5 +1,5 @@
 import {describe, expect, it, vi} from "vitest";
-import {EventFilter, TimerPulledEventEmitter} from "./TimerPulledEventEmitter";
+import {EventFilter, TimerPulledEventEmitter} from "../../src/helpers/TimerPulledEventEmitter.js";
 
 type Events = {
 	alpha: {count: number};

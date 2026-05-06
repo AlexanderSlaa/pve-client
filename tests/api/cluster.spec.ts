@@ -38,7 +38,7 @@ describe('Cluster API', () => {
   it('should allow calling backup_info.index endpoint', () => {
     const client = { request: vi.fn().mockReturnValue([]) } as unknown as Client;
     const api = Cluster(client);
-    expect(() => api.backup_info.index()).not.toThrow();
+    expect(() => api.backup_info()).not.toThrow();
   });
 });
 

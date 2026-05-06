@@ -3,14 +3,14 @@ import Cluster from '../../src/api/cluster';
 import type { Client } from '../../src/index';
 
 describe('Cluster API - mapping', () => {
-  it('should list hardware mappings (not implemented)', () => {
-    const client = { request: vi.fn() } as unknown as Client;
+  it('should list hardware mappings', () => {
+    const client = { request: vi.fn().mockReturnValue([]) } as unknown as Client;
     const api = Cluster(client);
-    expect(() => api.mapping.index()).toThrow('Not implemented');
+    expect(() => api.mapping.index()).not.toThrow();
   });
-  it('should create hardware mapping (not implemented)', () => {
-    const client = { request: vi.fn() } as unknown as Client;
+  it('should create PCI hardware mapping', () => {
+    const client = { request: vi.fn().mockReturnValue({}) } as unknown as Client;
     const api = Cluster(client);
-    expect(() => api.mapping.create({ $body: { id: 'map1' } })).toThrow('Not implemented');
+    expect(() => api.mapping.pci.create({ $body: { id: 'map1' } } as never)).not.toThrow();
   });
 });

@@ -1,5 +1,5 @@
 import {describe, expect, it, vi} from 'vitest';
-import {Client} from './index';
+import {Client} from '../../src/index.js';
 
 describe('API Endpoints', () => {
 	it('calls /version endpoint', async () => {
@@ -38,9 +38,9 @@ describe('API Endpoints', () => {
 		});
 		const requestSpy = vi.spyOn(client, 'request').mockResolvedValue([{name: 'node1'}] as never);
 
-		const result = await client.api.cluster.status();
+		const result = await client.api.cluster.status.index();
 
-		expect(requestSpy).toHaveBeenCalledWith('/cluster/status', 'GET', {});
+		expect(requestSpy).toHaveBeenCalledWith('/cluster/ha/status', 'GET', {});
 		expect(result).toEqual([{name: 'node1'}]);
 	});
 });
