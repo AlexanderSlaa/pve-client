@@ -135,7 +135,7 @@ export class TimerPulledEventEmitter<T extends EventValueMap> extends EventEmitt
             if (this.listenerCount("error") > 0) {
                 (super.emit as (eventName: EventKey, ...args: unknown[]) => boolean)("error", error as Error);
             } else {
-                console.error(error);
+                console.error(`[TimerPulledEventEmitter] Pull failed on ${this.constructor.name}:`, error);
             }
         }
     }
