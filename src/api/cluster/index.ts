@@ -12,7 +12,6 @@ export { optionsFactory } from "./options.js";
 export { replicationFactory } from "./replication.js";
 export { resourcesFactory } from "./resources.js";
 export { sdnFactory } from "./sdn.js";
-export { statusFactory } from "./status.js";
 export { tasksFactory } from "./tasks.js";
 
 // Default export: Cluster function
@@ -30,12 +29,17 @@ import { optionsFactory } from "./options.js";
 import { replicationFactory } from "./replication.js";
 import { resourcesFactory } from "./resources.js";
 import { sdnFactory } from "./sdn.js";
-import { statusFactory } from "./status.js";
 import { tasksFactory } from "./tasks.js";
 import type { Client } from "../../index.js";
+import type { ClusterAPI } from "./types.js";
 
 function Cluster(client: Client) {
 	return {
+		/** Returns the next available VM ID. Calls GET /cluster/nextid. */
+		nextid: (args?: ClusterAPI["/cluster/nextid"]["GET"]["parameters"]):
+			Promise<ClusterAPI["/cluster/nextid"]["GET"]["return"]> =>
+			client.request("/cluster/nextid", "GET", args ?? {}),
+
 		acme: acmeFactory(client),
 		backup: backupFactory(client),
 		ceph: cephFactory(client),
@@ -50,7 +54,9 @@ function Cluster(client: Client) {
 		replication: replicationFactory(client),
 		resources: resourcesFactory(client),
 		sdn: sdnFactory(client),
-		status: statusFactory(client),
+		/** Lists cluster and node status. Calls GET /cluster/status. */
+		status: (): Promise<ClusterAPI["/cluster/status"]["GET"]["return"]> =>
+			client.request("/cluster/status", "GET", {}),
 		tasks: tasksFactory(client),
 		// Add index and other endpoints as needed
 		index: () => client.request("/cluster", "GET", {}),
