@@ -95,7 +95,7 @@ const nodes = await client.api.nodes.list();
 ### Path-based endpoints
 
 ```ts
-const nodeStatus = await client.api.nodes.get("pve").status.get();
+const vms = await client.api.nodes.get("pve").qemu.list();
 ```
 
 ### Endpoints with optional parameters
