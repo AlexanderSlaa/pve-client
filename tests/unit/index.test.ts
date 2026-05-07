@@ -166,16 +166,17 @@ describe("Client", () => {
 		});
 	});
 
-	it("rejects terminal helper for API tokens", () => {
+	it("builds terminal helper for API tokens", () => {
 		const client = new Client({
 			baseUrl: "https://pve.local",
 			apiToken: "token",
 			fetch: vi.fn(),
 		});
 
-		expect(() => client.helpers.terminal(101)).toThrow(
-			"Terminal helper requires username/password auth in Proxmox and is not supported with API tokens."
-		);
+		// Terminal helper should be available regardless of whether auth uses cookie or API token.
+		const terminal = client.helpers.terminal(101);
+		expect(terminal).toBeDefined();
+		expect(typeof terminal.open).toBe("function");
 	});
 
 	it("exposes create methods for both lxc and qemu nodes APIs", async () => {

@@ -207,11 +207,7 @@ export class Client {
 
     public readonly helpers = {
         terminal: (vmid: string | number): Terminal => {
-            if ("apiToken" in this.opts) {
-                throw new Error(
-                    "Terminal helper requires username/password auth in Proxmox and is not supported with API tokens."
-                );
-            }
+            // Terminal now supports both login-cookie auth and API-token auth.
             return new Terminal(vmid, this);
         },
         display: (vmid: string | number): Display => new Display(vmid, this),

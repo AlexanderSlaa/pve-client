@@ -287,23 +287,34 @@ export class Terminal {
     }
 
     async open(options: TerminalOpenOptions = {}): Promise<TerminalSession> {
+        // Fail fast on programmer/configuration errors before spinning up reconnect state.
+        if (!this.client.sessionCookie() && !this.client.tokenAuthorizationHeader()) {
+            throw new Error("Missing authentication for terminal websocket. Provide login cookie or API token.");
+        }
+
         const session = new TerminalSession(
             async () => {
                 const info = await this.getConnectionInfo();
+                // Websocket auth differs by client auth mode: login() => cookie, API token => Authorization header.
                 const cookie = this.client.sessionCookie();
-                if (!cookie) {
-                    throw new Error("Missing authenticated session cookie. Did you call login()?");
+                const authHeader = this.client.tokenAuthorizationHeader();
+                if (!cookie && !authHeader) {
+                    throw new Error("Missing authentication for terminal websocket. Provide login cookie or API token.");
                 }
 
                 const wsUrl = new URL(info.websocketUrl);
                 const originProtocol = wsUrl.protocol === "wss:" ? "https:" : "http:";
                 const origin = `${originProtocol}//${wsUrl.host}`;
 
+                const headers: Record<string, string> = {
+                    // Proxmox checks Origin for websocket terminal connections.
+                    Origin: origin,
+                };
+                if (cookie) headers.Cookie = cookie;
+                if (authHeader) headers.Authorization = authHeader;
+
                 const socket = new WS(info.websocketUrl, {
-                    headers: {
-                        Cookie: cookie,
-                        Origin: origin,
-                    },
+                    headers,
                     rejectUnauthorized: options.rejectUnauthorized ?? false,
                 });
 
