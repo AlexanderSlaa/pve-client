@@ -6,7 +6,7 @@ import globals from "globals";
 /** @type {import("eslint").Linter.FlatConfig[]} */
 export default [
   {
-    ignores: ["dist/**", "node_modules/**", "coverage/**", "jsr/**", "generated/**", "vite.config.ts", "eslint.config.js"]
+    ignores: ["dist/**", "node_modules/**", "coverage/**", "jsr/**", "generated/**", "docs/**", "vite.config.ts", "eslint.config.js"]
   },
   js.configs.recommended,
   {

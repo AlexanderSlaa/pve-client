@@ -77,6 +77,18 @@ export type QemuScopedAPI = ReturnType<NodeScopedAPI['qemu']['vmid']>;
 /** The per-container sub-API returned by `client.api.nodes.get(node).lxc.id(vmid)`. */
 export type LxcScopedAPI = ReturnType<NodeScopedAPI['lxc']['id']>;
 
+/** The node-storage sub-API returned by `client.api.nodes.get(node).storage`. */
+export type NodeStorageScopedAPI = NodeScopedAPI['storage'];
+
+/** The storage-item sub-API returned by `client.api.nodes.get(node).storage.get(name)`. */
+export type StorageItemAPI = ReturnType<NodeStorageScopedAPI['get']>;
+
+/** The cluster sub-API returned by `client.api.cluster`. */
+export type ClusterScopedAPI = ReturnType<typeof Cluster>;
+
+/** The access sub-API returned by `client.api.access`. */
+export type AccessScopedAPI = ReturnType<typeof Access>;
+
 
 export class Client {
     private readonly baseUrl: string;
@@ -315,8 +327,8 @@ export class Client {
         if (query) {
             for (const [k, v] of Object.entries(query)) {
                 if (v === undefined || v === null) continue;
-                if (Array.isArray(v)) for (const item of v) url.searchParams.append(k, String(item));
-                else url.searchParams.set(k, String(v));
+                if (Array.isArray(v)) for (const item of v) url.searchParams.append(k, this.serializeScalar(item));
+                else url.searchParams.set(k, this.serializeScalar(v));
             }
         }
         return url.toString();
@@ -338,13 +350,20 @@ export class Client {
             : `PVEAPIToken=${this.opts.apiToken}`;
     }
 
+    private serializeScalar(value: unknown): string {
+        if (typeof value === "boolean") {
+            return value ? "1" : "0";
+        }
+        return String(value);
+    }
+
     private encodeForm(body: Record<string, unknown> | undefined): string {
         const sp = new URLSearchParams();
         for (const [k, v] of Object.entries(body ?? {})) {
             if (v === undefined || v === null) continue;
-            if (Array.isArray(v)) for (const item of v) sp.append(k, String(item));
+            if (Array.isArray(v)) for (const item of v) sp.append(k, this.serializeScalar(item));
             else if (typeof v === "object") sp.set(k, JSON.stringify(v));
-            else sp.set(k, String(v));
+            else sp.set(k, this.serializeScalar(v));
         }
         return sp.toString();
     }

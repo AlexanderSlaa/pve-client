@@ -198,7 +198,6 @@ describe('API Endpoints', () => {
 		const requestSpy = vi.spyOn(client, 'request').mockResolvedValue('UPID:pve:001:clone' as never);
 
 		const upid = await client.api.nodes.get('pve').qemu.vmid(101).clone({
-			$path: { node: 'pve', vmid: 101 },
 			$body: { newid: 200, name: 'cloned-vm', full: 1 },
 		});
 
@@ -221,7 +220,6 @@ describe('API Endpoints', () => {
 		const requestSpy = vi.spyOn(client, 'request').mockResolvedValue('UPID:pve:002:clone' as never);
 
 		const upid = await client.api.nodes.get('pve').lxc.id(201).clone({
-			$path: { node: 'pve', vmid: 201 },
 			$body: { newid: 300, hostname: 'cloned-ct', full: 1 },
 		});
 

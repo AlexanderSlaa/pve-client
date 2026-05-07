@@ -67,13 +67,13 @@ function Nodes(client: Client) {
 						qemuApi.list(node, args as Parameters<typeof qemuApi.list>[1]),
 					/** Returns per-VM operations pre-bound to this node and vmid. */
 					vmid: (vmid: number) => ({
-						delete: (args?: Parameters<typeof qemuApi.delete>[2]) =>
-							qemuApi.delete(node, vmid, args as Parameters<typeof qemuApi.delete>[2]),
-						clone: (args: NodesAPI["/nodes/{node}/qemu/{vmid}/clone"]["POST"]["parameters"]) =>
+						delete: (args?: Omit<NodesAPI["/nodes/{node}/qemu/{vmid}"]["DELETE"]["parameters"], "$path">) =>
+							qemuApi.delete(node, vmid, ({ $path: { node, vmid }, ...(args ?? {}) } as NodesAPI["/nodes/{node}/qemu/{vmid}"]["DELETE"]["parameters"])),
+						clone: (args: Omit<NodesAPI["/nodes/{node}/qemu/{vmid}/clone"]["POST"]["parameters"], "$path">) =>
 							client.request(
 								"/nodes/{node}/qemu/{vmid}/clone",
 								"POST",
-								{ $path: { node, vmid }, ...(args as object) } as NodesAPI["/nodes/{node}/qemu/{vmid}/clone"]["POST"]["parameters"]
+								{ $path: { node, vmid }, ...(args ?? {}) } as NodesAPI["/nodes/{node}/qemu/{vmid}/clone"]["POST"]["parameters"]
 							),
 						status: {
 							start: (args?: NodesAPI["/nodes/{node}/qemu/{vmid}/status/start"]["POST"]["parameters"]) =>
@@ -104,14 +104,28 @@ function Nodes(client: Client) {
 						lxcApi.list(node, args as Parameters<typeof lxcApi.list>[1]),
 					/** Returns per-container operations pre-bound to this node and vmid. */
 					id: (vmid: number) => ({
-						delete: (args?: Parameters<typeof lxcApi.delete>[2]) =>
-							lxcApi.delete(node, vmid, args as Parameters<typeof lxcApi.delete>[2]),
-						clone: (args: NodesAPI["/nodes/{node}/lxc/{vmid}/clone"]["POST"]["parameters"]) =>
+						delete: (args?: Omit<NodesAPI["/nodes/{node}/lxc/{vmid}"]["DELETE"]["parameters"], "$path">) =>
+							lxcApi.delete(node, vmid, ({ $path: { node, vmid }, ...(args ?? {}) } as NodesAPI["/nodes/{node}/lxc/{vmid}"]["DELETE"]["parameters"])),
+						clone: (args: Omit<NodesAPI["/nodes/{node}/lxc/{vmid}/clone"]["POST"]["parameters"], "$path">) =>
 							client.request(
 								"/nodes/{node}/lxc/{vmid}/clone",
 								"POST",
-								{ $path: { node, vmid }, ...(args as object) } as NodesAPI["/nodes/{node}/lxc/{vmid}/clone"]["POST"]["parameters"]
+								{ $path: { node, vmid }, ...(args ?? {}) } as NodesAPI["/nodes/{node}/lxc/{vmid}/clone"]["POST"]["parameters"]
 							),
+						interfaces: (): Promise<NodesAPI["/nodes/{node}/lxc/{vmid}/interfaces"]["GET"]["return"]> =>
+							client.request(
+								"/nodes/{node}/lxc/{vmid}/interfaces",
+								"GET",
+								{ $path: { node, vmid } }
+							),
+						config: {
+							get: (args?: Omit<NodesAPI["/nodes/{node}/lxc/{vmid}/config"]["GET"]["parameters"], "$path">): Promise<NodesAPI["/nodes/{node}/lxc/{vmid}/config"]["GET"]["return"]> =>
+								client.request(
+									"/nodes/{node}/lxc/{vmid}/config",
+									"GET",
+									{ $path: { node, vmid }, ...(args ?? {}) } as NodesAPI["/nodes/{node}/lxc/{vmid}/config"]["GET"]["parameters"]
+								),
+						},
 						status: {
 							start: (args?: NodesAPI["/nodes/{node}/lxc/{vmid}/status/start"]["POST"]["parameters"]) =>
 								client.request(

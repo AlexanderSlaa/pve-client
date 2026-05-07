@@ -19,7 +19,9 @@ describe("Client", () => {
 			fetch: vi.fn(),
 		});
 
-		expect(client.url("/nodes", {a: 1, b: ["x", "y"]})).toBe("https://pve.local/api2/json/nodes?a=1&b=x&b=y");
+		expect(client.url("/nodes", {a: 1, b: ["x", "y"], purge: true, skiplock: false})).toBe(
+			"https://pve.local/api2/json/nodes?a=1&b=x&b=y&purge=1&skiplock=0"
+		);
 		expect(client.tokenAuthorizationHeader()).toBe("PVEAPIToken=root@pam!id=secret");
 	});
 
