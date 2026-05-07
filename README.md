@@ -226,6 +226,22 @@ Current high-value suites cover:
 - `native_fetch` request construction, header/body behavior, and abort handling
 - `TimerPulledEventEmitter` polling, filtering, dedupe, and error flows
 
+## Changelog
+
+### [1.2.0] - 2026-05-07
+
+#### Fixed
+- Corrected README example for path-based endpoints — replaced invalid `.status.get()` call with valid `nodes.get(node).qemu.list()` usage
+
+### [1.1.0] - 2026-04-09
+
+#### Added
+- LXC and QEMU methods on node (`nodes.get(node).qemu`, `nodes.get(node).lxc`)
+
+### [1.0.0] - 2026-02-25
+
+- Initial release
+
 ## License
 
 Apache-2.0

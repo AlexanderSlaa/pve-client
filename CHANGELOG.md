@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/AlexanderSlaa/pve-client/compare/v1.1.0...v1.2.0) (2026-05-07)
+
+
+### Bug Fixes
+
+* corrected README example for path-based endpoints — replaced invalid `.status.get()` call with valid `nodes.get(node).qemu.list()` usage
+
 # [1.1.0](https://github.com/AlexanderSlaa/pve-client/compare/v1.0.0...v1.1.0) (2026-04-09)
 
 
