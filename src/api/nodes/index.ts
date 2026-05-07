@@ -67,6 +67,8 @@ function Nodes(client: Client) {
 						qemuApi.list(node, args as Parameters<typeof qemuApi.list>[1]),
 					/** Returns per-VM operations pre-bound to this node and vmid. */
 					vmid: (vmid: number) => ({
+						delete: (args?: Parameters<typeof qemuApi.delete>[2]) =>
+							qemuApi.delete(node, vmid, args as Parameters<typeof qemuApi.delete>[2]),
 						clone: (args: NodesAPI["/nodes/{node}/qemu/{vmid}/clone"]["POST"]["parameters"]) =>
 							client.request(
 								"/nodes/{node}/qemu/{vmid}/clone",
@@ -102,6 +104,8 @@ function Nodes(client: Client) {
 						lxcApi.list(node, args as Parameters<typeof lxcApi.list>[1]),
 					/** Returns per-container operations pre-bound to this node and vmid. */
 					id: (vmid: number) => ({
+						delete: (args?: Parameters<typeof lxcApi.delete>[2]) =>
+							lxcApi.delete(node, vmid, args as Parameters<typeof lxcApi.delete>[2]),
 						clone: (args: NodesAPI["/nodes/{node}/lxc/{vmid}/clone"]["POST"]["parameters"]) =>
 							client.request(
 								"/nodes/{node}/lxc/{vmid}/clone",

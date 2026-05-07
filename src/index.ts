@@ -68,6 +68,15 @@ export type APIClient = {
     version: ReturnType<typeof Version>;
 };
 
+/** The node-scoped sub-API returned by `client.api.nodes.get(node)`. */
+export type NodeScopedAPI = ReturnType<ReturnType<typeof Nodes>['get']>;
+
+/** The per-VM sub-API returned by `client.api.nodes.get(node).qemu.vmid(id)`. */
+export type QemuScopedAPI = ReturnType<NodeScopedAPI['qemu']['vmid']>;
+
+/** The per-container sub-API returned by `client.api.nodes.get(node).lxc.id(vmid)`. */
+export type LxcScopedAPI = ReturnType<NodeScopedAPI['lxc']['id']>;
+
 
 export class Client {
     private readonly baseUrl: string;

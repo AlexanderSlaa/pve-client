@@ -494,4 +494,44 @@ describe('API Endpoints', () => {
 		);
 		expect(upid).toBe('UPID:pve:008:reboot');
 	});
+
+	// Regression: nodes.get(node).qemu.vmid(id).delete was missing, causing:
+	//   "TypeError: guestApi.delete is not a function" when removing a VM.
+	it('calls DELETE /nodes/{node}/qemu/{vmid} via nodes.get(node).qemu.vmid(id).delete()', async () => {
+		const client = new Client({
+			baseUrl: 'https://pve.local',
+			apiToken: 'token',
+			fetch: vi.fn(),
+		});
+		const requestSpy = vi.spyOn(client, 'request').mockResolvedValue('UPID:pve:009:destroy' as never);
+
+		const upid = await client.api.nodes.get('pve').qemu.vmid(101).delete({ $body: { purge: 1 } });
+
+		expect(requestSpy).toHaveBeenCalledWith(
+			'/nodes/{node}/qemu/{vmid}',
+			'DELETE',
+			expect.objectContaining({ $path: { node: 'pve', vmid: 101 } })
+		);
+		expect(upid).toBe('UPID:pve:009:destroy');
+	});
+
+	// Regression: nodes.get(node).lxc.id(vmid).delete was missing, causing:
+	//   "TypeError: guestApi.delete is not a function" when removing a container.
+	it('calls DELETE /nodes/{node}/lxc/{vmid} via nodes.get(node).lxc.id(vmid).delete()', async () => {
+		const client = new Client({
+			baseUrl: 'https://pve.local',
+			apiToken: 'token',
+			fetch: vi.fn(),
+		});
+		const requestSpy = vi.spyOn(client, 'request').mockResolvedValue('UPID:pve:010:destroy' as never);
+
+		const upid = await client.api.nodes.get('pve').lxc.id(100).delete({ $body: { purge: 1 } });
+
+		expect(requestSpy).toHaveBeenCalledWith(
+			'/nodes/{node}/lxc/{vmid}',
+			'DELETE',
+			expect.objectContaining({ $path: { node: 'pve', vmid: 100 } })
+		);
+		expect(upid).toBe('UPID:pve:010:destroy');
+	});
 });
