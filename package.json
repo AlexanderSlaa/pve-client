@@ -57,6 +57,8 @@
     "access": "public"
   },
   "dependencies": {
+    "terminal.js": "github:Gottox/terminal.js",
+    "wcwidth": "^1.0.1",
     "ws": "^8.19.0"
   },
   "devDependencies": {

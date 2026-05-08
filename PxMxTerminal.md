@@ -40,14 +40,31 @@ Browser  <--WS-->  Vite dev server (/proxmox/terminal/ws)  <--WS-->  Proxmox vnc
 
 The plugin lives entirely in `vite.config.ts`.
 
-### Why `pve-client`'s `helpers.terminal()` is NOT used
+### pve-client Terminal Helper Integration
 
-`Client.helpers.terminal()` throws immediately if the client was constructed with an API token:
+As of May 2026, `pve-client` provides:
+
+- **`Terminal` class** — Manages tickets, connection info, and WebSocket setup
+- **`TerminalSession`** — Manages connection lifecycle with automatic reconnect
+- **`TerminalRenderer`** — New: Parses VT100/xterm escape sequences using [terminal.js](https://github.com/Gottox/terminal.js) (Gottox)
+
+The helper can be used with or without a renderer:
+
 ```ts
-if ("apiToken" in this.opts) {
-  throw new Error("Terminal helper requires username/password auth…");
-}
+const terminal = new Terminal(vmid, client);
+
+// Browser app with renderer (parses escape sequences)
+const renderer = new TerminalRenderer(80, 24);
+renderer.on("render", (state) => {
+  // Update UI with state.state.screen
+});
+const session = await terminal.open({ renderer });
+
+// Or: Node.js CLI with TTY piping (no renderer needed)
+const session = await terminal.open({ pipeTo: stdioAdapter });
 ```
+
+**Previous limitation**: The helper required username/password auth and would throw if an API token was used. This constraint may still apply depending on the version; check the pve-client docs.
 Additionally, `Terminal.open()` calls `client.sessionCookie()` which returns `undefined` for API token clients, causing a second throw.
 
 **Workaround:** Call `client.request()` directly for the termproxy ticket (this works with both auth methods), then construct the `vncwebsocket` URL manually using `client.url()`. Use `client.sessionCookie()` or `client.tokenAuthorizationHeader()` (both are public methods) to set the correct WebSocket auth header.

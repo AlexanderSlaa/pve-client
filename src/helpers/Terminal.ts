@@ -2,6 +2,8 @@ import EventEmitter from "node:events";
 import type {ClusterAPI} from "../api/cluster/types.js";
 import type {Client} from "../index.js";
 import WS, {type RawData} from "ws";
+import TerminalJS from "terminal.js";
+import type {TermState} from "terminal.js";
 
 type VMType = "qemu" | "lxc";
 type ClusterResource = ClusterAPI["/cluster/resources"]["GET"]["return"][number];
@@ -45,12 +47,33 @@ export type TerminalPipe = {
     once(event: "close", listener: () => void): unknown;
 } & EventEmitter;
 
+/**
+ * Represents a rendered terminal state using terminal.js
+ * Provides access to the parsed terminal buffer and state.
+ */
+export type TerminalRendererState = {
+    /**
+     * The underlying terminal.js state object containing parsed terminal buffer.
+     * Use this to render the terminal to HTML, ANSI, plain text, etc.
+     */
+    state: TermState;
+    /**
+     * Current terminal dimensions (columns x rows)
+     */
+    dimensions: { columns: number; rows: number };
+};
+
 export type TerminalOpenOptions = {
     rejectUnauthorized?: boolean;
     pipeTo?: TerminalPipe;
     reconnect?: boolean;
     reconnectIntervalMs?: number;
     reconnectMaxAttempts?: number;
+    /**
+     * Optional terminal renderer for parsing escape sequences.
+     * If provided, the renderer will receive all incoming data.
+     */
+    renderer?: TerminalRenderer;
 };
 
 function rawToBuffer(data: RawData): Buffer {
@@ -61,6 +84,88 @@ function rawToBuffer(data: RawData): Buffer {
     throw new Error(`Unsupported websocket payload type: ${Object.prototype.toString.call(data)}`);
 }
 
+/**
+ * Terminal renderer using terminal.js for VT100/xterm escape sequence parsing.
+ * Maintains the parsed terminal state for rendering to various output formats.
+ */
+export class TerminalRenderer extends EventEmitter<{
+    render: [TerminalRendererState];
+    error: [Error];
+}> {
+    private terminal: InstanceType<typeof TerminalJS>;
+    private columns: number = 80;
+    private rows: number = 24;
+
+    constructor(columns: number = 80, rows: number = 24) {
+        super();
+        this.columns = columns;
+        this.rows = rows;
+        this.terminal = new TerminalJS({columns, rows});
+    }
+
+    /**
+     * Feed data to the terminal emulator.
+     * Parses escape sequences and updates the terminal state.
+     * @param data Raw terminal data (may contain escape sequences)
+     */
+    write(data: Buffer | string): void {
+        try {
+            const str = typeof data === "string" ? data : data.toString("utf8");
+            this.terminal.write(str);
+            this.emit("render", this.getState());
+        } catch (error) {
+            const err = error instanceof Error ? error : new Error(String(error));
+            this.emit("error", err);
+        }
+    }
+
+    /**
+     * Resize the terminal
+     * @param columns Number of columns
+     * @param rows Number of rows
+     */
+    resize(columns: number, rows: number): void {
+        this.columns = columns;
+        this.rows = rows;
+        this.terminal.reset();
+        this.terminal = new TerminalJS({columns, rows});
+        this.emit("render", this.getState());
+    }
+
+    /**
+     * Get the current rendered terminal state
+     */
+    getState(): TerminalRendererState {
+        return {
+            state: this.terminal.getState(),
+            dimensions: {columns: this.columns, rows: this.rows},
+        };
+    }
+
+    /**
+     * Clear the terminal
+     */
+    clear(): void {
+        this.terminal.reset();
+        this.emit("render", this.getState());
+    }
+}
+
+/**
+ * WebSocket-based terminal session connected to a Proxmox VM/container terminal.
+ * 
+ * Manages WebSocket connection lifecycle, reconnection, and optionally feeds
+ * data through a TerminalRenderer for escape sequence parsing.
+ * 
+ * Events emitted:
+ * - `ready`: Connection established and authenticated
+ * - `data`: Raw terminal data received (Buffer)
+ * - `close`: Connection closed
+ * - `error`: An error occurred (Error)
+ * - `state`: State changed (new state, old state)
+ * - `reconnect`: Attempting to reconnect (attempt number)
+ * - `resize`: Terminal resized (columns, rows) — emit this to resize the VM terminal
+ */
 export class TerminalSession extends EventEmitter<{
     ready: [];
     data: [Buffer];
@@ -77,12 +182,16 @@ export class TerminalSession extends EventEmitter<{
     private manuallyClosed = false;
     private reconnectAttempts = 0;
     private info?: TerminalConnectionInfo;
+    private renderer?: TerminalRenderer;
 
     constructor(
         private readonly createSocket: SocketFactory,
-        private readonly options: Required<Pick<TerminalOpenOptions, "reconnect" | "reconnectIntervalMs" | "reconnectMaxAttempts">>
+        private readonly options: Required<Pick<TerminalOpenOptions, "reconnect" | "reconnectIntervalMs" | "reconnectMaxAttempts">> & {
+            renderer?: TerminalRenderer;
+        }
     ) {
         super();
+        this.renderer = options.renderer;
         this.bindResizeHandler();
     }
 
@@ -101,6 +210,7 @@ export class TerminalSession extends EventEmitter<{
     private bindResizeHandler() {
         this.on("resize", (columns, rows) => {
             if (this.state !== TerminalState.CONNECTED || !this.socket || this.socket.readyState !== WS.OPEN) return;
+            if (this.renderer) this.renderer.resize(columns, rows);
             this.socket.send(`1:${columns}:${rows}:`);
         });
     }
@@ -156,7 +266,10 @@ export class TerminalSession extends EventEmitter<{
                     this.setState(TerminalState.CONNECTED);
                     this.emit("ready");
                     const rest = data.subarray(2);
-                    if (rest.length) this.emit("data", rest);
+                    if (rest.length) {
+                        if (this.renderer) this.renderer.write(rest);
+                        this.emit("data", rest);
+                    }
                 } else {
                     socket.close();
                 }
@@ -164,6 +277,7 @@ export class TerminalSession extends EventEmitter<{
             }
 
             if (this.state === TerminalState.CONNECTED) {
+                if (this.renderer) this.renderer.write(data);
                 this.emit("data", data);
             }
         });
@@ -205,6 +319,12 @@ export class TerminalSession extends EventEmitter<{
         }, this.options.reconnectIntervalMs);
     }
 
+    /**
+     * Send data to the terminal (keyboard input).
+     * Uses Proxmox terminal protocol: `0:byteLength:data`
+     * @param data Text to send
+     * @returns true if sent, false if not connected
+     */
     write(data: string): boolean {
         if (this.state !== TerminalState.CONNECTED || !this.socket || this.socket.readyState !== WS.OPEN) {
             return false;
@@ -213,6 +333,12 @@ export class TerminalSession extends EventEmitter<{
         return true;
     }
 
+    /**
+     * Close the terminal session and WebSocket connection.
+     * Emits 'close' event when fully disconnected.
+     * @param code Optional WebSocket close code
+     * @param reason Optional close reason
+     */
     close(code?: number, reason?: string | Buffer) {
         this.manuallyClosed = true;
         this.setState(TerminalState.DISCONNECTING);
@@ -224,6 +350,13 @@ export class TerminalSession extends EventEmitter<{
         }
     }
 
+    /**
+     * Bidirectionally pipe terminal data to another stream (e.g., local TTY).
+     * Forwards received data to target.send() and sends target messages back to terminal.
+     * Closes both when either side closes.
+     * @param target Target implementing TerminalPipe interface
+     * @returns The target (for chaining)
+     */
     pipe<T extends TerminalPipe>(target: T): T {
         this.on("data", (data) => target.send(data));
         target.on("message", (data) => {
@@ -236,19 +369,54 @@ export class TerminalSession extends EventEmitter<{
     }
 }
 
+/**
+ * Helper for opening Proxmox VM/container terminals.
+ * 
+ * Handles ticket creation, WebSocket setup, and provides TerminalSession
+ * for managing the connection.
+ * 
+ * Usage:
+ * ```ts
+ * const terminal = new Terminal(vmid, client);
+ * const renderer = new TerminalRenderer(80, 24);
+ * const session = await terminal.open({ renderer });
+ * 
+ * renderer.on("render", (state) => {
+ *   // Update UI with state.state.screen and state.dimensions
+ * });
+ * 
+ * session.on("data", (buf) => {
+ *   // Raw data also available here if needed
+ * });
+ * ```
+ */
 export class Terminal {
     private cachedTicket?: TerminalTicket;
 
+    /**
+     * Create a terminal helper for a specific VM or container.
+     * @param vmid VM/container ID
+     * @param client Authenticated Proxmox client
+     */
     constructor(
         private readonly vmid: string | number,
         private readonly client: Client
     ) {
     }
 
+    /**
+     * Get the cached terminal ticket, if available.
+     * Tickets are cached after createTicket() and remain valid for the session.
+     */
     get ticket() {
         return this.cachedTicket;
     }
 
+    /**
+     * Request a terminal ticket from Proxmox.
+     * Tickets are valid for the current session and are cached for reuse.
+     * The VM must be running.
+     */
     async createTicket(): Promise<TerminalTicket> {
         const vm = await this.getRunningVm();
         const ticket = await this.client.request(
@@ -265,6 +433,10 @@ export class Terminal {
         return this.cachedTicket;
     }
 
+    /**
+     * Build WebSocket connection info (URL, headers, auth message).
+     * Used internally by open() but also available for custom connection setups.
+     */
     async getConnectionInfo(): Promise<TerminalConnectionInfo> {
         const vm = await this.getRunningVm();
         const ticket = this.cachedTicket ?? (await this.createTicket());
@@ -286,6 +458,20 @@ export class Terminal {
         };
     }
 
+    /**
+     * Open an interactive terminal session to the VM/container.
+     * 
+     * The VM must be running. Authentication (login cookie or API token) is required.
+     * 
+     * @param options Configuration options
+     * @param options.renderer Optional TerminalRenderer for escape sequence parsing (VT100/xterm)
+     * @param options.pipeTo Optional TerminalPipe for bidirectional data relay (e.g., to local TTY)
+     * @param options.reconnect Auto-reconnect on disconnect (default: true)
+     * @param options.reconnectIntervalMs Delay between reconnect attempts (default: 1500ms)
+     * @param options.reconnectMaxAttempts Max reconnect attempts (default: unlimited)
+     * @param options.rejectUnauthorized HTTPS certificate validation (default: false)
+     * @returns Active TerminalSession
+     */
     async open(options: TerminalOpenOptions = {}): Promise<TerminalSession> {
         // Fail fast on programmer/configuration errors before spinning up reconnect state.
         if (!this.client.sessionCookie() && !this.client.tokenAuthorizationHeader()) {
@@ -324,6 +510,7 @@ export class Terminal {
                 reconnect: options.reconnect ?? true,
                 reconnectIntervalMs: Math.max(250, options.reconnectIntervalMs ?? 1500),
                 reconnectMaxAttempts: options.reconnectMaxAttempts ?? Number.POSITIVE_INFINITY,
+                renderer: options.renderer,
             }
         );
 
