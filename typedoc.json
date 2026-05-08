@@ -8,6 +8,10 @@
   "excludeProtected": true,
   "excludeInternal": true,
   "skipErrorChecking": true,
+  "gitRevision": "main",
+  "validation": {
+    "notExported": false
+  },
   "includeVersion": true,
   "categorizeByGroup": true,
   "searchInComments": true,

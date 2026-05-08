@@ -65,7 +65,7 @@ console.log(nodes);
 
 ## Using `.env`
 
-```env
+```bash
 PVE_BASE_URL=https://pve.example.com:8006
 PVE_API_TOKEN=PVEAPIToken=root@pam!mytoken=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ```
@@ -209,7 +209,7 @@ npm run example/terminal
 
 Example `.env` (username/password required for terminal helper):
 
-```env
+```bash
 PVE_BASE_URL=https://pve.example.com:8006
 PVE_USERNAME=root
 PVE_PASSWORD=your-password
@@ -232,7 +232,7 @@ npm run example/tasks
 
 Optional `.env` values:
 
-```env
+```bash
 # required
 PVE_BASE_URL=https://pve.example.com:8006
 
