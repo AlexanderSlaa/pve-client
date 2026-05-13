@@ -237,6 +237,9 @@ export class TerminalSession extends EventEmitter<{
     ) {
         super();
         this.renderer = options.renderer;
+        // Prevent process crashes from unhandled EventEmitter 'error' events.
+        // Consumers can still attach their own listeners for observability.
+        this.on("error", () => undefined);
         this.bindResizeHandler();
     }
 

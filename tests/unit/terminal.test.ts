@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Terminal } from '../../src/helpers/Terminal.js';
+import { Terminal, TerminalSession, bridgeTerminalSessionToSocket } from '../../src/helpers/Terminal.js';
 
 const mockedWs = vi.hoisted(() => {
   const wsCtorSpy = vi.fn();
@@ -27,14 +27,18 @@ const mockedWs = vi.hoisted(() => {
       this.handlers.set(event, list);
     }
 
+    emit(event: string, ...args: unknown[]): void {
+      const list = this.handlers.get(event) ?? [];
+      for (const handler of list) handler(...args);
+    }
+
     send(payload: string): void {
       this.sent.push(payload);
     }
 
     close(): void {
       this.readyState = 3;
-      const closeHandlers = this.handlers.get('close') ?? [];
-      for (const handler of closeHandlers) handler();
+      this.emit('close');
     }
   }
 
@@ -109,5 +113,67 @@ describe('Terminal helper auth headers', () => {
       'Missing authentication for terminal websocket. Provide login cookie or API token.'
     );
     expect(mockedWs.wsCtorSpy).not.toHaveBeenCalled();
+  });
+});
+
+describe('Terminal session resiliency', () => {
+  it('does not throw on socket error when consumer has no error listener', async () => {
+    const socket = new mockedWs.MockWebSocket('wss://pve.local/ws');
+    const session = new TerminalSession(
+      async () => ({
+        socket: socket as never,
+        info: {
+          vmid: 100,
+          node: 'pve',
+          type: 'qemu',
+          ticket: { port: 5900, ticket: 'ticket', upid: 'upid', user: 'root@pam' },
+          websocketUrl: 'wss://pve.local/ws',
+          authMessage: 'root@pam:ticket\n'
+        }
+      }),
+      {
+        reconnect: false,
+        reconnectIntervalMs: 1500,
+        reconnectMaxAttempts: 1
+      }
+    );
+
+    await session.start();
+
+    expect(() => {
+      socket.emit('error', new Error('WebSocket was closed before the connection was established'));
+    }).not.toThrow();
+  });
+
+  it('bridge closes session safely when browser closes before session ready', async () => {
+    const socket = new mockedWs.MockWebSocket('wss://pve.local/ws');
+    const session = new TerminalSession(
+      async () => ({
+        socket: socket as never,
+        info: {
+          vmid: 100,
+          node: 'pve',
+          type: 'qemu',
+          ticket: { port: 5900, ticket: 'ticket', upid: 'upid', user: 'root@pam' },
+          websocketUrl: 'wss://pve.local/ws',
+          authMessage: 'root@pam:ticket\n'
+        }
+      }),
+      {
+        reconnect: false,
+        reconnectIntervalMs: 1500,
+        reconnectMaxAttempts: 1
+      }
+    );
+
+    const browserSocket = new mockedWs.MockWebSocket('ws://browser') as never;
+    bridgeTerminalSessionToSocket(session, browserSocket);
+
+    await session.start();
+
+    expect(() => {
+      browserSocket.emit('close');
+      socket.emit('error', new Error('WebSocket was closed before the connection was established'));
+    }).not.toThrow();
   });
 });
