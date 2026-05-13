@@ -14,8 +14,10 @@ import Storage from "./api/storage.js";
 import type {AnyArgs, API, MethodKey, Params, Ret} from "./api/index.js";
 import Version from "./api/version.js";
 import {Display} from "./helpers/Display.js";
+import {NoVNCFacade} from "./helpers/NoVNC.js";
 import {Terminal, TerminalRenderer, TerminalSession, TerminalState, bridgeTerminalSessionToSocket, openTerminalBridge} from "./helpers/Terminal.js";
 import type {TerminalTicket, TerminalConnectionInfo, TerminalOpenOptions, TerminalRendererState, TerminalPipe, TerminalBridgeOptions, TerminalBrowserSocket, TerminalBrowserMessage} from "./helpers/Terminal.js";
+import type {NoVNCConnectionOptions, NoVNCViewportOptions, NoVNCQualityOptions, NoVNCEventMap, NoVNCEventName, NoVNCReconnectOptions, NoVNCReconnectAttempt} from "./helpers/NoVNC.js";
 import {TimerPulledEventEmitter} from "./helpers/TimerPulledEventEmitter.js";
 
 
@@ -475,6 +477,14 @@ export function createAPI(client: Client): APIClient {
 
 // Re-export Terminal helpers for convenience
 export {
+    NoVNCFacade,
+    type NoVNCConnectionOptions,
+    type NoVNCViewportOptions,
+    type NoVNCQualityOptions,
+    type NoVNCEventMap,
+    type NoVNCEventName,
+    type NoVNCReconnectOptions,
+    type NoVNCReconnectAttempt,
     Terminal,
     TerminalRenderer,
     TerminalSession,

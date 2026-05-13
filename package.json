@@ -57,6 +57,7 @@
     "access": "public"
   },
   "dependencies": {
+    "@novnc/novnc": "^1.7.0",
     "terminal.js": "github:Gottox/terminal.js",
     "wcwidth": "^1.0.1",
     "ws": "^8.19.0"

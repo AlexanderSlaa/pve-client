@@ -538,7 +538,14 @@ export function bridgeTerminalSessionToSocket(
 
         const inputCols = parsedFrame.cols;
         const inputRows = parsedFrame.rows;
-        if (Number.isInteger(inputCols) && Number.isInteger(inputRows) && inputCols > 0 && inputRows > 0) {
+        const hasInputSize =
+            inputCols !== undefined
+            && inputRows !== undefined
+            && Number.isInteger(inputCols)
+            && Number.isInteger(inputRows)
+            && inputCols > 0
+            && inputRows > 0;
+        if (hasInputSize) {
             // Attach size to input frames so stdin is always interpreted against
             // the latest client geometry, even if a standalone resize frame was missed.
             latestResize = {cols: inputCols, rows: inputRows};

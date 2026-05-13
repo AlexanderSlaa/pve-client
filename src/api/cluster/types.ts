@@ -1,3 +1,5 @@
+// AUTO-GENERATED FILE: this large endpoint type surface is generated from Proxmox specs.
+// Keep manual edits minimal; prefer generator/source updates and plan future modular refactors.
 // Shared ClusterAPI type for all cluster endpoint factories
 // --- BEGIN ClusterAPI type definition ---
 // (Copy-paste from cluster.ts, lines 4-3187)

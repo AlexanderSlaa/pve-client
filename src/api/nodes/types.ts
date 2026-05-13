@@ -1,3 +1,5 @@
+// AUTO-GENERATED FILE: this large endpoint type surface is generated from Proxmox specs.
+// Keep manual edits minimal; prefer generator/source updates and plan future modular refactors.
 // Shared types for nodes endpoint group modules
 
 export type Service =
