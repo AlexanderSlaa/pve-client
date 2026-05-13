@@ -95,17 +95,80 @@ export type TerminalBrowserSocket = {
 export type TerminalBridgeOptions = {
     /** Browser resize frame prefix, defaults to `R:` */
     resizePrefix?: string;
+    /** Enables bridge frame-order tracing to the configured logger */
+    trace?: boolean;
+    /** Optional logger used when trace is enabled, defaults to console.debug */
+    traceLogger?: (line: string) => void;
+    /** Optional trace label to identify the bridged session */
+    traceLabel?: string;
     /** Delay before sending a one-time prompt nudge, defaults to 400ms */
     promptNudgeMs?: number;
     /** One-time prompt nudge payload, defaults to carriage return */
     promptNudgeInput?: string;
+    /**
+     * Maximum output bytes allowed before suppressing the prompt nudge, defaults to 8.
+     *
+     * Why this exists:
+     * - Some guests emit a tiny startup fragment before actually showing a prompt.
+     * - If we suppress nudge on any output, initial prompt can regress.
+     * - If we always nudge, delayed carriage return can relocate cursor after real output.
+     *
+     * This threshold keeps one nudge for tiny handshake noise, but blocks it once
+     * substantial output has started to avoid cursor-jump regressions.
+     */
+    promptNudgeMaxOutputBytes?: number;
     /** Frame formatter for terminal-session errors sent back to browser socket */
     onErrorFrame?: (error: Error) => Buffer | string | undefined;
     /** Browser socket close code when terminal session closes, defaults to 1001 */
     closeCodeOnSessionClose?: number;
     /** Browser socket close reason when terminal session closes */
     closeReasonOnSessionClose?: string;
+    /** Pre-buffered browser input to process once session is ready */
+    initialInputs?: string[];
 };
+
+type ParsedBrowserFrame =
+    | { kind: "resize"; cols: number; rows: number; source: "json" | "legacy" }
+    | { kind: "input"; data: string; source: "json" | "legacy"; cols?: number; rows?: number };
+
+function parseBrowserFrame(text: string, resizePrefix: string): ParsedBrowserFrame {
+    // Structured JSON frames are the primary protocol. We keep legacy parsing
+    // for backward compatibility with older browser senders.
+    if (text.startsWith("{")) {
+        try {
+            const parsed = JSON.parse(text) as { type?: unknown; cols?: unknown; rows?: unknown; data?: unknown };
+            if (parsed.type === "resize") {
+                const cols = Number(parsed.cols);
+                const rows = Number(parsed.rows);
+                if (Number.isInteger(cols) && Number.isInteger(rows) && cols > 0 && rows > 0) {
+                    return { kind: "resize", cols, rows, source: "json" };
+                }
+            }
+            if (parsed.type === "input" && typeof parsed.data === "string") {
+                const cols = Number(parsed.cols);
+                const rows = Number(parsed.rows);
+                const hasSize = Number.isInteger(cols) && Number.isInteger(rows) && cols > 0 && rows > 0;
+                if (hasSize) {
+                    return { kind: "input", data: parsed.data, source: "json", cols, rows };
+                }
+                return { kind: "input", data: parsed.data, source: "json" };
+            }
+        } catch {
+            // Fall through to legacy format parsing.
+        }
+    }
+
+    if (text.startsWith(resizePrefix)) {
+        const [cols, rows] = text.slice(resizePrefix.length).split(":");
+        const parsedCols = Number(cols);
+        const parsedRows = Number(rows);
+        if (Number.isInteger(parsedCols) && Number.isInteger(parsedRows) && parsedCols > 0 && parsedRows > 0) {
+            return { kind: "resize", cols: parsedCols, rows: parsedRows, source: "legacy" };
+        }
+    }
+
+    return { kind: "input", data: text, source: "legacy" };
+}
 
 function rawToBuffer(data: RawData): Buffer {
     if (typeof data === "string") return Buffer.from(data);
@@ -434,37 +497,73 @@ export function bridgeTerminalSessionToSocket(
     const resizePrefix = options.resizePrefix ?? "R:";
     const promptNudgeMs = options.promptNudgeMs ?? 400;
     const promptNudgeInput = options.promptNudgeInput ?? "\r";
+    const promptNudgeMaxOutputBytes = options.promptNudgeMaxOutputBytes ?? 8;
     const closeCodeOnSessionClose = options.closeCodeOnSessionClose ?? 1001;
+    const traceEnabled = options.trace ?? false;
+    const traceLogger = options.traceLogger ?? ((line: string) => console.debug(line));
+    const traceLabel = options.traceLabel ?? "terminal-bridge";
+    let traceSequence = 0;
+
+    const trace = (event: string, details: string) => {
+        if (!traceEnabled) return;
+        traceSequence += 1;
+        traceLogger(`[${traceLabel}] #${traceSequence} ${event} ${details}`);
+    };
 
     let sessionReady = false;
     let browserClosed = false;
-    const pendingInputs: string[] = [];
-    let sawTerminalOutput = false;
+    let latestResize: { cols: number; rows: number } | undefined;
+    const pendingInputs: Array<{ text: string; fromPreReadyQueue: boolean }> =
+        (options.initialInputs ?? []).map((text) => ({text, fromPreReadyQueue: true}));
+    let outputSinceReadyBytes = 0;
     let sawUserStdin = false;
     let promptNudgeTimer: ReturnType<typeof setTimeout> | undefined;
 
-    const forwardBrowserInput = (text: string) => {
+    const forwardBrowserInput = (text: string, fromPreReadyQueue = false) => {
         if (!sessionReady) {
-            pendingInputs.push(text);
+            trace("browser-queue", `len=${text.length}`);
+            pendingInputs.push({text, fromPreReadyQueue: true});
             return;
         }
 
-        if (text.startsWith(resizePrefix)) {
-            const [cols, rows] = text.slice(resizePrefix.length).split(":");
-            const parsedCols = Number(cols);
-            const parsedRows = Number(rows);
-            if (Number.isInteger(parsedCols) && Number.isInteger(parsedRows) && parsedCols > 0 && parsedRows > 0) {
-                session.emit("resize", parsedCols, parsedRows);
-            }
+        const parsedFrame = parseBrowserFrame(text, resizePrefix);
+        trace("browser-frame", `kind=${parsedFrame.kind} source=${parsedFrame.source} preReady=${fromPreReadyQueue}`);
+
+        if (parsedFrame.kind === "resize") {
+            latestResize = {cols: parsedFrame.cols, rows: parsedFrame.rows};
+            trace("emit-resize", `cols=${parsedFrame.cols} rows=${parsedFrame.rows}`);
+            session.emit("resize", parsedFrame.cols, parsedFrame.rows);
             return;
         }
 
-        sawUserStdin = true;
-        session.write(text);
+        const inputCols = parsedFrame.cols;
+        const inputRows = parsedFrame.rows;
+        if (Number.isInteger(inputCols) && Number.isInteger(inputRows) && inputCols > 0 && inputRows > 0) {
+            // Attach size to input frames so stdin is always interpreted against
+            // the latest client geometry, even if a standalone resize frame was missed.
+            latestResize = {cols: inputCols, rows: inputRows};
+            trace("input-resize", `cols=${inputCols} rows=${inputRows}`);
+            session.emit("resize", inputCols, inputRows);
+        }
+
+        if (latestResize) {
+            // Re-emit latest known resize right before stdin to avoid a PTY state
+            // where output is at one geometry but input cursor is at another.
+            trace("reapply-resize", `cols=${latestResize.cols} rows=${latestResize.rows}`);
+            session.emit("resize", latestResize.cols, latestResize.rows);
+        }
+
+        const isQueuedPromptTrigger = fromPreReadyQueue && parsedFrame.data === promptNudgeInput;
+        if (!isQueuedPromptTrigger) {
+            sawUserStdin = true;
+        }
+        trace("stdin-write", `bytes=${Buffer.byteLength(parsedFrame.data, "utf8")}`);
+        session.write(parsedFrame.data);
     };
 
     browserSocket.on("message", (raw) => {
         const text = browserMessageToUtf8(raw);
+        trace("browser-message", `len=${text.length}`);
         forwardBrowserInput(text);
     });
 
@@ -478,11 +577,10 @@ export function bridgeTerminalSessionToSocket(
     });
 
     session.on("data", (data) => {
-        sawTerminalOutput = true;
-        if (promptNudgeTimer) {
-            clearTimeout(promptNudgeTimer);
-            promptNudgeTimer = undefined;
+        if (sessionReady) {
+            outputSinceReadyBytes += data.length;
         }
+        trace("session-data", `bytes=${data.length}`);
 
         if (browserSocket.readyState === browserSocket.OPEN) {
             browserSocket.send(data);
@@ -505,17 +603,65 @@ export function bridgeTerminalSessionToSocket(
 
     session.once("ready", () => {
         sessionReady = true;
+        trace("session-ready", `queued=${pendingInputs.length}`);
 
         for (const input of pendingInputs) {
-            forwardBrowserInput(input);
+            forwardBrowserInput(input.text, input.fromPreReadyQueue);
         }
         pendingInputs.length = 0;
 
         promptNudgeTimer = setTimeout(() => {
-            if (browserClosed || !sessionReady || sawTerminalOutput || sawUserStdin) return;
+            if (browserClosed || !sessionReady || sawUserStdin) return;
+            if (outputSinceReadyBytes > promptNudgeMaxOutputBytes) {
+                trace("prompt-nudge-skip", `outputBytes=${outputSinceReadyBytes}`);
+                return;
+            }
+            // One-time fallback Enter for guests that delay first prompt until input.
+            // This is intentionally gated by output/user-input heuristics above.
+            trace("prompt-nudge", `bytes=${Buffer.byteLength(promptNudgeInput, "utf8")}`);
             session.write(promptNudgeInput);
         }, promptNudgeMs);
     });
+}
+
+/**
+ * Open a terminal session and bridge it to a browser socket while preserving
+ * browser input that may arrive before the session is available.
+ */
+export async function openTerminalBridge(
+    terminal: Terminal,
+    browserSocket: TerminalBrowserSocket,
+    openOptions: TerminalOpenOptions = {},
+    bridgeOptions: TerminalBridgeOptions = {}
+): Promise<TerminalSession> {
+    const preOpenInputs: string[] = [];
+    let bridgeAttached = false;
+    let browserClosedBeforeAttach = false;
+
+    browserSocket.on("message", (raw) => {
+        if (bridgeAttached) return;
+        preOpenInputs.push(browserMessageToUtf8(raw));
+    });
+
+    browserSocket.on("close", () => {
+        if (!bridgeAttached) {
+            browserClosedBeforeAttach = true;
+        }
+    });
+
+    const session = await terminal.open(openOptions);
+    if (browserClosedBeforeAttach) {
+        session.close();
+        return session;
+    }
+
+    bridgeAttached = true;
+    bridgeTerminalSessionToSocket(session, browserSocket, {
+        ...bridgeOptions,
+        initialInputs: [...preOpenInputs, ...(bridgeOptions.initialInputs ?? [])],
+    });
+
+    return session;
 }
 
 /**

@@ -1,5 +1,6 @@
 import {Agent} from "node:https";
 import {Client} from "../src";
+import {attachLocalPromptNudge} from "../src/helpers/LocalPromptNudge.js";
 
 function requireEnv(name: string): string {
     const value = process.env[name]?.trim();
@@ -24,6 +25,7 @@ async function main() {
     const terminal = client.helpers.terminal(vmid);
     const info = await terminal.getConnectionInfo();
     const session = await terminal.open({rejectUnauthorized: false});
+    const cleanupPromptNudge = attachLocalPromptNudge(session);
 
     const onResize = () => {
         const cols = process.stdout.columns ?? 80;
@@ -41,6 +43,7 @@ async function main() {
     };
 
     const cleanup = () => {
+        cleanupPromptNudge();
         process.stdout.off("resize", onResize);
         process.stdin.off("data", onInput);
         if (process.stdin.isTTY) process.stdin.setRawMode(false);
