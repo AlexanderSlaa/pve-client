@@ -3,22 +3,25 @@
  * - Generates TSDoc for every endpoint function (description + @endpoint + parameter list)
  */
 import {Agent} from "node:https";
-import native_fetch from "./fetch";
-import Access from "./api/access";
-import type {ClusterAPI} from "./api/cluster";
-import Cluster from "./api/cluster";
-import type {NodesAPI} from "./api/nodes";
-import Nodes from "./api/nodes";
-import Pools from "./api/pools";
-import Storage from "./api/storage";
-import type {AnyArgs, API, MethodKey, Params, Ret} from "./api";
-import Version from "./api/version";
-import {Display} from "./helpers/Display";
-import {Terminal} from "./helpers/Terminal";
-import {TimerPulledEventEmitter} from "./helpers/TimerPulledEventEmitter";
+import native_fetch from "./fetch.js";
+import Access from "./api/access.js";
+import type {ClusterAPI} from "./api/cluster/types.js";
+import Cluster from "./api/cluster/index.js";
+import type {NodesAPI} from "./api/nodes/types.js";
+import Nodes from "./api/nodes/index.js";
+import Pools from "./api/pools.js";
+import Storage from "./api/storage.js";
+import type {AnyArgs, API, MethodKey, Params, Ret} from "./api/index.js";
+import Version from "./api/version.js";
+import {Display} from "./helpers/Display.js";
+import {NoVNCFacade} from "./helpers/NoVNC.js";
+import {Terminal, TerminalRenderer, TerminalSession, TerminalState, bridgeTerminalSessionToSocket, openTerminalBridge} from "./helpers/Terminal.js";
+import type {TerminalTicket, TerminalConnectionInfo, TerminalOpenOptions, TerminalRendererState, TerminalPipe, TerminalBridgeOptions, TerminalBrowserSocket, TerminalBrowserMessage} from "./helpers/Terminal.js";
+import type {NoVNCConnectionOptions, NoVNCViewportOptions, NoVNCQualityOptions, NoVNCEventMap, NoVNCEventName, NoVNCReconnectOptions, NoVNCReconnectAttempt} from "./helpers/NoVNC.js";
+import {TimerPulledEventEmitter} from "./helpers/TimerPulledEventEmitter.js";
 
 
-export type FetchLike<Input extends string | URL | Request = string | URL, Init extends RequestInit = RequestInit, Out extends Request = Request> = (input: Input, init?: Init) => Promise<Out>;
+export type FetchLike<Input extends string | URL | Request = string | URL, Init extends RequestInit = RequestInit, Out extends Response = Response> = (input: Input, init?: Init) => Promise<Out>;
 
 export type ClientOptions = (
     {
@@ -45,6 +48,7 @@ type ClusterResource = ClusterAPI["/cluster/resources"]["GET"]["return"][number]
 type ClusterTask = ClusterAPI["/cluster/tasks"]["GET"]["return"][number];
 type TaskStatusReturn = NodesAPI["/nodes/{node}/tasks/{upid}/status"]["GET"]["return"];
 type TaskLogLine = NodesAPI["/nodes/{node}/tasks/{upid}/log"]["GET"]["return"][number];
+type LoginResponse = { ticket: string; CSRFPreventionToken: string };
 
 export type TaskState = "running" | "stopped" | "failed";
 export type TaskUpdate = {
@@ -67,14 +71,35 @@ export type APIClient = {
     version: ReturnType<typeof Version>;
 };
 
+/** The node-scoped sub-API returned by `client.api.nodes.get(node)`. */
+export type NodeScopedAPI = ReturnType<ReturnType<typeof Nodes>['get']>;
+
+/** The per-VM sub-API returned by `client.api.nodes.get(node).qemu.vmid(id)`. */
+export type QemuScopedAPI = ReturnType<NodeScopedAPI['qemu']['vmid']>;
+
+/** The per-container sub-API returned by `client.api.nodes.get(node).lxc.id(vmid)`. */
+export type LxcScopedAPI = ReturnType<NodeScopedAPI['lxc']['id']>;
+
+/** The node-storage sub-API returned by `client.api.nodes.get(node).storage`. */
+export type NodeStorageScopedAPI = NodeScopedAPI['storage'];
+
+/** The storage-item sub-API returned by `client.api.nodes.get(node).storage.get(name)`. */
+export type StorageItemAPI = ReturnType<NodeStorageScopedAPI['get']>;
+
+/** The cluster sub-API returned by `client.api.cluster`. */
+export type ClusterScopedAPI = ReturnType<typeof Cluster>;
+
+/** The access sub-API returned by `client.api.access`. */
+export type AccessScopedAPI = ReturnType<typeof Access>;
+
 
 export class Client {
     private readonly baseUrl: string;
     private readonly apiPath: string;
-    private readonly fetchImpl: FetchLike<any, any, any>;
+    private readonly fetchImpl: FetchLike;
     private readonly opts: ClientOptions;
     private auth: AuthState = {};
-    private readonly eventMonitors = new Map<string, TimerPulledEventEmitter<any>>();
+    private readonly eventMonitors = new Map<string, unknown>();
 
     /**
      * Structured API surface generated from the spec.
@@ -111,10 +136,10 @@ export class Client {
                     const [status, logs] = await Promise.all([
                         this.request("/nodes/{node}/tasks/{upid}/status", "GET", {
                             $path: {node, upid},
-                        } as any) as Promise<TaskStatusReturn>,
+                        }) as Promise<TaskStatusReturn>,
                         this.request("/nodes/{node}/tasks/{upid}/log", "GET", {
                             $path: {node, upid},
-                        } as any) as Promise<TaskLogLine[]>,
+                        }) as Promise<TaskLogLine[]>,
                     ]);
 
                     let logsChanged = false;
@@ -206,11 +231,7 @@ export class Client {
 
     public readonly helpers = {
         terminal: (vmid: string | number): Terminal => {
-            if ("apiToken" in this.opts) {
-                throw new Error(
-                    "Terminal helper requires username/password auth in Proxmox and is not supported with API tokens."
-                );
-            }
+            // Terminal now supports both login-cookie auth and API-token auth.
             return new Terminal(vmid, this);
         },
         display: (vmid: string | number): Display => new Display(vmid, this),
@@ -221,16 +242,16 @@ export class Client {
             const existing = this.eventMonitors.get("resources");
             if (existing) return existing as TimerPulledEventEmitter<Record<string, ClusterResource>>;
 
-            const monitor = new TimerPulledEventEmitter<Record<string, ClusterResource>>(async ({publish}) => {
+            const monitor = new TimerPulledEventEmitter<Record<string, ClusterResource>>(async ({publish}: { publish: <K extends string>(key: K, value: ClusterResource) => boolean }) => {
                 const resources = await this.request("/cluster/resources", "GET", {
                     $query: {type: "vm"},
-                } as any) as ClusterResource[];
+                } as const) as ClusterResource[];
                 for (const resource of resources) {
                     if (!resource.id) continue;
                     publish(resource.id, resource);
                 }
             });
-            this.eventMonitors.set("resources", monitor);
+            this.eventMonitors.set("resources", monitor as unknown);
             return monitor;
         },
 
@@ -238,8 +259,8 @@ export class Client {
             const existing = this.eventMonitors.get("tasks");
             if (existing) return existing as TimerPulledEventEmitter<Record<string, ClusterTask> & {task: ClusterTask}>;
 
-            const monitor = new TimerPulledEventEmitter<Record<string, ClusterTask> & {task: ClusterTask}>(async ({publish}) => {
-                const tasks = await this.request("/cluster/tasks", "GET", {} as any) as ClusterTask[];
+            const monitor = new TimerPulledEventEmitter<Record<string, ClusterTask> & {task: ClusterTask}>(async ({publish}: { publish: <K extends string>(key: K, value: ClusterTask) => boolean }) => {
+                const tasks = await this.request("/cluster/tasks", "GET", {}) as ClusterTask[];
                 for (const task of tasks) {
                     if (!task.upid) continue;
                     publish(task.upid, task);
@@ -248,17 +269,17 @@ export class Client {
             // Convenience event: subscribe to all task updates with a single event name.
             monitor.filter(
                 () => true,
-                (task) => {
+                (task: ClusterTask) => {
                     monitor.emit("task", task);
                 }
             );
-            this.eventMonitors.set("tasks", monitor);
+            this.eventMonitors.set("tasks", monitor as unknown);
             return monitor;
         },
 
         stopListening: (): void => {
             for (const monitor of this.eventMonitors.values()) {
-                monitor.destroy();
+                (monitor as TimerPulledEventEmitter<Record<string, unknown>>).destroy();
             }
             this.eventMonitors.clear();
         },
@@ -291,32 +312,32 @@ export class Client {
         const realm = this.opts.realm ?? "pam";
 
         // Proxmox: POST /access/ticket with form fields username, password, realm
-        const data: any = await this.request("/access/ticket", 'POST', {
-            $body: {username: this.opts.username, password: this.opts.password, realm} as any,
-        } as any);
+        const data = await this.request("/access/ticket", 'POST', {
+            $body: {username: this.opts.username, password: this.opts.password, realm},
+        }) as LoginResponse;
 
-        if (!data?.ticket || !data?.CSRFPreventionToken) {
+        if (!data.ticket || !data.CSRFPreventionToken) {
             throw new Error("Invalid login response: missing ticket or CSRFPreventionToken.");
         }
 
-        this.auth.ticket = data?.ticket;
-        this.auth.csrf = data?.CSRFPreventionToken;
+        this.auth.ticket = data.ticket;
+        this.auth.csrf = data.CSRFPreventionToken;
         return this;
     }
 
-    private buildUrl(path: string, query?: Record<string, any>): string {
+    private buildUrl(path: string, query?: Record<string, unknown>): string {
         const url = new URL(this.baseUrl + this.apiPath + path);
         if (query) {
             for (const [k, v] of Object.entries(query)) {
                 if (v === undefined || v === null) continue;
-                if (Array.isArray(v)) for (const item of v) url.searchParams.append(k, String(item));
-                else url.searchParams.set(k, String(v));
+                if (Array.isArray(v)) for (const item of v) url.searchParams.append(k, this.serializeScalar(item));
+                else url.searchParams.set(k, this.serializeScalar(v));
             }
         }
         return url.toString();
     }
 
-    url(path: string, query?: Record<string, any>): string {
+    url(path: string, query?: Record<string, unknown>): string {
         return this.buildUrl(path, query);
     }
 
@@ -332,19 +353,26 @@ export class Client {
             : `PVEAPIToken=${this.opts.apiToken}`;
     }
 
-    private encodeForm(body: any): string {
+    private serializeScalar(value: unknown): string {
+        if (typeof value === "boolean") {
+            return value ? "1" : "0";
+        }
+        return String(value);
+    }
+
+    private encodeForm(body: Record<string, unknown> | undefined): string {
         const sp = new URLSearchParams();
         for (const [k, v] of Object.entries(body ?? {})) {
             if (v === undefined || v === null) continue;
-            if (Array.isArray(v)) for (const item of v) sp.append(k, String(item));
+            if (Array.isArray(v)) for (const item of v) sp.append(k, this.serializeScalar(item));
             else if (typeof v === "object") sp.set(k, JSON.stringify(v));
-            else sp.set(k, String(v));
+            else sp.set(k, this.serializeScalar(v));
         }
         return sp.toString();
     }
 
     private authHeaders(extra?: Record<string, string | undefined> | undefined): Record<string, string> {
-        let h: Record<string, string> = Object.fromEntries(Object.entries(extra ?? {}).filter(([_, v]) => v !== undefined)) as Record<string, string>
+        let h: Record<string, string> = Object.fromEntries(Object.entries(extra ?? {}).filter(([, v]) => v !== undefined)) as Record<string, string>
 
         if ("apiToken" in this.opts) {
             h["Authorization"] = this.opts.apiToken?.startsWith("PVEAPIToken=")
@@ -370,7 +398,7 @@ export class Client {
         args: Params<P, M>,
         requestInit?: RequestInit,
     ): Promise<Ret<P, M>> => {
-        const a = args as unknown as AnyArgs;
+        const a = args as AnyArgs;
         let urlPath = String(path);
 
         if (a.$path) {
@@ -400,10 +428,10 @@ export class Client {
 
         if (a.$body !== undefined) {
             if (typeof a.$body === "string" || a.$body instanceof Blob) {
-                init.body = a.$body as any;
+                init.body = a.$body as BodyInit;
             } else {
-                (init.headers as any)["Content-Type"] = "application/x-www-form-urlencoded";
-                init.body = this.encodeForm(a.$body);
+                (init.headers as Record<string, string>)["Content-Type"] = "application/x-www-form-urlencoded";
+                init.body = this.encodeForm(a.$body as Record<string, unknown>);
             }
         }
 
@@ -416,10 +444,10 @@ export class Client {
         const ct = res.headers.get("content-type") || "";
         if (ct.includes("application/json")) {
             const json = await res.json();
-            return (json?.data ?? json) as any;
+            return (json?.data ?? json) as Ret<P, M>;
         }
 
-        return (await res.text()) as any;
+        return (await res.text()) as Ret<P, M>;
     }
 
     private getNodeFromUPID(upid: string): string {
@@ -446,3 +474,29 @@ export function createAPI(client: Client): APIClient {
         }
     ) as const;
 }
+
+// Re-export Terminal helpers for convenience
+export {
+    NoVNCFacade,
+    type NoVNCConnectionOptions,
+    type NoVNCViewportOptions,
+    type NoVNCQualityOptions,
+    type NoVNCEventMap,
+    type NoVNCEventName,
+    type NoVNCReconnectOptions,
+    type NoVNCReconnectAttempt,
+    Terminal,
+    TerminalRenderer,
+    TerminalSession,
+    TerminalState,
+    bridgeTerminalSessionToSocket,
+    openTerminalBridge,
+    type TerminalTicket,
+    type TerminalConnectionInfo,
+    type TerminalOpenOptions,
+    type TerminalRendererState,
+    type TerminalPipe,
+    type TerminalBridgeOptions,
+    type TerminalBrowserSocket,
+    type TerminalBrowserMessage,
+};

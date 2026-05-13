@@ -65,7 +65,7 @@ console.log(nodes);
 
 ## Using `.env`
 
-```env
+```bash
 PVE_BASE_URL=https://pve.example.com:8006
 PVE_API_TOKEN=PVEAPIToken=root@pam!mytoken=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ```
@@ -95,7 +95,7 @@ const nodes = await client.api.nodes.list();
 ### Path-based endpoints
 
 ```ts
-const nodeStatus = await client.api.nodes.get("pve").status.get();
+const vms = await client.api.nodes.get("pve").qemu.list();
 ```
 
 ### Endpoints with optional parameters
@@ -136,9 +136,66 @@ await client.api.access.permissions({
 - For self-signed certificates, pass a custom `https.Agent` with `rejectUnauthorized: false`.
 - Some Proxmox functionalities are only accessible with username/password ticket auth (session + CSRF) and are not available to API tokens, even if token permissions are broad.
 
-## Terminal Example (Local TTY)
+## Terminal
 
-There is a runnable example that opens a VM terminal and binds it to your local terminal (`stdin/stdout`):
+`pve-client` provides helpers for opening interactive terminals to VMs and containers via WebSocket.
+
+### Terminal Architecture
+
+Terminals use Proxmox's WebSocket-based VNC protocol. The helper manages:
+
+- **Ticket creation**: Gets a session token from Proxmox
+- **WebSocket connection**: Proxmox terminal protocol (`0:length:data` for input, etc.)
+- **Reconnection**: Automatic reconnect with configurable backoff
+- **Escape sequence parsing** (optional): Use `TerminalRenderer` to parse VT100/xterm sequences
+
+### Using TerminalRenderer (Browser UIs)
+
+For web-based terminals, the `TerminalRenderer` class parses escape sequences and maintains a terminal buffer:
+
+```ts
+import { Client, Terminal, TerminalRenderer } from "pve-client";
+
+const client = new Client({
+  baseUrl: "https://pve.example.com:8006",
+  apiToken: "...",
+});
+
+const terminal = new Terminal(100, client);
+const renderer = new TerminalRenderer(80, 24); // width x height
+
+// Subscribe to render events to update UI
+renderer.on("render", (state) => {
+  // state.state.screen is the parsed 2D character buffer
+  // state.dimensions contains {columns, rows}
+  updateTerminalUI(state);
+});
+
+const session = await terminal.open({ renderer });
+
+// Terminal resize (e.g., from window resize listener)
+session.emit("resize", newCols, newRows);
+
+// Send keyboard input to VM
+session.write("ls -la\n");
+
+// Handle session state changes
+session.on("state", (newState, prevState) => {
+  console.log("state:", newState, "prev:", prevState);
+});
+```
+
+`TerminalRenderer` uses [terminal.js](https://github.com/Gottox/terminal.js) (Gottox) for VT100/xterm compliance and exposes:
+
+- `.write(data)` — Feed raw terminal data (called automatically by the session)
+- `.resize(cols, rows)` — Resize the terminal
+- `.getState()` — Get current terminal state synchronously
+- `.clear()` — Clear the buffer
+- `render` event — Emitted after each write with updated state
+
+### Terminal Example (Local TTY)
+
+For Node.js environments, open a terminal and pipe to local `stdin/stdout`:
 
 ```bash
 npm run example/terminal -- 100
@@ -152,7 +209,7 @@ npm run example/terminal
 
 Example `.env` (username/password required for terminal helper):
 
-```env
+```bash
 PVE_BASE_URL=https://pve.example.com:8006
 PVE_USERNAME=root
 PVE_PASSWORD=your-password
@@ -175,7 +232,7 @@ npm run example/tasks
 
 Optional `.env` values:
 
-```env
+```bash
 # required
 PVE_BASE_URL=https://pve.example.com:8006
 
@@ -225,6 +282,22 @@ Current high-value suites cover:
 - `Client` authentication, request handling, events, and task polling
 - `native_fetch` request construction, header/body behavior, and abort handling
 - `TimerPulledEventEmitter` polling, filtering, dedupe, and error flows
+
+## Changelog
+
+### [1.2.0] - 2026-05-07
+
+#### Fixed
+- Corrected README example for path-based endpoints — replaced invalid `.status.get()` call with valid `nodes.get(node).qemu.list()` usage
+
+### [1.1.0] - 2026-04-09
+
+#### Added
+- LXC and QEMU methods on node (`nodes.get(node).qemu`, `nodes.get(node).lxc`)
+
+### [1.0.0] - 2026-02-25
+
+- Initial release
 
 ## License
 

@@ -53,9 +53,9 @@ async function bodyToBuffer(body: unknown): Promise<Buffer | undefined> {
     }
 
     // Node Readable -> buffer (basic support)
-    if (body && typeof (body as any).pipe === "function") {
+    if (body && typeof (body as unknown as { pipe?: () => unknown }).pipe === "function") {
         const chunks: Buffer[] = [];
-        for await (const chunk of body as any as AsyncIterable<Buffer | string>) {
+        for await (const chunk of body as unknown as AsyncIterable<Buffer | string>) {
             chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
         }
         return Buffer.concat(chunks);
@@ -160,12 +160,12 @@ const native_fetch: typeof fetch = async (
             const statusText = res.statusMessage ?? "";
 
             // Convert Node Readable -> Web ReadableStream for Response
-            const webBody = (Readable as any).toWeb
-                ? (Readable as any).toWeb(res)
-                : undefined;
+            const webBody = typeof (Readable as unknown as { toWeb?: (r: unknown) => unknown }).toWeb === "function"
+                ? ((Readable as unknown as { toWeb(r: unknown): unknown }).toWeb(res) as ReadableStream<Uint8Array>)
+                : null;
 
             // Note: Response() accepts null body; for HEAD responses body is empty anyway.
-            const response = new Response(webBody ?? null, {
+            const response = new Response(webBody, {
                 status,
                 statusText,
                 headers: resHeaders,
