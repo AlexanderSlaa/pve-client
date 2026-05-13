@@ -76,12 +76,57 @@ export type TerminalOpenOptions = {
     renderer?: TerminalRenderer;
 };
 
+export type TerminalBrowserMessage =
+    | string
+    | Buffer
+    | ArrayBuffer
+    | ArrayBufferView
+    | Array<Buffer | ArrayBuffer | ArrayBufferView>;
+
+export type TerminalBrowserSocket = {
+    readonly OPEN: number;
+    readonly readyState: number;
+    send(data: Buffer | string): void;
+    close(code?: number, reason?: string): void;
+    on(event: "message", listener: (data: TerminalBrowserMessage) => void): unknown;
+    on(event: "close", listener: () => void): unknown;
+};
+
+export type TerminalBridgeOptions = {
+    /** Browser resize frame prefix, defaults to `R:` */
+    resizePrefix?: string;
+    /** Delay before sending a one-time prompt nudge, defaults to 400ms */
+    promptNudgeMs?: number;
+    /** One-time prompt nudge payload, defaults to carriage return */
+    promptNudgeInput?: string;
+    /** Frame formatter for terminal-session errors sent back to browser socket */
+    onErrorFrame?: (error: Error) => Buffer | string | undefined;
+    /** Browser socket close code when terminal session closes, defaults to 1001 */
+    closeCodeOnSessionClose?: number;
+    /** Browser socket close reason when terminal session closes */
+    closeReasonOnSessionClose?: string;
+};
+
 function rawToBuffer(data: RawData): Buffer {
     if (typeof data === "string") return Buffer.from(data);
     if (Buffer.isBuffer(data)) return data;
     if (data instanceof ArrayBuffer) return Buffer.from(data);
     if (Array.isArray(data)) return Buffer.concat(data.map((part) => Buffer.isBuffer(part) ? part : Buffer.from(part)));
     throw new Error(`Unsupported websocket payload type: ${Object.prototype.toString.call(data)}`);
+}
+
+function browserMessageToUtf8(data: TerminalBrowserMessage): string {
+    if (typeof data === "string") return data;
+    if (Buffer.isBuffer(data)) return data.toString("utf8");
+    if (data instanceof ArrayBuffer) return Buffer.from(data).toString("utf8");
+    if (Array.isArray(data)) {
+        return Buffer.concat(data.map((part) => {
+            if (Buffer.isBuffer(part)) return part;
+            if (part instanceof ArrayBuffer) return Buffer.from(part);
+            return Buffer.from(part.buffer, part.byteOffset, part.byteLength);
+        })).toString("utf8");
+    }
+    return Buffer.from(data.buffer, data.byteOffset, data.byteLength).toString("utf8");
 }
 
 /**
@@ -367,6 +412,107 @@ export class TerminalSession extends EventEmitter<{
         this.once("close", () => target.close());
         return target;
     }
+}
+
+/**
+ * Bridge a browser websocket-like socket to an active TerminalSession.
+ *
+ * Features:
+ * - Buffers browser input until session emits `ready`
+ * - Handles browser resize control frames (default prefix `R:`)
+ * - Forwards session data/close/error to browser socket
+ * - Sends optional one-time prompt nudge after readiness when idle
+ */
+export function bridgeTerminalSessionToSocket(
+    session: TerminalSession,
+    browserSocket: TerminalBrowserSocket,
+    options: TerminalBridgeOptions = {}
+): void {
+    const resizePrefix = options.resizePrefix ?? "R:";
+    const promptNudgeMs = options.promptNudgeMs ?? 400;
+    const promptNudgeInput = options.promptNudgeInput ?? "\r";
+    const closeCodeOnSessionClose = options.closeCodeOnSessionClose ?? 1001;
+
+    let sessionReady = false;
+    let browserClosed = false;
+    const pendingInputs: string[] = [];
+    let sawTerminalOutput = false;
+    let sawUserStdin = false;
+    let promptNudgeTimer: ReturnType<typeof setTimeout> | undefined;
+
+    const forwardBrowserInput = (text: string) => {
+        if (!sessionReady) {
+            pendingInputs.push(text);
+            return;
+        }
+
+        if (text.startsWith(resizePrefix)) {
+            const [cols, rows] = text.slice(resizePrefix.length).split(":");
+            const parsedCols = Number(cols);
+            const parsedRows = Number(rows);
+            if (Number.isInteger(parsedCols) && Number.isInteger(parsedRows) && parsedCols > 0 && parsedRows > 0) {
+                session.emit("resize", parsedCols, parsedRows);
+            }
+            return;
+        }
+
+        sawUserStdin = true;
+        session.write(text);
+    };
+
+    browserSocket.on("message", (raw) => {
+        const text = browserMessageToUtf8(raw);
+        forwardBrowserInput(text);
+    });
+
+    browserSocket.on("close", () => {
+        browserClosed = true;
+        if (promptNudgeTimer) {
+            clearTimeout(promptNudgeTimer);
+            promptNudgeTimer = undefined;
+        }
+        session.close();
+    });
+
+    session.on("data", (data) => {
+        sawTerminalOutput = true;
+        if (promptNudgeTimer) {
+            clearTimeout(promptNudgeTimer);
+            promptNudgeTimer = undefined;
+        }
+
+        if (browserSocket.readyState === browserSocket.OPEN) {
+            browserSocket.send(data);
+        }
+    });
+
+    session.on("close", () => {
+        if (browserSocket.readyState === browserSocket.OPEN) {
+            browserSocket.close(closeCodeOnSessionClose, options.closeReasonOnSessionClose);
+        }
+    });
+
+    session.on("error", (err) => {
+        if (browserSocket.readyState !== browserSocket.OPEN) return;
+        const errorFrame = options.onErrorFrame?.(err);
+        if (errorFrame !== undefined) {
+            browserSocket.send(errorFrame);
+        }
+    });
+
+    session.once("ready", () => {
+        sessionReady = true;
+
+        for (const input of pendingInputs) {
+            forwardBrowserInput(input);
+        }
+        pendingInputs.length = 0;
+
+        promptNudgeTimer = setTimeout(() => {
+            if (browserClosed || !sessionReady || sawTerminalOutput || sawUserStdin) return;
+            session.write(promptNudgeInput);
+        }, promptNudgeMs);
+    });
 }
 
 /**

@@ -14,8 +14,8 @@ import Storage from "./api/storage.js";
 import type {AnyArgs, API, MethodKey, Params, Ret} from "./api/index.js";
 import Version from "./api/version.js";
 import {Display} from "./helpers/Display.js";
-import {Terminal, TerminalRenderer, TerminalSession, TerminalState} from "./helpers/Terminal.js";
-import type {TerminalTicket, TerminalConnectionInfo, TerminalOpenOptions, TerminalRendererState, TerminalPipe} from "./helpers/Terminal.js";
+import {Terminal, TerminalRenderer, TerminalSession, TerminalState, bridgeTerminalSessionToSocket} from "./helpers/Terminal.js";
+import type {TerminalTicket, TerminalConnectionInfo, TerminalOpenOptions, TerminalRendererState, TerminalPipe, TerminalBridgeOptions, TerminalBrowserSocket, TerminalBrowserMessage} from "./helpers/Terminal.js";
 import {TimerPulledEventEmitter} from "./helpers/TimerPulledEventEmitter.js";
 
 
@@ -479,9 +479,13 @@ export {
     TerminalRenderer,
     TerminalSession,
     TerminalState,
+    bridgeTerminalSessionToSocket,
     type TerminalTicket,
     type TerminalConnectionInfo,
     type TerminalOpenOptions,
     type TerminalRendererState,
     type TerminalPipe,
+    type TerminalBridgeOptions,
+    type TerminalBrowserSocket,
+    type TerminalBrowserMessage,
 };
