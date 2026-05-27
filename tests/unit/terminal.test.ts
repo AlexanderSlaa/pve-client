@@ -562,6 +562,307 @@ describe('Terminal session resiliency', () => {
     expect(rightFrame).toBeDefined();
   });
 
+  it('normalizes SS3 cursor keys when normalizeSs3CursorKeys is enabled', async () => {
+    const socket = new mockedWs.MockWebSocket('wss://pve.local/ws');
+    const session = new TerminalSession(
+      async () => ({
+        socket: socket as never,
+        info: {
+          vmid: 100,
+          node: 'pve',
+          type: 'qemu',
+          ticket: { port: 5900, ticket: 'ticket', upid: 'upid', user: 'root@pam' },
+          websocketUrl: 'wss://pve.local/ws',
+          authMessage: 'root@pam:ticket\n'
+        }
+      }),
+      {
+        reconnect: false,
+        reconnectIntervalMs: 1500,
+        reconnectMaxAttempts: 1
+      }
+    );
+
+    const browserSocket = new mockedWs.MockWebSocket('ws://browser') as never;
+    bridgeTerminalSessionToSocket(session, browserSocket, {
+      promptNudgeMs: 60_000,
+      normalizeSs3CursorKeys: true
+    });
+
+    await session.start();
+    socket.readyState = mockedWs.MockWebSocket.OPEN;
+    socket.emit('open');
+    socket.emit('message', Buffer.from('OK'));
+
+    browserSocket.emit('message', Buffer.from('\u001bOD\u001bOC\u001bOA\u001bOB', 'utf8'), true);
+
+    const inputFrames = socket.sent
+      .filter((frame) => sentFrameText(frame).startsWith('0:12:'))
+      .map((frame) => Buffer.isBuffer(frame) ? frame : Buffer.from(frame, 'utf8'));
+
+    expect(inputFrames.length).toBe(1);
+    expect(inputFrames[0]).toEqual(Buffer.from('0:12:\u001b[D\u001b[C\u001b[A\u001b[B', 'utf8'));
+  });
+
+  it('normalizes only up/down SS3 keys in vertical-only mode', async () => {
+    const socket = new mockedWs.MockWebSocket('wss://pve.local/ws');
+    const session = new TerminalSession(
+      async () => ({
+        socket: socket as never,
+        info: {
+          vmid: 100,
+          node: 'pve',
+          type: 'qemu',
+          ticket: { port: 5900, ticket: 'ticket', upid: 'upid', user: 'root@pam' },
+          websocketUrl: 'wss://pve.local/ws',
+          authMessage: 'root@pam:ticket\n'
+        }
+      }),
+      {
+        reconnect: false,
+        reconnectIntervalMs: 1500,
+        reconnectMaxAttempts: 1
+      }
+    );
+
+    const browserSocket = new mockedWs.MockWebSocket('ws://browser') as never;
+    bridgeTerminalSessionToSocket(session, browserSocket, {
+      promptNudgeMs: 60_000,
+      normalizeSs3CursorKeys: true,
+      normalizeSs3CursorKeysMode: 'vertical-only'
+    });
+
+    await session.start();
+    socket.readyState = mockedWs.MockWebSocket.OPEN;
+    socket.emit('open');
+    socket.emit('message', Buffer.from('OK'));
+
+    browserSocket.emit('message', Buffer.from('\u001bOD\u001bOC\u001bOA\u001bOB', 'utf8'), true);
+
+    const inputFrames = socket.sent
+      .filter((frame) => sentFrameText(frame).startsWith('0:12:'))
+      .map((frame) => Buffer.isBuffer(frame) ? frame : Buffer.from(frame, 'utf8'));
+
+    expect(inputFrames.length).toBe(1);
+    expect(inputFrames[0]).toEqual(Buffer.from('0:12:\u001bOD\u001bOC\u001b[A\u001b[B', 'utf8'));
+  });
+
+  it('simplifies modified cursor keys when simplifyModifiedCursorKeys is enabled', async () => {
+    const socket = new mockedWs.MockWebSocket('wss://pve.local/ws');
+    const session = new TerminalSession(
+      async () => ({
+        socket: socket as never,
+        info: {
+          vmid: 100,
+          node: 'pve',
+          type: 'qemu',
+          ticket: { port: 5900, ticket: 'ticket', upid: 'upid', user: 'root@pam' },
+          websocketUrl: 'wss://pve.local/ws',
+          authMessage: 'root@pam:ticket\n'
+        }
+      }),
+      {
+        reconnect: false,
+        reconnectIntervalMs: 1500,
+        reconnectMaxAttempts: 1
+      }
+    );
+
+    const browserSocket = new mockedWs.MockWebSocket('ws://browser') as never;
+    bridgeTerminalSessionToSocket(session, browserSocket, {
+      promptNudgeMs: 60_000,
+      simplifyModifiedCursorKeys: true
+    });
+
+    await session.start();
+    socket.readyState = mockedWs.MockWebSocket.OPEN;
+    socket.emit('open');
+    socket.emit('message', Buffer.from('OK'));
+
+    browserSocket.emit('message', Buffer.from('\u001b[1;2D\u001b[1;2C\u001b[1;5A', 'utf8'), true);
+
+    const inputFrames = socket.sent
+      .filter((frame) => sentFrameText(frame).startsWith('0:9:'))
+      .map((frame) => Buffer.isBuffer(frame) ? frame : Buffer.from(frame, 'utf8'));
+
+    expect(inputFrames.length).toBe(1);
+    expect(inputFrames[0]).toEqual(Buffer.from('0:9:\u001b[D\u001b[C\u001b[A', 'utf8'));
+  });
+
+  it('coalesces split ANSI key sequences across input frames', async () => {
+    const socket = new mockedWs.MockWebSocket('wss://pve.local/ws');
+    const session = new TerminalSession(
+      async () => ({
+        socket: socket as never,
+        info: {
+          vmid: 100,
+          node: 'pve',
+          type: 'qemu',
+          ticket: { port: 5900, ticket: 'ticket', upid: 'upid', user: 'root@pam' },
+          websocketUrl: 'wss://pve.local/ws',
+          authMessage: 'root@pam:ticket\n'
+        }
+      }),
+      {
+        reconnect: false,
+        reconnectIntervalMs: 1500,
+        reconnectMaxAttempts: 1
+      }
+    );
+
+    const browserSocket = new mockedWs.MockWebSocket('ws://browser') as never;
+    bridgeTerminalSessionToSocket(session, browserSocket, {
+      promptNudgeMs: 60_000,
+      normalizeSs3CursorKeys: true
+    });
+
+    await session.start();
+    socket.readyState = mockedWs.MockWebSocket.OPEN;
+    socket.emit('open');
+    socket.emit('message', Buffer.from('OK'));
+
+    browserSocket.emit('message', Buffer.from('\u001b', 'utf8'), true);
+    browserSocket.emit('message', Buffer.from('O', 'utf8'), true);
+    browserSocket.emit('message', Buffer.from('D', 'utf8'), true);
+    browserSocket.emit('message', Buffer.from('\u001b[3', 'utf8'), true);
+    browserSocket.emit('message', Buffer.from('~', 'utf8'), true);
+
+    const writtenFrames = socket.sent
+      .map((frame) => Buffer.isBuffer(frame) ? frame : Buffer.from(frame, 'utf8'))
+      .filter((frame) => frame.toString('utf8').startsWith('0:'));
+
+    expect(writtenFrames.find((frame) => frame.equals(Buffer.from('0:3:\u001b[D', 'utf8')))).toBeDefined();
+    expect(writtenFrames.find((frame) => frame.equals(Buffer.from('0:4:\u001b[3~', 'utf8')))).toBeDefined();
+  });
+
+  it('coalesces split home key prefixes across input frames', async () => {
+    const socket = new mockedWs.MockWebSocket('wss://pve.local/ws');
+    const session = new TerminalSession(
+      async () => ({
+        socket: socket as never,
+        info: {
+          vmid: 100,
+          node: 'pve',
+          type: 'qemu',
+          ticket: { port: 5900, ticket: 'ticket', upid: 'upid', user: 'root@pam' },
+          websocketUrl: 'wss://pve.local/ws',
+          authMessage: 'root@pam:ticket\n'
+        }
+      }),
+      {
+        reconnect: false,
+        reconnectIntervalMs: 1500,
+        reconnectMaxAttempts: 1
+      }
+    );
+
+    const browserSocket = new mockedWs.MockWebSocket('ws://browser') as never;
+    bridgeTerminalSessionToSocket(session, browserSocket, {
+      promptNudgeMs: 60_000,
+      normalizeSs3CursorKeys: true
+    });
+
+    await session.start();
+    socket.readyState = mockedWs.MockWebSocket.OPEN;
+    socket.emit('open');
+    socket.emit('message', Buffer.from('OK'));
+
+    browserSocket.emit('message', Buffer.from('\u001b[', 'utf8'), true);
+    browserSocket.emit('message', Buffer.from('H', 'utf8'), true);
+
+    const writtenFrames = socket.sent
+      .map((frame) => Buffer.isBuffer(frame) ? frame : Buffer.from(frame, 'utf8'))
+      .filter((frame) => frame.toString('utf8').startsWith('0:'));
+
+    expect(writtenFrames.find((frame) => frame.equals(Buffer.from('0:3:\u001b[H', 'utf8')))).toBeDefined();
+  });
+
+  it('coalesces split csi arrow keys across input frames', async () => {
+    const socket = new mockedWs.MockWebSocket('wss://pve.local/ws');
+    const session = new TerminalSession(
+      async () => ({
+        socket: socket as never,
+        info: {
+          vmid: 100,
+          node: 'pve',
+          type: 'qemu',
+          ticket: { port: 5900, ticket: 'ticket', upid: 'upid', user: 'root@pam' },
+          websocketUrl: 'wss://pve.local/ws',
+          authMessage: 'root@pam:ticket\n'
+        }
+      }),
+      {
+        reconnect: false,
+        reconnectIntervalMs: 1500,
+        reconnectMaxAttempts: 1
+      }
+    );
+
+    const browserSocket = new mockedWs.MockWebSocket('ws://browser') as never;
+    bridgeTerminalSessionToSocket(session, browserSocket, {
+      promptNudgeMs: 60_000,
+      normalizeSs3CursorKeys: true
+    });
+
+    await session.start();
+    socket.readyState = mockedWs.MockWebSocket.OPEN;
+    socket.emit('open');
+    socket.emit('message', Buffer.from('OK'));
+
+    browserSocket.emit('message', Buffer.from('\u001b[', 'utf8'), true);
+    browserSocket.emit('message', Buffer.from('D', 'utf8'), true);
+
+    const writtenFrames = socket.sent
+      .map((frame) => Buffer.isBuffer(frame) ? frame : Buffer.from(frame, 'utf8'))
+      .filter((frame) => frame.toString('utf8').startsWith('0:'));
+
+    expect(writtenFrames.find((frame) => frame.equals(Buffer.from('0:3:\u001b[D', 'utf8')))).toBeDefined();
+  });
+
+  it('does not buffer non-key CSI fragments ahead of later input', async () => {
+    const socket = new mockedWs.MockWebSocket('wss://pve.local/ws');
+    const session = new TerminalSession(
+      async () => ({
+        socket: socket as never,
+        info: {
+          vmid: 100,
+          node: 'pve',
+          type: 'qemu',
+          ticket: { port: 5900, ticket: 'ticket', upid: 'upid', user: 'root@pam' },
+          websocketUrl: 'wss://pve.local/ws',
+          authMessage: 'root@pam:ticket\n'
+        }
+      }),
+      {
+        reconnect: false,
+        reconnectIntervalMs: 1500,
+        reconnectMaxAttempts: 1
+      }
+    );
+
+    const browserSocket = new mockedWs.MockWebSocket('ws://browser') as never;
+    bridgeTerminalSessionToSocket(session, browserSocket, {
+      promptNudgeMs: 60_000,
+      normalizeSs3CursorKeys: true
+    });
+
+    await session.start();
+    socket.readyState = mockedWs.MockWebSocket.OPEN;
+    socket.emit('open');
+    socket.emit('message', Buffer.from('OK'));
+
+    browserSocket.emit('message', Buffer.from('\u001b[23;', 'utf8'), true);
+    browserSocket.emit('message', Buffer.from('\r', 'utf8'), true);
+
+    const writtenFrames = socket.sent
+      .map((frame) => Buffer.isBuffer(frame) ? frame : Buffer.from(frame, 'utf8'))
+      .filter((frame) => frame.toString('utf8').startsWith('0:'));
+
+    const frameTexts = writtenFrames.map((frame) => frame.toString('utf8'));
+    expect(frameTexts.some((text) => text.includes('\u001b[23;'))).toBe(true);
+    expect(frameTexts.some((text) => text.endsWith('\r'))).toBe(true);
+  });
+
   it('does not repair missing-escape navigation fragments', async () => {
     const socket = new mockedWs.MockWebSocket('wss://pve.local/ws');
     const session = new TerminalSession(
@@ -603,6 +904,147 @@ describe('Terminal session resiliency', () => {
     expect(inputFrames[0]).toEqual(Buffer.from('0:2:[D', 'utf8'));
     expect(inputFrames[1]).toEqual(Buffer.from('0:2:[C', 'utf8'));
     expect(inputFrames[2]).toEqual(Buffer.from('0:2:OA', 'utf8'));
+  });
+
+  it('repairs orphan navigation fragments when compatibility mode is enabled', async () => {
+    const socket = new mockedWs.MockWebSocket('wss://pve.local/ws');
+    const session = new TerminalSession(
+      async () => ({
+        socket: socket as never,
+        info: {
+          vmid: 100,
+          node: 'pve',
+          type: 'qemu',
+          ticket: { port: 5900, ticket: 'ticket', upid: 'upid', user: 'root@pam' },
+          websocketUrl: 'wss://pve.local/ws',
+          authMessage: 'root@pam:ticket\n'
+        }
+      }),
+      {
+        reconnect: false,
+        reconnectIntervalMs: 1500,
+        reconnectMaxAttempts: 1
+      }
+    );
+
+    const browserSocket = new mockedWs.MockWebSocket('ws://browser') as never;
+    bridgeTerminalSessionToSocket(session, browserSocket, {
+      promptNudgeMs: 60_000,
+      normalizeSs3CursorKeys: true,
+      enableInputRepairCompatibility: true
+    });
+
+    await session.start();
+    socket.readyState = mockedWs.MockWebSocket.OPEN;
+    socket.emit('open');
+    socket.emit('message', Buffer.from('OK'));
+
+    browserSocket.emit('message', Buffer.from('\u001bOD', 'utf8'), true);
+    browserSocket.emit('message', Buffer.from('D', 'utf8'), true);
+
+    const inputFrames = socket.sent
+      .filter((frame) => sentFrameText(frame).startsWith('0:'))
+      .map((frame) => Buffer.isBuffer(frame) ? frame : Buffer.from(frame, 'utf8'));
+
+    expect(inputFrames.length).toBe(2);
+    expect(inputFrames[0]).toEqual(Buffer.from('0:3:\u001b[D', 'utf8'));
+    expect(inputFrames[1]).toEqual(Buffer.from('0:3:\u001b[D', 'utf8'));
+  });
+
+  it('repairs mixed orphan bracket/final navigation bursts when compatibility mode is enabled', async () => {
+    const socket = new mockedWs.MockWebSocket('wss://pve.local/ws');
+    const session = new TerminalSession(
+      async () => ({
+        socket: socket as never,
+        info: {
+          vmid: 100,
+          node: 'pve',
+          type: 'qemu',
+          ticket: { port: 5900, ticket: 'ticket', upid: 'upid', user: 'root@pam' },
+          websocketUrl: 'wss://pve.local/ws',
+          authMessage: 'root@pam:ticket\n'
+        }
+      }),
+      {
+        reconnect: false,
+        reconnectIntervalMs: 1500,
+        reconnectMaxAttempts: 1
+      }
+    );
+
+    const browserSocket = new mockedWs.MockWebSocket('ws://browser') as never;
+    bridgeTerminalSessionToSocket(session, browserSocket, {
+      promptNudgeMs: 60_000,
+      normalizeSs3CursorKeys: true,
+      enableInputRepairCompatibility: true
+    });
+
+    await session.start();
+    socket.readyState = mockedWs.MockWebSocket.OPEN;
+    socket.emit('open');
+    socket.emit('message', Buffer.from('OK'));
+
+    browserSocket.emit('message', Buffer.from('\u001bOD', 'utf8'), true);
+    browserSocket.emit('message', Buffer.from('[DD[D', 'utf8'), true);
+
+    const inputFrames = socket.sent
+      .filter((frame) => sentFrameText(frame).startsWith('0:'))
+      .map((frame) => Buffer.isBuffer(frame) ? frame : Buffer.from(frame, 'utf8'));
+
+    expect(inputFrames.length).toBe(2);
+    expect(inputFrames[0]).toEqual(Buffer.from('0:3:\u001b[D', 'utf8'));
+    expect(inputFrames[1]).toEqual(Buffer.from('0:9:\u001b[D\u001b[D\u001b[D', 'utf8'));
+  });
+
+  it('coalesces repeated navigation keys when coalesceNavigationRepeats is enabled', async () => {
+    vi.useFakeTimers();
+
+    const socket = new mockedWs.MockWebSocket('wss://pve.local/ws');
+    const session = new TerminalSession(
+      async () => ({
+        socket: socket as never,
+        info: {
+          vmid: 100,
+          node: 'pve',
+          type: 'qemu',
+          ticket: { port: 5900, ticket: 'ticket', upid: 'upid', user: 'root@pam' },
+          websocketUrl: 'wss://pve.local/ws',
+          authMessage: 'root@pam:ticket\n'
+        }
+      }),
+      {
+        reconnect: false,
+        reconnectIntervalMs: 1500,
+        reconnectMaxAttempts: 1
+      }
+    );
+
+    const browserSocket = new mockedWs.MockWebSocket('ws://browser') as never;
+    bridgeTerminalSessionToSocket(session, browserSocket, {
+      promptNudgeMs: 60_000,
+      normalizeSs3CursorKeys: true,
+      coalesceNavigationRepeats: true,
+      navigationRepeatCoalesceMs: 5
+    });
+
+    await session.start();
+    socket.readyState = mockedWs.MockWebSocket.OPEN;
+    socket.emit('open');
+    socket.emit('message', Buffer.from('OK'));
+
+    browserSocket.emit('message', Buffer.from('\u001bOD', 'utf8'), true);
+    browserSocket.emit('message', Buffer.from('\u001bOD', 'utf8'), true);
+
+    await vi.advanceTimersByTimeAsync(6);
+
+    const inputFrames = socket.sent
+      .filter((frame) => sentFrameText(frame).startsWith('0:'))
+      .map((frame) => Buffer.isBuffer(frame) ? frame : Buffer.from(frame, 'utf8'));
+
+    expect(inputFrames.length).toBe(1);
+    expect(inputFrames[0]).toEqual(Buffer.from('0:6:\u001b[D\u001b[D', 'utf8'));
+
+    vi.useRealTimers();
   });
 
   it('does not repair batched and parameterized missing-escape fragments', async () => {

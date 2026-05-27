@@ -129,11 +129,198 @@ export type TerminalBridgeOptions = {
     initialInputs?: string[];
     /** Pre-buffered binary browser input to process once session is ready */
     initialBinaryInputs?: Buffer[];
+    /** Coalesce repeated navigation keys over a short idle window */
+    coalesceNavigationRepeats?: boolean;
+    /** Idle window (ms) before flushing coalesced navigation repeats */
+    navigationRepeatCoalesceMs?: number;
     /* Temporary compatibility only: keep legacy text stdin and narrow ESC-repair
      * fallback until strict binary stdin is stable everywhere. */
     allowTextInputFrames?: boolean;
     enableInputRepairCompatibility?: boolean;
+    /**
+     * Normalize SS3 cursor key sequences (ESC O A/B/C/D/H/F) to CSI
+     * (ESC [ A/B/C/D/H/F). Useful when backend line editors do not handle
+     * application cursor mode consistently.
+     */
+    normalizeSs3CursorKeys?: boolean;
+    /**
+     * Optional SS3 normalization scope.
+     * - "all": normalize A/B/C/D/H/F
+     * - "vertical-only": normalize A/B only
+     */
+    normalizeSs3CursorKeysMode?: "all" | "vertical-only";
+    /**
+     * Collapse modified CSI cursor keys (for example ESC[1;2D from Shift+Left)
+     * to plain cursor keys (ESC[D) for shells that do not handle modifiers.
+     */
+    simplifyModifiedCursorKeys?: boolean;
 };
+
+function normalizeSs3CursorKeys(payload: Buffer, mode: "all" | "vertical-only" = "all"): Buffer {
+    const finals = mode === "vertical-only"
+        ? [0x41, 0x42]
+        : [0x41, 0x42, 0x43, 0x44, 0x48, 0x46];
+    const normalized: number[] = [];
+    let changed = false;
+
+    for (let index = 0; index < payload.length; index += 1) {
+        const current = payload[index];
+        const next = payload[index + 1];
+        const final = payload[index + 2];
+
+        if (current === 0x1b && next === 0x4f && finals.includes(final)) {
+            normalized.push(0x1b, 0x5b, final);
+            changed = true;
+            index += 2;
+            continue;
+        }
+
+        normalized.push(current);
+    }
+
+    return changed ? Buffer.from(normalized) : payload;
+}
+
+function simplifyModifiedCursorKeys(payload: Buffer): Buffer {
+    const text = payload.toString("utf8");
+    const simplified = text.replace(/\u001b\[[0-9]+;[0-9]+([ABCDHF])/g, "\u001b[$1");
+    if (simplified === text) return payload;
+    return Buffer.from(simplified, "utf8");
+}
+
+function hasNavigationSequence(payload: Buffer): boolean {
+    const text = payload.toString("utf8");
+    return /\u001b(?:\[[0-9;]*[ABCDHF~]|O[ABCDHF])/.test(text);
+}
+
+function isSingleNavigationSequence(payload: Buffer): boolean {
+    const text = payload.toString("utf8");
+    return /^\u001b(?:\[[0-9;]*[ABCDHF~]|O[ABCDHF])$/.test(text);
+}
+
+function repairOrphanNavigationFragments(payload: Buffer, recentNavigation: boolean): Buffer {
+    if (!recentNavigation) return payload;
+
+    const text = payload.toString("utf8");
+
+    // Single final-byte leaks are the most common corruption when ESC is lost.
+    if (/^[ABCDHF]$/.test(text)) {
+        return Buffer.from(`\u001b[${text}`, "utf8");
+    }
+
+    // Under sustained repeats we can occasionally receive a short burst of
+    // final bytes with all ESC bytes dropped (for example "DDD").
+    // Keep this narrow to avoid over-repairing normal typed text.
+    if (/^[ABCDHF]{2,4}$/.test(text)) {
+        const repaired = Array.from(text).map((final) => `\u001b[${final}`).join("");
+        return Buffer.from(repaired, "utf8");
+    }
+
+    // Some repeats leak as mixed bracket/final bursts (for example "[DD[D").
+    // Rebuild them into discrete CSI navigation sequences when the payload is
+    // entirely composed of navigation final bytes and '[' markers.
+    if (/^[\[ABCDHF]{2,24}$/.test(text) && text.includes("[")) {
+        let repaired = "";
+        for (let index = 0; index < text.length; index += 1) {
+            const char = text[index];
+
+            if (char === "[") {
+                let cursor = index + 1;
+                while (cursor < text.length && /[ABCDHF]/.test(text[cursor])) {
+                    repaired += `\u001b[${text[cursor]}`;
+                    cursor += 1;
+                }
+                index = cursor - 1;
+                continue;
+            }
+
+            if (/[ABCDHF]/.test(char)) {
+                repaired += `\u001b[${char}`;
+                continue;
+            }
+
+            return payload;
+        }
+
+        if (repaired.length > 0) {
+            return Buffer.from(repaired, "utf8");
+        }
+    }
+
+    if (/^\[[ABCDHF]$/.test(text) || /^\[[1-8]~$/.test(text)) {
+        return Buffer.from(`\u001b${text}`, "utf8");
+    }
+
+    if (/^O[ABCDHF]$/.test(text)) {
+        return Buffer.from(`\u001b${text}`, "utf8");
+    }
+
+    return payload;
+}
+
+function splitIncompleteAnsiTail(payload: Buffer): { complete: Buffer; pending: Buffer } {
+    const ESC = 0x1b;
+    const CSI = 0x5b;
+    const SS3 = 0x4f;
+
+    for (let index = 0; index < payload.length; index += 1) {
+        if (payload[index] !== ESC) continue;
+
+        const next = payload[index + 1];
+        if (next === undefined) {
+            return {complete: payload.subarray(0, index), pending: payload.subarray(index)};
+        }
+
+        // CSI: ESC [ params/intermediates ... final(0x40-0x7E)
+        if (next === CSI) {
+            let cursor = index + 2;
+            if (cursor >= payload.length) {
+                return {complete: payload.subarray(0, index), pending: payload.subarray(index)};
+            }
+
+            while (cursor < payload.length) {
+                const byte = payload[cursor];
+                const isFinal = byte >= 0x40 && byte <= 0x7e;
+                if (isFinal) {
+                    index = cursor;
+                    break;
+                }
+
+                const isParam = byte >= 0x30 && byte <= 0x3f;
+                const isIntermediate = byte >= 0x20 && byte <= 0x2f;
+                if (!isParam && !isIntermediate) {
+                    // Malformed CSI: do not buffer it into the next frame.
+                    index = cursor;
+                    break;
+                }
+
+                cursor += 1;
+            }
+
+            if (cursor >= payload.length) {
+                return {complete: payload.subarray(0, index), pending: payload.subarray(index)};
+            }
+
+            continue;
+        }
+
+        // SS3: ESC O final(0x40-0x7E)
+        if (next === SS3) {
+            const final = payload[index + 2];
+            if (final === undefined) {
+                return {complete: payload.subarray(0, index), pending: payload.subarray(index)};
+            }
+            const isFinal = final >= 0x40 && final <= 0x7e;
+            index = isFinal ? index + 2 : index + 1;
+            continue;
+        }
+
+        // Other ESC-prefixed sequences are treated as 2-byte forms.
+        index += 1;
+    }
+
+    return {complete: payload, pending: Buffer.alloc(0)};
+}
 
 type ParsedBrowserFrame =
     | { kind: "resize"; cols: number; rows: number; source: "json" | "legacy" }
@@ -470,10 +657,8 @@ export class TerminalSession extends EventEmitter<{
         if (this.state !== TerminalState.CONNECTED || !this.socket || this.socket.readyState !== WS.OPEN) {
             return false;
         }
-        // Proxmox termproxy expects stdin on text websocket frames (`0:<n>:<data>`).
-        // We still preserve exact payload bytes by decoding to UTF-8 string from the
-        // already-normalized keyboard payload before composing the frame.
-        this.socket.send(`0:${payload.byteLength}:${payload.toString("utf8")}`);
+        const header = Buffer.from(`0:${payload.byteLength}:`, "ascii");
+        this.socket.send(Buffer.concat([header, payload]));
         return true;
     }
 
@@ -535,8 +720,13 @@ export function bridgeTerminalSessionToSocket(
     const promptNudgeInput = options.promptNudgeInput ?? "\r";
     const promptNudgeMaxOutputBytes = options.promptNudgeMaxOutputBytes ?? 8;
     const closeCodeOnSessionClose = options.closeCodeOnSessionClose ?? 1001;
+    const coalesceNavigationRepeats = options.coalesceNavigationRepeats ?? false;
+    const navigationRepeatCoalesceMs = options.navigationRepeatCoalesceMs ?? 8;
     const allowTextInputFrames = options.allowTextInputFrames ?? true;
     const enableInputRepairCompatibility = options.enableInputRepairCompatibility ?? false;
+    const normalizeSs3CursorKeysEnabled = options.normalizeSs3CursorKeys ?? false;
+    const normalizeSs3CursorKeysMode = options.normalizeSs3CursorKeysMode ?? "all";
+    const simplifyModifiedCursorKeysEnabled = options.simplifyModifiedCursorKeys ?? false;
     const traceEnabled = options.trace ?? false;
     const traceLogger = options.traceLogger ?? ((line: string) => console.debug(line));
     const traceLabel = options.traceLabel ?? "terminal-bridge";
@@ -547,6 +737,14 @@ export function bridgeTerminalSessionToSocket(
         traceSequence += 1;
         traceLogger(`[${traceLabel}] #${traceSequence} ${event} ${details}`);
     };
+
+    /*
+     * Browser stdin processing order:
+     * 1) Reassemble split ANSI tails across websocket frames.
+     * 2) Normalize SS3 cursor keys (optional).
+     * 3) Simplify modified cursor keys (optional).
+     * 4) Forward to proxmox termproxy via writeRaw.
+     */
 
     const hexPreview = (payload: Buffer) => payload.subarray(0, 8).toString("hex");
 
@@ -561,6 +759,90 @@ export function bridgeTerminalSessionToSocket(
     let outputSinceReadyBytes = 0;
     let sawUserStdin = false;
     let promptNudgeTimer: ReturnType<typeof setTimeout> | undefined;
+    // Shared across frames so ESC fragments can be reassembled before forwarding.
+    let pendingAnsiTail: Buffer = Buffer.alloc(0);
+    // Timestamp for recently emitted navigation traffic. Compatibility repair
+    // only runs inside this short window to avoid mutating regular typed text.
+    let lastNavigationInputAt = 0;
+    const navigationRepairWindowMs = 1_000;
+    // Short-window repeat coalescing state for held navigation keys.
+    let repeatPayload: Buffer | undefined;
+    let repeatCount = 0;
+    let repeatMeta: { binary: boolean; normalized: boolean; simplified: boolean; repaired: boolean } | undefined;
+    let repeatTimer: ReturnType<typeof setTimeout> | undefined;
+
+    const writePayload = (
+        payload: Buffer,
+        meta: { binary: boolean; normalized: boolean; simplified: boolean; repaired: boolean }
+    ) => {
+        if (hasNavigationSequence(payload)) {
+            lastNavigationInputAt = Date.now();
+        }
+        trace(
+            "stdin-write",
+            `bytes=${payload.byteLength} binary=${meta.binary} repaired=${meta.repaired} normalized=${meta.normalized} simplified=${meta.simplified} compat=${enableInputRepairCompatibility} head=${hexPreview(payload)}`
+        );
+        session.writeRaw(payload);
+    };
+
+    const flushRepeatBuffer = () => {
+        if (!repeatPayload || repeatCount <= 0 || !repeatMeta) return;
+        const basePayload = repeatPayload;
+        const payload = repeatCount === 1
+            ? basePayload
+            : Buffer.concat(Array.from({length: repeatCount}, () => basePayload));
+        trace("stdin-coalesce-flush", `count=${repeatCount} bytes=${payload.byteLength} head=${hexPreview(payload)}`);
+        writePayload(payload, repeatMeta);
+        repeatPayload = undefined;
+        repeatCount = 0;
+        repeatMeta = undefined;
+        if (repeatTimer) {
+            clearTimeout(repeatTimer);
+            repeatTimer = undefined;
+        }
+    };
+
+    const scheduleRepeatFlush = () => {
+        if (repeatTimer) {
+            clearTimeout(repeatTimer);
+        }
+        repeatTimer = setTimeout(() => {
+            flushRepeatBuffer();
+        }, navigationRepeatCoalesceMs);
+    };
+
+    const enqueueOrWritePayload = (
+        payload: Buffer,
+        meta: { binary: boolean; normalized: boolean; simplified: boolean; repaired: boolean }
+    ) => {
+        // Coalesce only single complete navigation sequences. Mixed payloads are
+        // flushed immediately to preserve ordering and user-visible responsiveness.
+        if (!coalesceNavigationRepeats || !isSingleNavigationSequence(payload)) {
+            flushRepeatBuffer();
+            writePayload(payload, meta);
+            return;
+        }
+
+        if (
+            repeatPayload
+            && repeatMeta
+            && repeatPayload.equals(payload)
+            && repeatMeta.binary === meta.binary
+            && repeatMeta.normalized === meta.normalized
+            && repeatMeta.simplified === meta.simplified
+            && repeatMeta.repaired === meta.repaired
+        ) {
+            repeatCount += 1;
+            scheduleRepeatFlush();
+            return;
+        }
+
+        flushRepeatBuffer();
+        repeatPayload = payload;
+        repeatCount = 1;
+        repeatMeta = meta;
+        scheduleRepeatFlush();
+    };
 
     const applyResize = (cols: number, rows: number, eventName: string) => {
         const alreadyApplied = appliedResize?.cols === cols && appliedResize?.rows === rows;
@@ -583,13 +865,36 @@ export function bridgeTerminalSessionToSocket(
         }
 
         if (isBinary) {
-            const payload = browserMessageToBuffer(message);
+            const payloadSource = browserMessageToBuffer(message);
+            // Reassemble any split ANSI tail before normalization and forwarding.
+            const merged = pendingAnsiTail.byteLength > 0
+                ? Buffer.concat([pendingAnsiTail, payloadSource])
+                : payloadSource;
+            const split = splitIncompleteAnsiTail(merged);
+            pendingAnsiTail = split.pending;
+            if (split.complete.byteLength === 0) {
+                trace("stdin-buffer", `bytes=${pendingAnsiTail.byteLength} head=${hexPreview(pendingAnsiTail)}`);
+                return;
+            }
+
+            const ss3Normalized = normalizeSs3CursorKeysEnabled
+                ? normalizeSs3CursorKeys(split.complete, normalizeSs3CursorKeysMode)
+                : split.complete;
+            const simplifiedPayload = simplifyModifiedCursorKeysEnabled
+                ? simplifyModifiedCursorKeys(ss3Normalized)
+                : ss3Normalized;
+            const repairedPayload = enableInputRepairCompatibility
+                ? repairOrphanNavigationFragments(simplifiedPayload, Date.now() - lastNavigationInputAt <= navigationRepairWindowMs)
+                : simplifiedPayload;
+            const payload = repairedPayload;
+            const repaired = payload.compare(simplifiedPayload) !== 0;
             sawUserStdin = true;
-            trace(
-                "stdin-write",
-                `bytes=${payload.byteLength} binary=true repaired=false normalized=false compat=${enableInputRepairCompatibility} head=${hexPreview(payload)}`
-            );
-            session.writeRaw(payload);
+            enqueueOrWritePayload(payload, {
+                binary: true,
+                repaired,
+                normalized: payload.compare(payloadSource) !== 0,
+                simplified: simplifiedPayload.compare(ss3Normalized) !== 0
+            });
             return;
         }
 
@@ -599,6 +904,7 @@ export function bridgeTerminalSessionToSocket(
         trace("browser-frame", `kind=${parsedFrame.kind} source=${parsedFrame.source} preReady=${fromPreReadyQueue}`);
 
         if (parsedFrame.kind === "resize") {
+            flushRepeatBuffer();
             applyResize(parsedFrame.cols, parsedFrame.rows, "emit-resize");
             return;
         }
@@ -626,12 +932,34 @@ export function bridgeTerminalSessionToSocket(
             sawUserStdin = true;
         }
         const textPayload = Buffer.from(parsedFrame.data, "utf8");
-        const normalizedTextPayload = textPayload;
-        trace(
-            "stdin-write",
-            `bytes=${normalizedTextPayload.byteLength} binary=false repaired=false normalized=false compat=${enableInputRepairCompatibility} head=${hexPreview(normalizedTextPayload)}`
-        );
-        session.writeRaw(normalizedTextPayload);
+        // Apply the same coalescing path for legacy text stdin frames.
+        const mergedTextPayload = pendingAnsiTail.byteLength > 0
+            ? Buffer.concat([pendingAnsiTail, textPayload])
+            : textPayload;
+        const splitTextPayload = splitIncompleteAnsiTail(mergedTextPayload);
+        pendingAnsiTail = splitTextPayload.pending;
+        if (splitTextPayload.complete.byteLength === 0) {
+            trace("stdin-buffer", `bytes=${pendingAnsiTail.byteLength} head=${hexPreview(pendingAnsiTail)}`);
+            return;
+        }
+
+        const ss3NormalizedTextPayload = normalizeSs3CursorKeysEnabled
+            ? normalizeSs3CursorKeys(splitTextPayload.complete, normalizeSs3CursorKeysMode)
+            : splitTextPayload.complete;
+        const simplifiedTextPayload = simplifyModifiedCursorKeysEnabled
+            ? simplifyModifiedCursorKeys(ss3NormalizedTextPayload)
+            : ss3NormalizedTextPayload;
+        const repairedTextPayload = enableInputRepairCompatibility
+            ? repairOrphanNavigationFragments(simplifiedTextPayload, Date.now() - lastNavigationInputAt <= navigationRepairWindowMs)
+            : simplifiedTextPayload;
+        const normalizedTextPayload = repairedTextPayload;
+        const repaired = normalizedTextPayload.compare(simplifiedTextPayload) !== 0;
+        enqueueOrWritePayload(normalizedTextPayload, {
+            binary: false,
+            repaired,
+            normalized: normalizedTextPayload.compare(splitTextPayload.complete) !== 0,
+            simplified: simplifiedTextPayload.compare(ss3NormalizedTextPayload) !== 0
+        });
     };
 
     browserSocket.on("message", (raw, isBinary) => {
@@ -647,6 +975,7 @@ export function bridgeTerminalSessionToSocket(
     });
 
     browserSocket.on("close", () => {
+        flushRepeatBuffer();
         browserClosed = true;
         if (promptNudgeTimer) {
             clearTimeout(promptNudgeTimer);
@@ -667,6 +996,7 @@ export function bridgeTerminalSessionToSocket(
     });
 
     session.on("close", () => {
+        flushRepeatBuffer();
         if (browserSocket.readyState === browserSocket.OPEN) {
             browserSocket.close(closeCodeOnSessionClose, options.closeReasonOnSessionClose);
         }
