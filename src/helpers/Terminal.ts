@@ -844,9 +844,9 @@ export function bridgeTerminalSessionToSocket(
         scheduleRepeatFlush();
     };
 
-    const applyResize = (cols: number, rows: number, eventName: string) => {
+    const applyResize = (cols: number, rows: number, eventName: string, force = false) => {
         const alreadyApplied = appliedResize?.cols === cols && appliedResize?.rows === rows;
-        if (alreadyApplied) {
+        if (alreadyApplied && !force) {
             trace("skip-resize", `cols=${cols} rows=${rows}`);
             return;
         }
@@ -1007,6 +1007,14 @@ export function bridgeTerminalSessionToSocket(
         const errorFrame = options.onErrorFrame?.(err);
         if (errorFrame !== undefined) {
             browserSocket.send(errorFrame);
+        }
+    });
+
+    session.on("ready", () => {
+        // Proxmox terminal reconnects can reset PTY size back to defaults.
+        // Reapply the last known browser geometry every time readiness flips on.
+        if (appliedResize) {
+            applyResize(appliedResize.cols, appliedResize.rows, "reapply-resize-on-ready", true);
         }
     });
 
