@@ -2,7 +2,7 @@ import type { ClusterAPI } from "./types.js";
 import type { ArgsTuple, PathContext } from "../index.js";
 import { Client } from "../../index.js";
 
-export function acmeFactory(client: Client) {
+export default function acmeFactory(client: Client) {
     return {
         index: (...args: ArgsTuple<ClusterAPI["/cluster/acme"]["GET"]['parameters']>) => client.request("/cluster/acme", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/acme"]["GET"]['parameters']),
         account: {

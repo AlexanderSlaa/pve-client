@@ -326,7 +326,7 @@ type ParsedBrowserFrame =
     | { kind: "resize"; cols: number; rows: number; source: "json" | "legacy" }
     | { kind: "input"; data: string; source: "json" | "legacy"; cols?: number; rows?: number };
 
-function parseBrowserFrame(text: string, resizePrefix: string): ParsedBrowserFrame {
+export function parseBrowserFrame(text: string, resizePrefix: string): ParsedBrowserFrame {
     // Structured JSON frames are the primary protocol. We keep legacy parsing
     // for backward compatibility with older browser senders.
     if (text.startsWith("{")) {
@@ -354,7 +354,9 @@ function parseBrowserFrame(text: string, resizePrefix: string): ParsedBrowserFra
     }
 
     if (text.startsWith(resizePrefix)) {
-        const [cols, rows] = text.slice(resizePrefix.length).split(":");
+        const parts = text.slice(resizePrefix.length).split(":");
+        if (parts.length !== 2) return { kind: "input", data: text, source: "legacy" };
+        const [cols, rows] = parts;
         const parsedCols = Number(cols);
         const parsedRows = Number(rows);
         if (Number.isInteger(parsedCols) && Number.isInteger(parsedRows) && parsedCols > 0 && parsedRows > 0) {
@@ -425,9 +427,15 @@ export class TerminalRenderer extends EventEmitter<{
      * Parses escape sequences and updates the terminal state.
      * @param data Raw terminal data (may contain escape sequences)
      */
+    private static readonly MAX_BUFFER_SIZE = 1024 * 1024; // 1MB
+
     write(data: Buffer | string): void {
         try {
             const str = typeof data === "string" ? data : data.toString("utf8");
+            // Prevent unbounded buffer growth
+            if (str.length > TerminalRenderer.MAX_BUFFER_SIZE) {
+                throw new Error(`TerminalRenderer: input exceeds max buffer size (${TerminalRenderer.MAX_BUFFER_SIZE} bytes)`);
+            }
             this.terminal.write(str);
             this.emit("render", this.getState());
         } catch (error) {

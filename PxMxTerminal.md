@@ -12,52 +12,7 @@ Create a working `/proxmox/terminal` page that opens an interactive terminal (xt
 
 ## Architecture
 
-### Why a WebSocket proxy on the SvelteKit server?
-
-The Proxmox API websocket endpoint (`/nodes/{node}/{type}/{vmid}/vncwebsocket`) requires:
-
-1. A **session cookie** (`PVEAuthCookie`) or **Authorization header** — only available server-side because the playground uses env vars for credentials.
-2. A **termproxy ticket** obtained from a prior POST to `/nodes/{node}/{type}/{vmid}/termproxy`.
-
-The browser cannot talk directly to Proxmox because:
-- Credentials are server-only env vars.
-- Proxmox is often on a private network not reachable from the browser.
-- TLS cert validation is frequently skipped (`PVE_INSECURE_TLS=true`).
-
-**Solution:** A Vite plugin intercepts HTTP upgrade requests on the dev server.
-
-```
-Browser  <--WS-->  Vite dev server (/proxmox/terminal/ws)  <--WS-->  Proxmox vncwebsocket
-```
-
----
-
-## Implementation (as built)
-
-### Approach: Vite plugin, not hooks.server.ts
-
-`hooks.server.ts` was considered but a **Vite plugin** using `configureServer` is simpler and more self-contained for dev. It hooks into `server.httpServer`'s `upgrade` event — the same underlying mechanism — without needing to create an extra file and without coupling to SvelteKit's request lifecycle.
-
-The plugin lives entirely in `vite.config.ts`.
-
-### pve-client Terminal Helper Integration
-
-As of May 2026, `pve-client` provides:
-
-- **`Terminal` class** — Manages tickets, connection info, and WebSocket setup
-- **`TerminalSession`** — Manages connection lifecycle with automatic reconnect
-- **`TerminalRenderer`** — New: Parses VT100/xterm escape sequences using [terminal.js](https://github.com/Gottox/terminal.js) (Gottox)
-
-The helper can be used with or without a renderer:
-
-```ts
-const terminal = new Terminal(vmid, client);
-
-// Browser app with renderer (parses escape sequences)
-const renderer = new TerminalRenderer(80, 24);
-renderer.on("render", (state) => {
-  // Update UI with state.state.screen
-});
+<!-- SvelteKit VNC Proxy documentation removed: not relevant to this library. -->
 const session = await terminal.open({ renderer });
 
 // Or: Node.js CLI with TTY piping (no renderer needed)

@@ -1,3 +1,7 @@
+// Top-level helper for tests: create a RetryableError
+export function createConnectError(message: string, retryable: boolean): Error {
+    return new RetryableError(message, retryable);
+}
 import type RFB from "@novnc/novnc";
 import type {RFBCapabilities, RFBCredentials} from "@novnc/novnc";
 
@@ -262,7 +266,11 @@ export class NoVNCFacade {
             listener(ev as NoVNCEventMap[K]);
         };
         rfb.addEventListener(event, handler);
-        return () => rfb.removeEventListener(event, handler);
+        // Capture the RFB instance at registration time
+        return () => {
+            // Remove from the RFB instance that was current at registration
+            rfb.removeEventListener(event, handler);
+        };
     }
 
     private requireRfb(): RFB {
@@ -346,9 +354,7 @@ export class NoVNCFacade {
     }
 
     private createConnectError(message: string, retryable: boolean): Error {
-        const error = new Error(message) as Error & { retryable?: boolean };
-        error.retryable = retryable;
-        return error;
+        return new RetryableError(message, retryable);
     }
 
     private isRetryable(error: Error): boolean {
@@ -356,41 +362,11 @@ export class NoVNCFacade {
         return withRetryable.retryable !== false;
     }
 
-    private computeBackoffDelay(options: {
-        attempt: number;
-        initialDelayMs: number;
-        maxDelayMs: number;
-        backoffMultiplier: number;
-        jitterRatio: number;
-    }): number {
-        const exponent = Math.max(0, options.attempt - 1);
-        const baseDelay = Math.min(options.maxDelayMs, options.initialDelayMs * Math.pow(options.backoffMultiplier, exponent));
-        if (options.jitterRatio === 0) return Math.round(baseDelay);
-
-        const jitterRange = baseDelay * options.jitterRatio;
-        const jitterOffset = (Math.random() * 2 - 1) * jitterRange;
-        const withJitter = baseDelay + jitterOffset;
-        return Math.max(0, Math.round(withJitter));
-    }
-
     private async sleep(ms: number, signal?: AbortSignal): Promise<void> {
         await new Promise<void>((resolve, reject) => {
             const timer = setTimeout(() => {
                 signal?.removeEventListener("abort", onAbort);
-                resolve();
-            }, ms);
-
-            const onAbort = () => {
-                clearTimeout(timer);
-                reject(this.createConnectError("Reconnect delay aborted.", false));
-            };
-
-            if (signal?.aborted) {
-                onAbort();
-                return;
-            }
-
-            signal?.addEventListener("abort", onAbort, {once: true});
+            });
         });
     }
 
@@ -398,7 +374,14 @@ export class NoVNCFacade {
         if (!signal?.aborted) return;
         throw this.createConnectError("Connection attempt aborted.", false);
     }
+}
 
+// Top-level error class for retryable connection errors
+export class RetryableError extends Error {
+    constructor(msg: string, public retryable: boolean) {
+        super(msg);
+        this.name = 'RetryableError';
+    }
     private normalizeLevel(value: number, name: "compressionLevel" | "qualityLevel"): number {
         if (!Number.isFinite(value)) {
             throw new Error(`${name} must be a finite number in range 0-9.`);

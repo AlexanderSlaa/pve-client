@@ -99,7 +99,7 @@ export class Client {
     private readonly fetchImpl: FetchLike;
     private readonly opts: ClientOptions;
     private auth: AuthState = {};
-    private readonly eventMonitors = new Map<string, unknown>();
+    private readonly eventMonitors = new Map<string, TimerPulledEventEmitter<Record<string, unknown>>>();
 
     /**
      * Structured API surface generated from the spec.
@@ -356,6 +356,18 @@ export class Client {
     private serializeScalar(value: unknown): string {
         if (typeof value === "boolean") {
             return value ? "1" : "0";
+        }
+        if (typeof value === "number") {
+            if (!Number.isFinite(value)) {
+                throw new TypeError(`Invalid number for Proxmox API param: ${value}`);
+            }
+            return String(value);
+        }
+        if (typeof value === "symbol") {
+            throw new TypeError("Cannot serialize Symbol for Proxmox API param");
+        }
+        if (typeof value === "undefined" || value === null) {
+            throw new TypeError("Cannot serialize undefined/null for Proxmox API param");
         }
         return String(value);
     }

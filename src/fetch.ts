@@ -21,7 +21,7 @@ function mergeHeaders(base?: HeadersInit, extra?: HeadersInit): Headers {
     return h;
 }
 
-async function bodyToBuffer(body: unknown): Promise<Buffer | undefined> {
+export async function bodyToBuffer(body: unknown): Promise<Buffer | undefined> {
     if (body == null) return undefined;
 
     // String
@@ -53,7 +53,7 @@ async function bodyToBuffer(body: unknown): Promise<Buffer | undefined> {
     }
 
     // Node Readable -> buffer (basic support)
-    if (body && typeof (body as unknown as { pipe?: () => unknown }).pipe === "function") {
+    if (body && 'pipe' in body && typeof (body as { pipe: unknown }).pipe === 'function') {
         const chunks: Buffer[] = [];
         for await (const chunk of body as unknown as AsyncIterable<Buffer | string>) {
             chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));

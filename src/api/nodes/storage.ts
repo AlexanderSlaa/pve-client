@@ -2,7 +2,7 @@
 import type { Client } from "../../index.js";
 import type { NodesAPI } from "./types.js";
 
-export function nodeStorageFactory(client: Client, node: string) {
+export default function nodeStorageFactory(client: Client, node: string) {
     return {
         /** Lists all storages on this node. Calls GET /nodes/{node}/storage. */
         list: (args?: Omit<NodesAPI["/nodes/{node}/storage"]["GET"]["parameters"], "$path">) =>

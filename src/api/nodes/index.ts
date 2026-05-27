@@ -6,7 +6,7 @@ export { lxcFactory } from "./lxc.js";
 export { qemuFactory } from "./qemu.js";
 export { firewallFactory } from "./firewall.js";
 export { disksFactory } from "./disks.js";
-export { nodeStorageFactory } from "./storage.js";
+
 
 import { aptFactory } from "./apt.js";
 import { cephFactory } from "./ceph.js";
@@ -17,7 +17,7 @@ import { lxcFactory } from "./lxc.js";
 import { qemuFactory } from "./qemu.js";
 import type { Client } from "../../index.js";
 import type { NodesAPI } from "./types.js";
-import { nodeStorageFactory } from "./storage.js";
+import nodeStorageFactory from "./storage.js";
 
 function Nodes(client: Client) {
 	return {

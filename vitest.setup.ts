@@ -1,26 +1,27 @@
 // Redirect all D:/Temp and /Temp references to c:/temp/vite for Vitest
 import { beforeAll } from 'vitest';
+import os from 'os';
+import path from 'path';
+
+let realTmpdir: string;
 
 beforeAll(() => {
-  // Patch process.env.TEMP, TMP, and TMPDIR
-  process.env.TEMP = 'c:/temp/vite';
-  process.env.TMP = 'c:/temp/vite';
-  process.env.TMPDIR = 'c:/temp/vite';
+  // Save the real tmpdir
+  realTmpdir = os.tmpdir();
+  const viteTmp = path.join(realTmpdir, 'vite');
 
-  // Patch os.tmpdir if possible
-  try {
-    const os = require('os');
-    if (os && typeof os.tmpdir === 'function') {
-      os.tmpdir = () => 'c:/temp/vite';
-    }
-  } catch (error) {
-    void error;
-  }
+  // Patch process.env.TEMP, TMP, and TMPDIR
+  process.env.TEMP = viteTmp;
+  process.env.TMP = viteTmp;
+  process.env.TMPDIR = viteTmp;
+
+  // Patch os.tmpdir to return vite subdir
+  os.tmpdir = () => viteTmp;
 
   // Patch globalThis if any test code uses it
   if (globalThis && typeof globalThis === 'object') {
-    globalThis.TEMP = 'c:/temp/vite';
-    globalThis.TMP = 'c:/temp/vite';
-    globalThis.TMPDIR = 'c:/temp/vite';
+    globalThis.TEMP = viteTmp;
+    globalThis.TMP = viteTmp;
+    globalThis.TMPDIR = viteTmp;
   }
 });
