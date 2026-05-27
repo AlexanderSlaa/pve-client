@@ -88,7 +88,7 @@ export type TerminalBrowserSocket = {
     readonly readyState: number;
     send(data: Buffer | string): void;
     close(code?: number, reason?: string): void;
-    on(event: "message", listener: (data: TerminalBrowserMessage) => void): unknown;
+    on(event: "message", listener: (data: TerminalBrowserMessage, isBinary?: boolean) => void): unknown;
     on(event: "close", listener: () => void): unknown;
 };
 
@@ -105,6 +105,8 @@ export type TerminalBridgeOptions = {
     promptNudgeMs?: number;
     /** One-time prompt nudge payload, defaults to carriage return */
     promptNudgeInput?: string;
+    /** Enable one-time prompt nudge after readiness, defaults to true */
+    enablePromptNudge?: boolean;
     /**
      * Maximum output bytes allowed before suppressing the prompt nudge, defaults to 8.
      *
@@ -125,6 +127,12 @@ export type TerminalBridgeOptions = {
     closeReasonOnSessionClose?: string;
     /** Pre-buffered browser input to process once session is ready */
     initialInputs?: string[];
+    /** Pre-buffered binary browser input to process once session is ready */
+    initialBinaryInputs?: Buffer[];
+    /* Temporary compatibility only: keep legacy text stdin and narrow ESC-repair
+     * fallback until strict binary stdin is stable everywhere. */
+    allowTextInputFrames?: boolean;
+    enableInputRepairCompatibility?: boolean;
 };
 
 type ParsedBrowserFrame =
@@ -190,6 +198,20 @@ function browserMessageToUtf8(data: TerminalBrowserMessage): string {
         })).toString("utf8");
     }
     return Buffer.from(data.buffer, data.byteOffset, data.byteLength).toString("utf8");
+}
+
+function browserMessageToBuffer(data: TerminalBrowserMessage): Buffer {
+    if (typeof data === "string") return Buffer.from(data, "utf8");
+    if (Buffer.isBuffer(data)) return data;
+    if (data instanceof ArrayBuffer) return Buffer.from(data);
+    if (Array.isArray(data)) {
+        return Buffer.concat(data.map((part) => {
+            if (Buffer.isBuffer(part)) return part;
+            if (part instanceof ArrayBuffer) return Buffer.from(part);
+            return Buffer.from(part.buffer, part.byteOffset, part.byteLength);
+        }));
+    }
+    return Buffer.from(data.buffer, data.byteOffset, data.byteLength);
 }
 
 /**
@@ -437,10 +459,21 @@ export class TerminalSession extends EventEmitter<{
      * @returns true if sent, false if not connected
      */
     write(data: string): boolean {
+        return this.writeRaw(Buffer.from(data, "utf8"));
+    }
+
+    /**
+     * Send raw stdin bytes to the terminal preserving control sequences.
+     * Uses Proxmox terminal protocol framing: `0:byteLength:` + raw payload bytes.
+     */
+    writeRaw(payload: Buffer): boolean {
         if (this.state !== TerminalState.CONNECTED || !this.socket || this.socket.readyState !== WS.OPEN) {
             return false;
         }
-        this.socket.send(`0:${Buffer.byteLength(data, "utf8")}:${data}`);
+        // Proxmox termproxy expects stdin on text websocket frames (`0:<n>:<data>`).
+        // We still preserve exact payload bytes by decoding to UTF-8 string from the
+        // already-normalized keyboard payload before composing the frame.
+        this.socket.send(`0:${payload.byteLength}:${payload.toString("utf8")}`);
         return true;
     }
 
@@ -485,7 +518,9 @@ export class TerminalSession extends EventEmitter<{
  *
  * Features:
  * - Buffers browser input until session emits `ready`
- * - Handles browser resize control frames (default prefix `R:`)
+ * - Treats text frames as control-plane messages only (resize / legacy metadata)
+ * - Forwards binary stdin as raw bytes for control-sequence fidelity
+ * - Optionally repairs specific missing-ESC navigation fragments in compatibility mode
  * - Forwards session data/close/error to browser socket
  * - Sends optional one-time prompt nudge after readiness when idle
  */
@@ -495,10 +530,13 @@ export function bridgeTerminalSessionToSocket(
     options: TerminalBridgeOptions = {}
 ): void {
     const resizePrefix = options.resizePrefix ?? "R:";
+    const enablePromptNudge = options.enablePromptNudge ?? true;
     const promptNudgeMs = options.promptNudgeMs ?? 400;
     const promptNudgeInput = options.promptNudgeInput ?? "\r";
     const promptNudgeMaxOutputBytes = options.promptNudgeMaxOutputBytes ?? 8;
     const closeCodeOnSessionClose = options.closeCodeOnSessionClose ?? 1001;
+    const allowTextInputFrames = options.allowTextInputFrames ?? true;
+    const enableInputRepairCompatibility = options.enableInputRepairCompatibility ?? false;
     const traceEnabled = options.trace ?? false;
     const traceLogger = options.traceLogger ?? ((line: string) => console.debug(line));
     const traceLabel = options.traceLabel ?? "terminal-bridge";
@@ -510,29 +548,63 @@ export function bridgeTerminalSessionToSocket(
         traceLogger(`[${traceLabel}] #${traceSequence} ${event} ${details}`);
     };
 
+    const hexPreview = (payload: Buffer) => payload.subarray(0, 8).toString("hex");
+
     let sessionReady = false;
     let browserClosed = false;
-    let latestResize: { cols: number; rows: number } | undefined;
-    const pendingInputs: Array<{ text: string; fromPreReadyQueue: boolean }> =
-        (options.initialInputs ?? []).map((text) => ({text, fromPreReadyQueue: true}));
+    let appliedResize: { cols: number; rows: number } | undefined;
+    const pendingInputs: Array<{ message: TerminalBrowserMessage; fromPreReadyQueue: boolean; isBinary: boolean }> =
+        [
+            ...(options.initialInputs ?? []).map((text) => ({message: text as TerminalBrowserMessage, fromPreReadyQueue: true, isBinary: false})),
+            ...(options.initialBinaryInputs ?? []).map((buffer) => ({message: buffer as TerminalBrowserMessage, fromPreReadyQueue: true, isBinary: true})),
+        ];
     let outputSinceReadyBytes = 0;
     let sawUserStdin = false;
     let promptNudgeTimer: ReturnType<typeof setTimeout> | undefined;
 
-    const forwardBrowserInput = (text: string, fromPreReadyQueue = false) => {
-        if (!sessionReady) {
-            trace("browser-queue", `len=${text.length}`);
-            pendingInputs.push({text, fromPreReadyQueue: true});
+    const applyResize = (cols: number, rows: number, eventName: string) => {
+        const alreadyApplied = appliedResize?.cols === cols && appliedResize?.rows === rows;
+        if (alreadyApplied) {
+            trace("skip-resize", `cols=${cols} rows=${rows}`);
             return;
         }
+
+        appliedResize = {cols, rows};
+        trace(eventName, `cols=${cols} rows=${rows}`);
+        session.emit("resize", cols, rows);
+    };
+
+    const forwardBrowserInput = (message: TerminalBrowserMessage, isBinary: boolean, fromPreReadyQueue = false) => {
+        if (!sessionReady) {
+            const len = isBinary ? browserMessageToBuffer(message).byteLength : browserMessageToUtf8(message).length;
+            trace("browser-queue", `len=${len} binary=${isBinary}`);
+            pendingInputs.push({message, isBinary, fromPreReadyQueue: true});
+            return;
+        }
+
+        if (isBinary) {
+            const payload = browserMessageToBuffer(message);
+            sawUserStdin = true;
+            trace(
+                "stdin-write",
+                `bytes=${payload.byteLength} binary=true repaired=false normalized=false compat=${enableInputRepairCompatibility} head=${hexPreview(payload)}`
+            );
+            session.writeRaw(payload);
+            return;
+        }
+
+        const text = browserMessageToUtf8(message);
 
         const parsedFrame = parseBrowserFrame(text, resizePrefix);
         trace("browser-frame", `kind=${parsedFrame.kind} source=${parsedFrame.source} preReady=${fromPreReadyQueue}`);
 
         if (parsedFrame.kind === "resize") {
-            latestResize = {cols: parsedFrame.cols, rows: parsedFrame.rows};
-            trace("emit-resize", `cols=${parsedFrame.cols} rows=${parsedFrame.rows}`);
-            session.emit("resize", parsedFrame.cols, parsedFrame.rows);
+            applyResize(parsedFrame.cols, parsedFrame.rows, "emit-resize");
+            return;
+        }
+
+        if (!allowTextInputFrames) {
+            trace("drop-text-input", `source=${parsedFrame.source} bytes=${Buffer.byteLength(parsedFrame.data, "utf8")}`);
             return;
         }
 
@@ -546,32 +618,32 @@ export function bridgeTerminalSessionToSocket(
             && inputCols > 0
             && inputRows > 0;
         if (hasInputSize) {
-            // Attach size to input frames so stdin is always interpreted against
-            // the latest client geometry, even if a standalone resize frame was missed.
-            latestResize = {cols: inputCols, rows: inputRows};
-            trace("input-resize", `cols=${inputCols} rows=${inputRows}`);
-            session.emit("resize", inputCols, inputRows);
-        }
-
-        if (latestResize) {
-            // Re-emit latest known resize right before stdin to avoid a PTY state
-            // where output is at one geometry but input cursor is at another.
-            trace("reapply-resize", `cols=${latestResize.cols} rows=${latestResize.rows}`);
-            session.emit("resize", latestResize.cols, latestResize.rows);
+            applyResize(inputCols, inputRows, "input-resize");
         }
 
         const isQueuedPromptTrigger = fromPreReadyQueue && parsedFrame.data === promptNudgeInput;
         if (!isQueuedPromptTrigger) {
             sawUserStdin = true;
         }
-        trace("stdin-write", `bytes=${Buffer.byteLength(parsedFrame.data, "utf8")}`);
-        session.write(parsedFrame.data);
+        const textPayload = Buffer.from(parsedFrame.data, "utf8");
+        const normalizedTextPayload = textPayload;
+        trace(
+            "stdin-write",
+            `bytes=${normalizedTextPayload.byteLength} binary=false repaired=false normalized=false compat=${enableInputRepairCompatibility} head=${hexPreview(normalizedTextPayload)}`
+        );
+        session.writeRaw(normalizedTextPayload);
     };
 
-    browserSocket.on("message", (raw) => {
-        const text = browserMessageToUtf8(raw);
-        trace("browser-message", `len=${text.length}`);
-        forwardBrowserInput(text);
+    browserSocket.on("message", (raw, isBinary) => {
+        const binary = isBinary === true;
+        if (binary) {
+            const payload = browserMessageToBuffer(raw);
+            trace("browser-message", `len=${payload.byteLength} binary=true head=${hexPreview(payload)}`);
+        } else {
+            const text = browserMessageToUtf8(raw);
+            trace("browser-message", `len=${text.length} binary=false`);
+        }
+        forwardBrowserInput(raw, binary);
     });
 
     browserSocket.on("close", () => {
@@ -587,7 +659,7 @@ export function bridgeTerminalSessionToSocket(
         if (sessionReady) {
             outputSinceReadyBytes += data.length;
         }
-        trace("session-data", `bytes=${data.length}`);
+        trace("session-data", `bytes=${data.length} head=${hexPreview(data)}`);
 
         if (browserSocket.readyState === browserSocket.OPEN) {
             browserSocket.send(data);
@@ -613,21 +685,21 @@ export function bridgeTerminalSessionToSocket(
         trace("session-ready", `queued=${pendingInputs.length}`);
 
         for (const input of pendingInputs) {
-            forwardBrowserInput(input.text, input.fromPreReadyQueue);
+            forwardBrowserInput(input.message, input.isBinary, input.fromPreReadyQueue);
         }
         pendingInputs.length = 0;
 
-        promptNudgeTimer = setTimeout(() => {
-            if (browserClosed || !sessionReady || sawUserStdin) return;
-            if (outputSinceReadyBytes > promptNudgeMaxOutputBytes) {
-                trace("prompt-nudge-skip", `outputBytes=${outputSinceReadyBytes}`);
-                return;
-            }
-            // One-time fallback Enter for guests that delay first prompt until input.
-            // This is intentionally gated by output/user-input heuristics above.
-            trace("prompt-nudge", `bytes=${Buffer.byteLength(promptNudgeInput, "utf8")}`);
-            session.write(promptNudgeInput);
-        }, promptNudgeMs);
+        if (enablePromptNudge) {
+            promptNudgeTimer = setTimeout(() => {
+                if (browserClosed || !sessionReady || sawUserStdin) return;
+                if (outputSinceReadyBytes > promptNudgeMaxOutputBytes) {
+                    trace("prompt-nudge-skip", `outputBytes=${outputSinceReadyBytes}`);
+                    return;
+                }
+                trace("prompt-nudge", `bytes=${Buffer.byteLength(promptNudgeInput, "utf8")}`);
+                session.write(promptNudgeInput);
+            }, promptNudgeMs);
+        }
     });
 }
 
@@ -641,13 +713,18 @@ export async function openTerminalBridge(
     openOptions: TerminalOpenOptions = {},
     bridgeOptions: TerminalBridgeOptions = {}
 ): Promise<TerminalSession> {
-    const preOpenInputs: string[] = [];
+    const preOpenTextInputs: string[] = [];
+    const preOpenBinaryInputs: Buffer[] = [];
     let bridgeAttached = false;
     let browserClosedBeforeAttach = false;
 
-    browserSocket.on("message", (raw) => {
+    browserSocket.on("message", (raw, isBinary) => {
         if (bridgeAttached) return;
-        preOpenInputs.push(browserMessageToUtf8(raw));
+        if (isBinary === true) {
+            preOpenBinaryInputs.push(browserMessageToBuffer(raw));
+            return;
+        }
+        preOpenTextInputs.push(browserMessageToUtf8(raw));
     });
 
     browserSocket.on("close", () => {
@@ -665,7 +742,8 @@ export async function openTerminalBridge(
     bridgeAttached = true;
     bridgeTerminalSessionToSocket(session, browserSocket, {
         ...bridgeOptions,
-        initialInputs: [...preOpenInputs, ...(bridgeOptions.initialInputs ?? [])],
+        initialInputs: [...preOpenTextInputs, ...(bridgeOptions.initialInputs ?? [])],
+        initialBinaryInputs: [...preOpenBinaryInputs, ...(bridgeOptions.initialBinaryInputs ?? [])],
     });
 
     return session;
