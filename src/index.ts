@@ -99,7 +99,8 @@ export class Client {
     private readonly fetchImpl: FetchLike;
     private readonly opts: ClientOptions;
     private auth: AuthState = {};
-    private readonly eventMonitors = new Map<string, TimerPulledEventEmitter<Record<string, unknown>>>();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private readonly eventMonitors = new Map<string, TimerPulledEventEmitter<any>>();
 
     /**
      * Structured API surface generated from the spec.
@@ -251,7 +252,7 @@ export class Client {
                     publish(resource.id, resource);
                 }
             });
-            this.eventMonitors.set("resources", monitor as unknown);
+            this.eventMonitors.set("resources", monitor);
             return monitor;
         },
 
@@ -273,7 +274,7 @@ export class Client {
                     monitor.emit("task", task);
                 }
             );
-            this.eventMonitors.set("tasks", monitor as unknown);
+            this.eventMonitors.set("tasks", monitor);
             return monitor;
         },
 

@@ -53,7 +53,12 @@ export async function bodyToBuffer(body: unknown): Promise<Buffer | undefined> {
     }
 
     // Node Readable -> buffer (basic support)
-    if (body && 'pipe' in body && typeof (body as { pipe: unknown }).pipe === 'function') {
+    if (
+        typeof body === 'object' &&
+        body !== null &&
+        'pipe' in body &&
+        typeof (body as { pipe: unknown }).pipe === 'function'
+    ) {
         const chunks: Buffer[] = [];
         for await (const chunk of body as unknown as AsyncIterable<Buffer | string>) {
             chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));

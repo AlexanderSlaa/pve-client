@@ -72,7 +72,7 @@ export class NoVNCFacade {
     private rfb?: RFB;
     private connected = false;
     private connectVersion = 0;
-    private static rfbCtor?: typeof import("@novnc/novnc").default;
+        public static rfbCtor?: typeof import("@novnc/novnc").default;
 
     /**
      * Opens a new RFB session.
@@ -81,6 +81,46 @@ export class NoVNCFacade {
      * The method is async because noVNC is loaded dynamically to avoid evaluating
      * browser-only code (window usage) in non-browser runtimes.
      */
+    public static async getRfbConstructor(): Promise<typeof import("@novnc/novnc").default> {
+        if (!NoVNCFacade.rfbCtor) {
+            const module = await import("@novnc/novnc");
+            NoVNCFacade.rfbCtor = module.default;
+        }
+        return NoVNCFacade.rfbCtor;
+    }
+
+    private computeBackoffDelay({
+        attempt,
+        initialDelayMs,
+        maxDelayMs,
+        backoffMultiplier,
+        jitterRatio,
+    }: {
+        attempt: number;
+        initialDelayMs: number;
+        maxDelayMs: number;
+        backoffMultiplier: number;
+        jitterRatio: number;
+    }): number {
+        let delay = Math.min(
+            maxDelayMs,
+            initialDelayMs * Math.pow(backoffMultiplier, attempt - 1)
+        );
+        if (jitterRatio > 0) {
+            const jitter = delay * jitterRatio * (Math.random() - 0.5) * 2;
+            delay = Math.max(0, delay + jitter);
+        }
+        return Math.floor(delay);
+    }
+
+    private normalizeLevel(value: number, name: "compressionLevel" | "qualityLevel"): number {
+        if (!Number.isFinite(value)) {
+            throw new Error(`${name} must be a finite number in range 0-9.`);
+        }
+        const rounded = Math.round(value);
+        return Math.min(9, Math.max(0, rounded));
+    }
+
     async connect(options: NoVNCConnectionOptions): Promise<RFB> {
         const RFBConstructor = await NoVNCFacade.getRfbConstructor();
         const version = ++this.connectVersion;
@@ -366,7 +406,15 @@ export class NoVNCFacade {
         await new Promise<void>((resolve, reject) => {
             const timer = setTimeout(() => {
                 signal?.removeEventListener("abort", onAbort);
-            });
+                }, ms);
+                function onAbort() {
+                    clearTimeout(timer);
+                    signal?.removeEventListener("abort", onAbort);
+                    reject(new Error("Aborted"));
+                }
+                if (signal) {
+                    signal.addEventListener("abort", onAbort);
+                }
         });
     }
 
@@ -381,20 +429,5 @@ export class RetryableError extends Error {
     constructor(msg: string, public retryable: boolean) {
         super(msg);
         this.name = 'RetryableError';
-    }
-    private normalizeLevel(value: number, name: "compressionLevel" | "qualityLevel"): number {
-        if (!Number.isFinite(value)) {
-            throw new Error(`${name} must be a finite number in range 0-9.`);
-        }
-        const rounded = Math.round(value);
-        return Math.min(9, Math.max(0, rounded));
-    }
-
-    private static async getRfbConstructor(): Promise<typeof import("@novnc/novnc").default> {
-        if (!NoVNCFacade.rfbCtor) {
-            const module = await import("@novnc/novnc");
-            NoVNCFacade.rfbCtor = module.default;
-        }
-        return NoVNCFacade.rfbCtor;
     }
 }

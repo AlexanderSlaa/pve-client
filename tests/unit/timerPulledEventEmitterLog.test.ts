@@ -3,7 +3,7 @@ import { TimerPulledEventEmitter } from '../../src/helpers/TimerPulledEventEmitt
 
 describe('TimerPulledEventEmitter error log', () => {
   it('logs error with event key', async () => {
-    const emitter = new TimerPulledEventEmitter(async ({ publish }) => {
+    const emitter = new TimerPulledEventEmitter(async () => {
       throw new Error('fail');
     });
     emitter.stop();
