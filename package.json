@@ -1,6 +1,6 @@
 {
   "name": "pve-client",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Proxmox Typescript API Client",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.es.js",
@@ -80,7 +80,12 @@
       "@semantic-release/commit-analyzer",
       "@semantic-release/release-notes-generator",
       "@semantic-release/changelog",
-      ["@semantic-release/npm", { "provenance": true }],
+      [
+        "@semantic-release/npm",
+        {
+          "provenance": true
+        }
+      ],
       "@sourceregistry/semantic-release-jsr",
       [
         "@semantic-release/git",
