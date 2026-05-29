@@ -3024,6 +3024,377 @@ export type ClusterAPI = {
             }[]
         }
     },
+
+    "/cluster/ha/status/arm-ha": {
+        "POST": {
+            parameters: {}
+            return: null
+        }
+    },
+    "/cluster/ha/status/disarm-ha": {
+        "POST": {
+            parameters: {
+                $body: {
+                    "resource-mode": "freeze" | "ignore";
+                };
+            }
+            return: null
+        }
+    },
+    "/cluster/qemu": {
+        "GET": {
+            parameters: {}
+            return: Record<string, unknown>[]
+        }
+    },
+    "/cluster/qemu/cpu-flags": {
+        "GET": {
+            parameters: {
+                $query?: {
+                    "accel"?: "kvm" | "tcg";
+                    "arch"?: "x86_64" | "aarch64";
+                };
+            }
+            return: {
+                "description"?: string;
+                "name": string;
+                "supported-on"?: string[];
+            }[]
+        }
+    },
+    "/cluster/qemu/custom-cpu-models": {
+        "GET": {
+            parameters: {}
+            return: {
+                "cputype"?: string;
+                "digest"?: string;
+                "flags"?: string;
+                "guest-phys-bits"?: number;
+                "hidden"?: boolean;
+                "hv-vendor-id"?: string;
+                "level"?: number;
+                "phys-bits"?: string;
+                "reported-model"?: "486" | "a64fx" | "athlon" | "Broadwell" | "Broadwell-IBRS" | "Broadwell-noTSX" | "Broadwell-noTSX-IBRS" | "Cascadelake-Server" | "Cascadelake-Server-noTSX" | "Cascadelake-Server-v2" | "Cascadelake-Server-v4" | "Cascadelake-Server-v5" | "ClearwaterForest" | "ClearwaterForest-v2" | "ClearwaterForest-v3" | "Conroe" | "Cooperlake" | "Cooperlake-v2" | "core2duo" | "coreduo" | "cortex-a35" | "cortex-a53" | "cortex-a55" | "cortex-a57" | "cortex-a710" | "cortex-a72" | "cortex-a76" | "cortex-a78ae" | "DiamondRapids" | "EPYC" | "EPYC-Genoa" | "EPYC-Genoa-v2" | "EPYC-IBPB" | "EPYC-Milan" | "EPYC-Milan-v2" | "EPYC-Milan-v3" | "EPYC-Rome" | "EPYC-Rome-v2" | "EPYC-Rome-v3" | "EPYC-Rome-v4" | "EPYC-Rome-v5" | "EPYC-Turin" | "EPYC-v3" | "EPYC-v4" | "EPYC-v5" | "GraniteRapids" | "GraniteRapids-v2" | "GraniteRapids-v3" | "GraniteRapids-v4" | "GraniteRapids-v5" | "Haswell" | "Haswell-IBRS" | "Haswell-noTSX" | "Haswell-noTSX-IBRS" | "host" | "Icelake-Client" | "Icelake-Client-noTSX" | "Icelake-Server" | "Icelake-Server-noTSX" | "Icelake-Server-v3" | "Icelake-Server-v4" | "Icelake-Server-v5" | "Icelake-Server-v6" | "Icelake-Server-v7" | "IvyBridge" | "IvyBridge-IBRS" | "KnightsMill" | "kvm32" | "kvm64" | "max" | "Nehalem" | "Nehalem-IBRS" | "neoverse-n1" | "neoverse-n2" | "neoverse-v1" | "Opteron_G1" | "Opteron_G2" | "Opteron_G3" | "Opteron_G4" | "Opteron_G5" | "Penryn" | "pentium" | "pentium2" | "pentium3" | "phenom" | "qemu32" | "qemu64" | "SandyBridge" | "SandyBridge-IBRS" | "SapphireRapids" | "SapphireRapids-v2" | "SapphireRapids-v3" | "SapphireRapids-v4" | "SapphireRapids-v5" | "SapphireRapids-v6" | "SierraForest" | "SierraForest-v2" | "SierraForest-v3" | "SierraForest-v4" | "SierraForest-v5" | "Skylake-Client" | "Skylake-Client-IBRS" | "Skylake-Client-noTSX-IBRS" | "Skylake-Client-v4" | "Skylake-Server" | "Skylake-Server-IBRS" | "Skylake-Server-noTSX-IBRS" | "Skylake-Server-v4" | "Skylake-Server-v5" | "Westmere" | "Westmere-IBRS";
+            }[]
+        },
+        "POST": {
+            parameters: {
+                $body: {
+                    "cputype": string;
+                    "reported-model": "486" | "a64fx" | "athlon" | "Broadwell" | "Broadwell-IBRS" | "Broadwell-noTSX" | "Broadwell-noTSX-IBRS" | "Cascadelake-Server" | "Cascadelake-Server-noTSX" | "Cascadelake-Server-v2" | "Cascadelake-Server-v4" | "Cascadelake-Server-v5" | "ClearwaterForest" | "ClearwaterForest-v2" | "ClearwaterForest-v3" | "Conroe" | "Cooperlake" | "Cooperlake-v2" | "core2duo" | "coreduo" | "cortex-a35" | "cortex-a53" | "cortex-a55" | "cortex-a57" | "cortex-a710" | "cortex-a72" | "cortex-a76" | "cortex-a78ae" | "DiamondRapids" | "EPYC" | "EPYC-Genoa" | "EPYC-Genoa-v2" | "EPYC-IBPB" | "EPYC-Milan" | "EPYC-Milan-v2" | "EPYC-Milan-v3" | "EPYC-Rome" | "EPYC-Rome-v2" | "EPYC-Rome-v3" | "EPYC-Rome-v4" | "EPYC-Rome-v5" | "EPYC-Turin" | "EPYC-v3" | "EPYC-v4" | "EPYC-v5" | "GraniteRapids" | "GraniteRapids-v2" | "GraniteRapids-v3" | "GraniteRapids-v4" | "GraniteRapids-v5" | "Haswell" | "Haswell-IBRS" | "Haswell-noTSX" | "Haswell-noTSX-IBRS" | "host" | "Icelake-Client" | "Icelake-Client-noTSX" | "Icelake-Server" | "Icelake-Server-noTSX" | "Icelake-Server-v3" | "Icelake-Server-v4" | "Icelake-Server-v5" | "Icelake-Server-v6" | "Icelake-Server-v7" | "IvyBridge" | "IvyBridge-IBRS" | "KnightsMill" | "kvm32" | "kvm64" | "max" | "Nehalem" | "Nehalem-IBRS" | "neoverse-n1" | "neoverse-n2" | "neoverse-v1" | "Opteron_G1" | "Opteron_G2" | "Opteron_G3" | "Opteron_G4" | "Opteron_G5" | "Penryn" | "pentium" | "pentium2" | "pentium3" | "phenom" | "qemu32" | "qemu64" | "SandyBridge" | "SandyBridge-IBRS" | "SapphireRapids" | "SapphireRapids-v2" | "SapphireRapids-v3" | "SapphireRapids-v4" | "SapphireRapids-v5" | "SapphireRapids-v6" | "SierraForest" | "SierraForest-v2" | "SierraForest-v3" | "SierraForest-v4" | "SierraForest-v5" | "Skylake-Client" | "Skylake-Client-IBRS" | "Skylake-Client-noTSX-IBRS" | "Skylake-Client-v4" | "Skylake-Server" | "Skylake-Server-IBRS" | "Skylake-Server-noTSX-IBRS" | "Skylake-Server-v4" | "Skylake-Server-v5" | "Westmere" | "Westmere-IBRS";
+                    "flags"?: string;
+                    "guest-phys-bits"?: number;
+                    "hidden"?: boolean;
+                    "hv-vendor-id"?: string;
+                    "level"?: number;
+                    "phys-bits"?: string;
+                };
+            }
+            return: null
+        }
+    },
+    "/cluster/qemu/custom-cpu-models/{cputype}": {
+        "GET": {
+            parameters: {
+                $path: {
+                    "cputype": string;
+                };
+            }
+            return: {
+                "cputype"?: string;
+                "digest"?: string;
+                "flags"?: string;
+                "guest-phys-bits"?: number;
+                "hidden"?: boolean;
+                "hv-vendor-id"?: string;
+                "level"?: number;
+                "phys-bits"?: string;
+                "reported-model"?: "486" | "a64fx" | "athlon" | "Broadwell" | "Broadwell-IBRS" | "Broadwell-noTSX" | "Broadwell-noTSX-IBRS" | "Cascadelake-Server" | "Cascadelake-Server-noTSX" | "Cascadelake-Server-v2" | "Cascadelake-Server-v4" | "Cascadelake-Server-v5" | "ClearwaterForest" | "ClearwaterForest-v2" | "ClearwaterForest-v3" | "Conroe" | "Cooperlake" | "Cooperlake-v2" | "core2duo" | "coreduo" | "cortex-a35" | "cortex-a53" | "cortex-a55" | "cortex-a57" | "cortex-a710" | "cortex-a72" | "cortex-a76" | "cortex-a78ae" | "DiamondRapids" | "EPYC" | "EPYC-Genoa" | "EPYC-Genoa-v2" | "EPYC-IBPB" | "EPYC-Milan" | "EPYC-Milan-v2" | "EPYC-Milan-v3" | "EPYC-Rome" | "EPYC-Rome-v2" | "EPYC-Rome-v3" | "EPYC-Rome-v4" | "EPYC-Rome-v5" | "EPYC-Turin" | "EPYC-v3" | "EPYC-v4" | "EPYC-v5" | "GraniteRapids" | "GraniteRapids-v2" | "GraniteRapids-v3" | "GraniteRapids-v4" | "GraniteRapids-v5" | "Haswell" | "Haswell-IBRS" | "Haswell-noTSX" | "Haswell-noTSX-IBRS" | "host" | "Icelake-Client" | "Icelake-Client-noTSX" | "Icelake-Server" | "Icelake-Server-noTSX" | "Icelake-Server-v3" | "Icelake-Server-v4" | "Icelake-Server-v5" | "Icelake-Server-v6" | "Icelake-Server-v7" | "IvyBridge" | "IvyBridge-IBRS" | "KnightsMill" | "kvm32" | "kvm64" | "max" | "Nehalem" | "Nehalem-IBRS" | "neoverse-n1" | "neoverse-n2" | "neoverse-v1" | "Opteron_G1" | "Opteron_G2" | "Opteron_G3" | "Opteron_G4" | "Opteron_G5" | "Penryn" | "pentium" | "pentium2" | "pentium3" | "phenom" | "qemu32" | "qemu64" | "SandyBridge" | "SandyBridge-IBRS" | "SapphireRapids" | "SapphireRapids-v2" | "SapphireRapids-v3" | "SapphireRapids-v4" | "SapphireRapids-v5" | "SapphireRapids-v6" | "SierraForest" | "SierraForest-v2" | "SierraForest-v3" | "SierraForest-v4" | "SierraForest-v5" | "Skylake-Client" | "Skylake-Client-IBRS" | "Skylake-Client-noTSX-IBRS" | "Skylake-Client-v4" | "Skylake-Server" | "Skylake-Server-IBRS" | "Skylake-Server-noTSX-IBRS" | "Skylake-Server-v4" | "Skylake-Server-v5" | "Westmere" | "Westmere-IBRS";
+            }
+        },
+        "PUT": {
+            parameters: {
+                $path: {
+                    "cputype": string;
+                };
+                $body?: {
+                    "delete"?: string;
+                    "digest"?: string;
+                    "flags"?: string;
+                    "guest-phys-bits"?: number;
+                    "hidden"?: boolean;
+                    "hv-vendor-id"?: string;
+                    "level"?: number;
+                    "phys-bits"?: string;
+                    "reported-model"?: "486" | "a64fx" | "athlon" | "Broadwell" | "Broadwell-IBRS" | "Broadwell-noTSX" | "Broadwell-noTSX-IBRS" | "Cascadelake-Server" | "Cascadelake-Server-noTSX" | "Cascadelake-Server-v2" | "Cascadelake-Server-v4" | "Cascadelake-Server-v5" | "ClearwaterForest" | "ClearwaterForest-v2" | "ClearwaterForest-v3" | "Conroe" | "Cooperlake" | "Cooperlake-v2" | "core2duo" | "coreduo" | "cortex-a35" | "cortex-a53" | "cortex-a55" | "cortex-a57" | "cortex-a710" | "cortex-a72" | "cortex-a76" | "cortex-a78ae" | "DiamondRapids" | "EPYC" | "EPYC-Genoa" | "EPYC-Genoa-v2" | "EPYC-IBPB" | "EPYC-Milan" | "EPYC-Milan-v2" | "EPYC-Milan-v3" | "EPYC-Rome" | "EPYC-Rome-v2" | "EPYC-Rome-v3" | "EPYC-Rome-v4" | "EPYC-Rome-v5" | "EPYC-Turin" | "EPYC-v3" | "EPYC-v4" | "EPYC-v5" | "GraniteRapids" | "GraniteRapids-v2" | "GraniteRapids-v3" | "GraniteRapids-v4" | "GraniteRapids-v5" | "Haswell" | "Haswell-IBRS" | "Haswell-noTSX" | "Haswell-noTSX-IBRS" | "host" | "Icelake-Client" | "Icelake-Client-noTSX" | "Icelake-Server" | "Icelake-Server-noTSX" | "Icelake-Server-v3" | "Icelake-Server-v4" | "Icelake-Server-v5" | "Icelake-Server-v6" | "Icelake-Server-v7" | "IvyBridge" | "IvyBridge-IBRS" | "KnightsMill" | "kvm32" | "kvm64" | "max" | "Nehalem" | "Nehalem-IBRS" | "neoverse-n1" | "neoverse-n2" | "neoverse-v1" | "Opteron_G1" | "Opteron_G2" | "Opteron_G3" | "Opteron_G4" | "Opteron_G5" | "Penryn" | "pentium" | "pentium2" | "pentium3" | "phenom" | "qemu32" | "qemu64" | "SandyBridge" | "SandyBridge-IBRS" | "SapphireRapids" | "SapphireRapids-v2" | "SapphireRapids-v3" | "SapphireRapids-v4" | "SapphireRapids-v5" | "SapphireRapids-v6" | "SierraForest" | "SierraForest-v2" | "SierraForest-v3" | "SierraForest-v4" | "SierraForest-v5" | "Skylake-Client" | "Skylake-Client-IBRS" | "Skylake-Client-noTSX-IBRS" | "Skylake-Client-v4" | "Skylake-Server" | "Skylake-Server-IBRS" | "Skylake-Server-noTSX-IBRS" | "Skylake-Server-v4" | "Skylake-Server-v5" | "Westmere" | "Westmere-IBRS";
+                };
+            }
+            return: null
+        },
+        "DELETE": {
+            parameters: {
+                $path: {
+                    "cputype": string;
+                };
+            }
+            return: null
+        }
+    },
+    "/cluster/sdn/dry-run": {
+        "GET": {
+            parameters: {
+                $query: {
+                    "node": string;
+                };
+            }
+            return: {
+                "frr-diff"?: string;
+                "interfaces-diff"?: string;
+            }
+        }
+    },
+    "/cluster/sdn/prefix-lists": {
+        "GET": {
+            parameters: {
+                $query?: {
+                    "pending"?: boolean;
+                    "running"?: boolean;
+                    "verbose"?: boolean;
+                };
+            }
+            return: Record<string, unknown>[]
+        },
+        "POST": {
+            parameters: {
+                $body: {
+                    "id": string;
+                    "digest"?: string;
+                    "entries"?: string[];
+                    "lock-token"?: string;
+                };
+            }
+            return: null
+        }
+    },
+    "/cluster/sdn/prefix-lists/{id}": {
+        "GET": {
+            parameters: {
+                $path: {
+                    "id": string;
+                };
+            }
+            return: Record<string, unknown>
+        },
+        "PUT": {
+            parameters: {
+                $path: {
+                    "id": string;
+                };
+                $body?: {
+                    "delete"?: "entries"[];
+                    "digest"?: string;
+                    "entries"?: string[];
+                    "lock-token"?: string;
+                };
+            }
+            return: null
+        },
+        "DELETE": {
+            parameters: {
+                $path: {
+                    "id": string;
+                };
+                $query?: {
+                    "lock-token"?: string;
+                };
+            }
+            return: null
+        }
+    },
+    "/cluster/sdn/prefix-lists/{id}/entries": {
+        "GET": {
+            parameters: {
+                $path: {
+                    "id": string;
+                };
+            }
+            return: Record<string, unknown>[]
+        },
+        "POST": {
+            parameters: {
+                $path: {
+                    "id": string;
+                };
+                $body: {
+                    "action": "permit" | "deny";
+                    "prefix": string;
+                    "ge"?: number;
+                    "le"?: number;
+                    "lock-token"?: string;
+                    "seq"?: number;
+                };
+            }
+            return: null
+        }
+    },
+    "/cluster/sdn/prefix-lists/{id}/entries/{url_seq}": {
+        "GET": {
+            parameters: {
+                $path: {
+                    "id": string;
+                };
+            }
+            return: Record<string, unknown>
+        },
+        "PUT": {
+            parameters: {
+                $body?: {
+                    "action"?: "permit" | "deny";
+                    "delete"?: "le" | "ge" | "seq"[];
+                    "digest"?: string;
+                    "ge"?: number;
+                    "le"?: number;
+                    "lock-token"?: string;
+                    "prefix"?: string;
+                    "seq"?: number;
+                };
+            }
+            return: null
+        },
+        "DELETE": {
+            parameters: {
+                $path: {
+                    "id": string;
+                };
+                $query?: {
+                    "lock-token"?: string;
+                };
+            }
+            return: null
+        }
+    },
+    "/cluster/sdn/route-maps": {
+        "GET": {
+            parameters: {
+                $query?: {
+                    "running"?: boolean;
+                };
+            }
+            return: {
+                "id": string;
+            }[]
+        }
+    },
+    "/cluster/sdn/route-maps/entries": {
+        "GET": {
+            parameters: {
+                $query?: {
+                    "pending"?: boolean;
+                    "running"?: boolean;
+                };
+            }
+            return: {
+                "action": "permit" | "deny";
+                "call"?: string;
+                "digest"?: string;
+                "exit-action"?: string;
+                "match"?: string[];
+                "order": number;
+                "route-map-id": string;
+                "set"?: string[];
+            }[]
+        },
+        "POST": {
+            parameters: {
+                $body: {
+                    "action": "permit" | "deny";
+                    "order": number;
+                    "route-map-id": string;
+                    "call"?: string;
+                    "digest"?: string;
+                    "exit-action"?: string;
+                    "lock-token"?: string;
+                    "match"?: string[];
+                    "set"?: string[];
+                };
+            }
+            return: null
+        }
+    },
+    "/cluster/sdn/route-maps/entries/{route-map-id}": {
+        "GET": {
+            parameters: {
+                $path: {
+                    "route-map-id": string;
+                };
+                $query?: {
+                    "pending"?: boolean;
+                    "running"?: boolean;
+                };
+            }
+            return: {
+                "action": "permit" | "deny";
+                "call"?: string;
+                "digest"?: string;
+                "exit-action"?: string;
+                "match"?: string[];
+                "order": number;
+                "route-map-id": string;
+                "set"?: string[];
+            }[]
+        }
+    },
+    "/cluster/sdn/route-maps/entries/{route-map-id}/entry/{order}": {
+        "GET": {
+            parameters: {
+                $path: {
+                    "order": number;
+                    "route-map-id": string;
+                };
+            }
+            return: {
+                "action": "permit" | "deny";
+                "call"?: string;
+                "digest"?: string;
+                "exit-action"?: string;
+                "match"?: string[];
+                "order": number;
+                "route-map-id": string;
+                "set"?: string[];
+            }
+        },
+        "PUT": {
+            parameters: {
+                $path: {
+                    "order": number;
+                    "route-map-id": string;
+                };
+                $body?: {
+                    "action"?: "permit" | "deny";
+                    "call"?: string;
+                    "delete"?: "set" | "match" | "call" | "exit-action"[];
+                    "digest"?: string;
+                    "exit-action"?: string;
+                    "lock-token"?: string;
+                    "match"?: string[];
+                    "set"?: string[];
+                };
+            }
+            return: null
+        },
+        "DELETE": {
+            parameters: {
+                $path: {
+                    "order": number;
+                    "route-map-id": string;
+                };
+                $query?: {
+                    "lock-token"?: string;
+                };
+            }
+            return: null
+        }
+    },
 }
 
 // --- END ClusterAPI type definition ---

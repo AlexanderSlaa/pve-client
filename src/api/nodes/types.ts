@@ -304,7 +304,21 @@ export type NodesAPI = {
             }
             return: string
         }
-    },
+    ,
+        "DELETE": {
+            parameters: {
+                $path: {
+                    "name": string;
+                    "node": string;
+                };
+                $query?: {
+                    "remove-pools"?: boolean;
+                    "remove-storages"?: boolean;
+                };
+            }
+            return: string
+        }
+        },
     "/nodes/{node}/ceph/init": {
         "POST": {
             parameters: {
@@ -4649,6 +4663,21 @@ export type NodesAPI = {
                 $path: { "node": string },
             }
             return: string
+        }
+    },
+
+    "/nodes/{node}/storage/{storage}/identity": {
+        "GET": {
+            parameters: {
+                $path: {
+                    "node": string;
+                    "storage": string;
+                };
+            }
+            return: {
+                "id": string;
+                "type": "btrfs" | "cephfs" | "cifs" | "dir" | "esxi" | "iscsi" | "iscsidirect" | "lvm" | "lvmthin" | "nfs" | "pbs" | "rbd" | "zfs" | "zfspool";
+            }
         }
     },
 };
