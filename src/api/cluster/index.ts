@@ -44,10 +44,35 @@ function Cluster(client: Client) {
 		status: (): Promise<ClusterAPI["/cluster/status"]["GET"]["return"]> =>
 			client.request("/cluster/status", "GET", {}),
 		tasks: tasksFactory(client),
-		// Add index and other endpoints as needed
 		index: () => client.request("/cluster", "GET", {}),
-		backup_info: () => client.request("/cluster/backup-info", "GET", {}),
-		bulk_action: () => client.request("/cluster/bulk-action", "GET", {}),
+		log: (args?: ClusterAPI["/cluster/log"]["GET"]["parameters"]) =>
+			client.request("/cluster/log", "GET", args ?? {}),
+		backup_info: {
+			index:           () => client.request("/cluster/backup-info", "GET", {}),
+			not_backed_up:   (args?: ClusterAPI["/cluster/backup-info/not-backed-up"]["GET"]["parameters"]) =>
+				client.request("/cluster/backup-info/not-backed-up", "GET", args ?? {}),
+		},
+		bulk_action: {
+			index:    () => client.request("/cluster/bulk-action", "GET", {}),
+			guest:    () => (client.request as any)("/cluster/bulk-action/guest", "GET", {}),
+			migrate:  (args?: any) => (client.request as any)("/cluster/bulk-action/guest/migrate",  "POST", args ?? {}),
+			shutdown: (args?: any) => (client.request as any)("/cluster/bulk-action/guest/shutdown", "POST", args ?? {}),
+			start:    (args?: any) => (client.request as any)("/cluster/bulk-action/guest/start",    "POST", args ?? {}),
+			suspend:  (args?: any) => (client.request as any)("/cluster/bulk-action/guest/suspend",  "POST", args ?? {}),
+		},
+		qemu: {
+			index:          () => (client.request as any)("/cluster/qemu",                      "GET", {}),
+			cpu_flags:      () => (client.request as any)("/cluster/qemu/cpu-flags",            "GET", {}),
+			custom_cpu: {
+				index:  () => (client.request as any)("/cluster/qemu/custom-cpu-models",        "GET", {}),
+				create: (args?: any) => (client.request as any)("/cluster/qemu/custom-cpu-models", "POST", args ?? {}),
+				cputype: (cputype: string) => ({
+					get:    () => (client.request as any)("/cluster/qemu/custom-cpu-models/{cputype}", "GET",    { $path: { cputype } }),
+					update: (args?: any) => (client.request as any)("/cluster/qemu/custom-cpu-models/{cputype}", "PUT",    { ...args, $path: { cputype } }),
+					delete: () => (client.request as any)("/cluster/qemu/custom-cpu-models/{cputype}", "DELETE", { $path: { cputype } }),
+				}),
+			},
+		},
 	};
 }
 

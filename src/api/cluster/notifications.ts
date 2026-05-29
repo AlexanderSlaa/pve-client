@@ -10,6 +10,8 @@ export default function notificationsFactory(client: Client) {
             client.request("/cluster/notifications", "GET", a[0] ?? {}),
 
         endpoints: {
+            index: (...a: ArgsTuple<C["/cluster/notifications/endpoints"]["GET"]["parameters"]>) =>
+                client.request("/cluster/notifications/endpoints", "GET", a[0] ?? {}),
             gotify: {
                 index:  (...a: ArgsTuple<C["/cluster/notifications/endpoints/gotify"]["GET"]["parameters"]>)  => client.request("/cluster/notifications/endpoints/gotify", "GET",  a[0] ?? {}),
                 create: (...a: ArgsTuple<C["/cluster/notifications/endpoints/gotify"]["POST"]["parameters"]>) => client.request("/cluster/notifications/endpoints/gotify", "POST", a[0] ?? {}),

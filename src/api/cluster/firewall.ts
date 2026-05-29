@@ -16,15 +16,27 @@ export default function firewallFactory(client: Client) {
         groups: {
             index: (...args: ArgsTuple<ClusterAPI["/cluster/firewall/groups"]["GET"]['parameters']>) => client.request("/cluster/firewall/groups", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/firewall/groups"]["GET"]['parameters']),
             group: (group: string) => ({
-                get: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/groups/{group}"]["GET"]['parameters']>>) => client.request("/cluster/firewall/groups/{group}", "GET", { ...((args[0]) as any), $path: { group } }),
-                // Add more group endpoints as needed
+                get:    (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/groups/{group}"]["GET"]["parameters"]>>)    => client.request("/cluster/firewall/groups/{group}", "GET",    { ...((args[0]) as any), $path: { group } }),
+                create: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/groups/{group}"]["POST"]["parameters"]>>)  => client.request("/cluster/firewall/groups/{group}", "POST",   { ...((args[0]) as any), $path: { group } }),
+                delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/groups/{group}"]["DELETE"]["parameters"]>>) => client.request("/cluster/firewall/groups/{group}", "DELETE", { ...((args[0]) as any), $path: { group } }),
+                pos: (pos: number | string) => ({
+                    get:    (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/groups/{group}/{pos}"]["GET"]["parameters"]>>)    => client.request("/cluster/firewall/groups/{group}/{pos}", "GET",    { ...((args[0]) as any), $path: { group, pos } }),
+                    update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/groups/{group}/{pos}"]["PUT"]["parameters"]>>)   => client.request("/cluster/firewall/groups/{group}/{pos}", "PUT",    { ...((args[0]) as any), $path: { group, pos } }),
+                    delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/groups/{group}/{pos}"]["DELETE"]["parameters"]>>) => client.request("/cluster/firewall/groups/{group}/{pos}", "DELETE", { ...((args[0]) as any), $path: { group, pos } }),
+                }),
             })
         },
         ipset: {
             index: (...args: ArgsTuple<ClusterAPI["/cluster/firewall/ipset"]["GET"]['parameters']>) => client.request("/cluster/firewall/ipset", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/firewall/ipset"]["GET"]['parameters']),
             name: (name: string) => ({
-                get: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/ipset/{name}"]["GET"]['parameters']>>) => client.request("/cluster/firewall/ipset/{name}", "GET", { ...((args[0]) as any), $path: { name } }),
-                // Add more ipset endpoints as needed
+                get:    (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/ipset/{name}"]["GET"]["parameters"]>>)    => client.request("/cluster/firewall/ipset/{name}", "GET",    { ...((args[0]) as any), $path: { name } }),
+                add:    (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/ipset/{name}"]["POST"]["parameters"]>>)  => client.request("/cluster/firewall/ipset/{name}", "POST",   { ...((args[0]) as any), $path: { name } }),
+                delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/ipset/{name}"]["DELETE"]["parameters"]>>) => client.request("/cluster/firewall/ipset/{name}", "DELETE", { ...((args[0]) as any), $path: { name } }),
+                cidr: (cidr: string) => ({
+                    get:    (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/ipset/{name}/{cidr}"]["GET"]["parameters"]>>)    => client.request("/cluster/firewall/ipset/{name}/{cidr}", "GET",    { ...((args[0]) as any), $path: { name, cidr } }),
+                    update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/ipset/{name}/{cidr}"]["PUT"]["parameters"]>>)   => client.request("/cluster/firewall/ipset/{name}/{cidr}", "PUT",    { ...((args[0]) as any), $path: { name, cidr } }),
+                    delete: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/firewall/ipset/{name}/{cidr}"]["DELETE"]["parameters"]>>) => client.request("/cluster/firewall/ipset/{name}/{cidr}", "DELETE", { ...((args[0]) as any), $path: { name, cidr } }),
+                }),
             })
         },
         aliases: {

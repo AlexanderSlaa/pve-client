@@ -46,6 +46,7 @@ export default function sdnFactory(client: Client) {
                 }),
             },
             node: {
+                index: () => (client.request as any)("/cluster/sdn/fabrics/node", "GET", {}),
                 fabric_id: (fabric_id: string) => ({
                     index:  (args?: A) => r("/cluster/sdn/fabrics/node/{fabric_id}", "GET",  { ...args, $path: { fabric_id } }),
                     create: (args?: A) => r("/cluster/sdn/fabrics/node/{fabric_id}", "POST", { ...args, $path: { fabric_id } }),

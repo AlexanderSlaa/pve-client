@@ -164,6 +164,7 @@ function Nodes(client: Client) {
 				disks: {
 					index:    () => disksApi.list(node, undefined as any),
 					list:     (args?: A) => disksApi.list(node, args),
+					list_disks: (args?: A) => (disksApi as any).list_disks(node, args),
 					directory: {
 						index:  () => r("/nodes/{node}/disks/directory", "GET", { $path: { node } }),
 						create: (args?: A) => r("/nodes/{node}/disks/directory", "POST", { ...args, $path: { node } }),
@@ -253,6 +254,10 @@ function Nodes(client: Client) {
 					list:   (args?: A) => lxcApi.list(node, args),
 					create: (args?: A) => lxcApi.create(node, args),
 					id: (vmid: number) => ({
+						status_index:    () => lxcApi.status_index(node, vmid),
+						mtunnel:         (args?: A) => lxcApi.mtunnel(node, vmid, args),
+						mtunnelwebsocket:(args?: A) => lxcApi.mtunnelwebsocket(node, vmid, args),
+						remote_migrate:  (args?: A) => lxcApi.remote_migrate(node, vmid, args),
 						destroy:    (args?: A) => lxcApi.delete(node, vmid, args),
 						diridx:     (args?: A) => lxcApi.get(node, vmid, args),
 						clone:      (args: A)  => lxcApi.clone(node, vmid, args),
@@ -363,6 +368,11 @@ function Nodes(client: Client) {
 					list:   (args?: A) => qemuApi.list(node, args),
 					create: (args?: A) => qemuApi.create(node, args),
 					vmid: (vmid: number) => ({
+						status_index: () => qemuApi.status_index(node, vmid),
+						dbus_vmstate: qemuApi.dbus_vmstate,
+						mtunnel:      (args?: A) => qemuApi.mtunnel(node, vmid, args),
+						mtunnelwebsocket: (args?: A) => qemuApi.mtunnelwebsocket(node, vmid, args),
+						remote_migrate:   (args?: A) => qemuApi.remote_migrate(node, vmid, args),
 						destroy:     (args?: A) => qemuApi.delete(node, vmid, args),
 						diridx:      (args?: A) => qemuApi.get(node, vmid, args),
 						clone:       (args: A)  => qemuApi.clone(node, vmid, args),

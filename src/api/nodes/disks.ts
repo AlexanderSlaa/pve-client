@@ -20,7 +20,13 @@ export default function disksFactory(client: Client) {
             "GET",
             { $path: { node }, ...stripPath(args[0]) }
         ),
-        // ...repeat for all other endpoints under /nodes/{node}/disks
-        // For brevity, only a representative sample is shown here. Continue this pattern for all endpoints.
+        list_disks: (
+            node: string,
+            ...args: ArgsTuple<NodesAPI["/nodes/{node}/disks/list"]["GET"]["parameters"]>
+        ) => client.request(
+            "/nodes/{node}/disks/list",
+            "GET",
+            { $path: { node }, ...stripPath(args[0]) }
+        ),
     };
 }

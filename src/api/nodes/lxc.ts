@@ -70,6 +70,18 @@ export default function lxcFactory(client: Client) {
                 client.request("/nodes/{node}/lxc/{vmid}/config", "PUT", { ...((a[0]) as any), $path: { node, vmid } }),
         },
 
+        status_index: (node: string, vmid: number) =>
+            client.request("/nodes/{node}/lxc/{vmid}/status", "GET", { $path: { node, vmid } } as any),
+
+        mtunnel: (node: string, vmid: number, ...a: ArgsTuple<PathContext<R<"/nodes/{node}/lxc/{vmid}/mtunnel", "POST">>>) =>
+            client.request("/nodes/{node}/lxc/{vmid}/mtunnel", "POST", { ...((a[0]) as any), $path: { node, vmid } }),
+
+        mtunnelwebsocket: (node: string, vmid: number, ...a: ArgsTuple<PathContext<R<"/nodes/{node}/lxc/{vmid}/mtunnelwebsocket", "GET">>>) =>
+            client.request("/nodes/{node}/lxc/{vmid}/mtunnelwebsocket", "GET", { ...((a[0]) as any), $path: { node, vmid } }),
+
+        remote_migrate: (node: string, vmid: number, ...a: ArgsTuple<PathContext<R<"/nodes/{node}/lxc/{vmid}/remote_migrate", "POST">>>) =>
+            client.request("/nodes/{node}/lxc/{vmid}/remote_migrate", "POST", { ...((a[0]) as any), $path: { node, vmid } }),
+
         firewall: {
             get:  (node: string, vmid: number) => client.request("/nodes/{node}/lxc/{vmid}/firewall", "GET", { $path: { node, vmid } } as any),
             log:  (node: string, vmid: number, ...a: ArgsTuple<PathContext<R<"/nodes/{node}/lxc/{vmid}/firewall/log",  "GET">>>) =>

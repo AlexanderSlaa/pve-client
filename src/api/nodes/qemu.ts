@@ -116,6 +116,23 @@ export default function qemuFactory(client: Client) {
         agent_set_user_password: (node: string, vmid: number, ...a: ArgsTuple<PathContext<R<"/nodes/{node}/qemu/{vmid}/agent/set-user-password", "POST">>>) =>
             client.request("/nodes/{node}/qemu/{vmid}/agent/set-user-password", "POST", { ...((a[0]) as any), $path: { node, vmid } }),
 
+        status_index: (node: string, vmid: number) =>
+            client.request("/nodes/{node}/qemu/{vmid}/status", "GET", { $path: { node, vmid } } as any),
+
+        dbus_vmstate: {
+            create: (node: string, vmid: number, ...a: ArgsTuple<PathContext<R<"/nodes/{node}/qemu/{vmid}/dbus-vmstate", "POST">>>) =>
+                client.request("/nodes/{node}/qemu/{vmid}/dbus-vmstate", "POST", { ...((a[0]) as any), $path: { node, vmid } }),
+        },
+
+        mtunnel: (node: string, vmid: number, ...a: ArgsTuple<PathContext<R<"/nodes/{node}/qemu/{vmid}/mtunnel", "POST">>>) =>
+            client.request("/nodes/{node}/qemu/{vmid}/mtunnel", "POST", { ...((a[0]) as any), $path: { node, vmid } }),
+
+        mtunnelwebsocket: (node: string, vmid: number, ...a: ArgsTuple<PathContext<R<"/nodes/{node}/qemu/{vmid}/mtunnelwebsocket", "GET">>>) =>
+            client.request("/nodes/{node}/qemu/{vmid}/mtunnelwebsocket", "GET", { ...((a[0]) as any), $path: { node, vmid } }),
+
+        remote_migrate: (node: string, vmid: number, ...a: ArgsTuple<PathContext<R<"/nodes/{node}/qemu/{vmid}/remote_migrate", "POST">>>) =>
+            client.request("/nodes/{node}/qemu/{vmid}/remote_migrate", "POST", { ...((a[0]) as any), $path: { node, vmid } }),
+
         cloudinit: {
             get:    (node: string, vmid: number) => client.request("/nodes/{node}/qemu/{vmid}/cloudinit", "GET", { $path: { node, vmid } } as any),
             update: (node: string, vmid: number, ...a: ArgsTuple<PathContext<R<"/nodes/{node}/qemu/{vmid}/cloudinit", "PUT">>>) =>
