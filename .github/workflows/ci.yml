@@ -65,6 +65,11 @@ jobs:
         run: git restore .
       - name: Build the package
         run: npm run build
+      - name: Ignore lock file changes during release
+        # package-lock.json is re-written by `npm version` inside semantic-release.
+        # jsr publish checks `git status` and aborts on any dirty file, so we mark
+        # the lock file as unchanged so git ignores its modifications.
+        run: git update-index --assume-unchanged package-lock.json
       - name: Run semantic-release
         run: npx semantic-release
 
