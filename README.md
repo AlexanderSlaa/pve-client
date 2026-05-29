@@ -1,33 +1,93 @@
+<div align="center">
+
+<img src="https://www.proxmox.com/images/proxmox/Proxmox_logo_standard_hex_400px.png" alt="Proxmox" width="180" />
+
 # pve-client
 
-[![npm version](https://img.shields.io/npm/v/pve-client)](https://www.npmjs.com/package/pve-client)
-[![GitHub repo](https://img.shields.io/badge/GitHub-AlexanderSlaa%2Fpve--client-181717?logo=github)](https://github.com/AlexanderSlaa/pve-client)
-[![License](https://img.shields.io/github/license/AlexanderSlaa/pve-client)](LICENSE)
-[![Tests](https://github.com/AlexanderSlaa/pve-client/actions/workflows/test.yml/badge.svg)](https://github.com/AlexanderSlaa/pve-client/actions/workflows/test.yml)
-[![Coverage](https://github.com/AlexanderSlaa/pve-client/actions/workflows/codecov-coverage.yml/badge.svg)](https://github.com/AlexanderSlaa/pve-client/actions/workflows/codecov-coverage.yml)
-[![codecov](https://codecov.io/gh/AlexanderSlaa/pve-client/graph/badge.svg)](https://codecov.io/gh/AlexanderSlaa/pve-client)
+**Full-coverage TypeScript client for the Proxmox VE REST API**
 
-TypeScript-first API client for Proxmox VE.
+[![npm version](https://img.shields.io/npm/v/pve-client?style=flat-square&color=CB3837&logo=npm)](https://www.npmjs.com/package/pve-client)
+[![JSR](https://img.shields.io/badge/JSR-%40sourceregistry%2Fproxmox-F7DF1E?style=flat-square&logo=deno)](https://jsr.io/@sourceregistry/proxmox)
+[![License](https://img.shields.io/github/license/AlexanderSlaa/pve-client?style=flat-square)](LICENSE)
+[![Tests](https://github.com/AlexanderSlaa/pve-client/actions/workflows/test.yml/badge.svg?style=flat-square)](https://github.com/AlexanderSlaa/pve-client/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/AlexanderSlaa/pve-client/graph/badge.svg?style=flat-square)](https://codecov.io/gh/AlexanderSlaa/pve-client)
+[![Node.js](https://img.shields.io/node/v/pve-client?style=flat-square&logo=node.js)](https://nodejs.org)
 
-It provides a typed API surface generated from the Proxmox spec, so endpoint paths, query/body fields, and return types are available through autocomplete.
+[**Docs**](https://alexanderslaa.github.io/pve-client/) · [**npm**](https://www.npmjs.com/package/pve-client) · [**JSR**](https://jsr.io/@sourceregistry/proxmox) · [**Issues**](https://github.com/AlexanderSlaa/pve-client/issues) · [**Discussions**](https://github.com/AlexanderSlaa/pve-client/discussions)
+
+</div>
+
+---
+
+`pve-client` is a **TypeScript-first** API client covering all **675 endpoints** of the official Proxmox VE REST API — typed end-to-end so your editor knows every path, parameter, and return shape. No hand-rolled fetch calls, no guessing field names.
+
+```ts
+import { Client } from "pve-client";
+
+const client = new Client({ baseUrl: "https://pve.example.com:8006", apiToken: "..." });
+
+const nodes = await client.api.nodes.list();
+//    ^? { node: string; status: "online" | "offline" | ...; ... }[]
+```
+
+---
+
+## Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Authentication](#authentication)
+- [API Modules](#api-modules)
+- [Common Patterns](#common-patterns)
+- [Task Monitoring](#task-monitoring)
+- [Live Events](#live-events)
+- [Error Handling](#error-handling)
+- [Examples](#examples)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
 
 ## Features
 
-- Typed endpoint methods for Proxmox VE APIs
-- Token auth and username/password login flow
-- Automatic path/query/body handling
-- Proxmox-style response unwrapping (`{ data: ... } -> data`)
-- Works with Node.js fetch and supports custom HTTPS agents
+| | |
+|---|---|
+| **675 typed endpoints** | Every Proxmox VE API path — `GET`, `POST`, `PUT`, `DELETE` — is typed with parameter and return types generated from the official spec |
+| **Two auth methods** | API token (recommended) or username/password ticket flow |
+| **Autocomplete everywhere** | Path params, query strings, body fields, and return shapes all resolve in your IDE |
+| **Response unwrapping** | Proxmox wraps responses in `{ data: ... }` — this client strips it automatically |
+| **Task polling** | Built-in `client.task.listen()` and `client.task.wait()` for async Proxmox tasks |
+| **Live resource events** | Subscribe to cluster resource and task streams via `client.events` |
+| **ESM + CJS** | Dual-format build works in any modern Node.js project |
+| **Node.js ≥ 18** | Uses native `fetch`; bring your own HTTPS agent for self-signed certs |
+
+---
 
 ## Installation
 
 ```bash
+# npm
 npm install pve-client
+
+# yarn
+yarn add pve-client
+
+# pnpm
+pnpm add pve-client
 ```
 
-## Quick Start
+**JSR** (Deno / JSR-compatible runtimes):
 
-### Token Authentication (recommended)
+```bash
+deno add @sourceregistry/proxmox
+# or
+npx jsr add @sourceregistry/proxmox
+```
+
+---
+
+## Quick Start
 
 ```ts
 import { Client } from "pve-client";
@@ -36,34 +96,54 @@ import { Agent } from "node:https";
 const client = new Client({
   baseUrl: "https://pve.example.com:8006",
   apiToken: "PVEAPIToken=root@pam!mytoken=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-  // only needed for self-signed certs
+
+  // required only for self-signed certificates
   agent: new Agent({ rejectUnauthorized: false }),
 });
 
+// list nodes
 const nodes = await client.api.nodes.list();
-console.log(nodes);
+
+// get cluster status
+const status = await client.api.cluster.status();
+
+// get VMs on a node
+const vms = await client.api.nodes.get("pve").qemu.list();
 ```
 
-### Username/Password Authentication
+---
+
+## Authentication
+
+### API Token *(recommended)*
+
+Create a token in the Proxmox web UI under **Datacenter → Permissions → API Tokens**, then:
 
 ```ts
-import { Client } from "pve-client";
-import { Agent } from "node:https";
+const client = new Client({
+  baseUrl: "https://pve.example.com:8006",
+  apiToken: "PVEAPIToken=root@pam!mytoken=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  // shorthand also works:
+  // apiToken: "root@pam!mytoken=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+});
+```
 
+### Username / Password
+
+```ts
 const client = new Client({
   baseUrl: "https://pve.example.com:8006",
   username: "root",
   password: "your-password",
-  realm: "pam", // optional, defaults to "pam"
-  agent: new Agent({ rejectUnauthorized: false }),
+  realm: "pam", // defaults to "pam"
 });
 
-await client.login();
-const nodes = await client.api.nodes.list();
-console.log(nodes);
+await client.login(); // exchanges credentials for a ticket + CSRF token
 ```
 
-## Using `.env`
+> **Note:** Some Proxmox operations (VM console, terminal access) require ticket-based auth and are unavailable to API tokens regardless of permissions.
+
+### Using `.env`
 
 ```env
 PVE_BASE_URL=https://pve.example.com:8006
@@ -78,154 +158,278 @@ const client = new Client({
   baseUrl: process.env.PVE_BASE_URL!,
   apiToken: process.env.PVE_API_TOKEN!,
 });
-
-const nodes = await client.api.nodes.list();
-console.log(nodes);
 ```
 
-## Common Calls
+---
 
-### Get cluster overview and nodes
+## API Modules
 
-```ts
-const cluster = await client.api.cluster.index();
-const nodes = await client.api.nodes.list();
-```
+The client exposes all 675 Proxmox endpoints through six typed modules:
 
-### Path-based endpoints
+| Module | Path prefix | Covers |
+|---|---|---|
+| `client.api.access` | `/access` | Users, groups, roles, ACLs, domains, TFA, tickets |
+| `client.api.cluster` | `/cluster` | Cluster config, HA, replication, firewall, SDN, backup, ACME, resources |
+| `client.api.nodes` | `/nodes` | Node management, VMs (QEMU), containers (LXC), storage, networking, tasks |
+| `client.api.pools` | `/pools` | Resource pool management |
+| `client.api.storage` | `/storage` | Storage configuration |
+| `client.api.version` | `/version` | API version info |
 
-```ts
-const nodeStatus = await client.api.nodes.get("pve").status.get();
-```
+### Request argument shape
 
-### Endpoints with optional parameters
+Every method accepts an object with the following optional keys:
 
-```ts
-// no params required
-const version = await client.api.version.version();
-
-// optional query/body can still be passed
-const pools = await client.api.pools.index({
-  $query: { type: "qemu" },
-});
-```
-
-## Request Argument Shape
-
-Methods accept an object with optional special fields depending on endpoint:
-
-- `$path`: path parameters (usually handled by path helper methods like `.get("node")`)
-- `$query`: query string parameters
-- `$body`: request body (sent as `application/x-www-form-urlencoded`)
-- `$headers`: additional request headers
-
-Example:
+| Key | Used for |
+|---|---|
+| `$path` | URL path parameters — usually pre-bound by helper methods like `.get("node")` |
+| `$query` | Query string parameters (GET / DELETE) |
+| `$body` | Request body (POST / PUT — sent as `application/x-www-form-urlencoded`) |
+| `$headers` | Extra request headers |
 
 ```ts
+// explicit path/query/body example
 await client.api.access.permissions({
-  $query: { path: "/", userid: "root@pam" },
+  $query: { path: "/vms/100", userid: "root@pam" },
+});
+
+await client.request("/nodes/{node}/qemu", "POST", {
+  $path: { node: "pve" },
+  $body: { vmid: 101, memory: 2048, cores: 2, name: "my-vm" },
 });
 ```
 
-## Authentication Notes
+---
 
-- `apiToken` accepts either:
-  - full: `PVEAPIToken=user@realm!token=secret`
-  - shorthand: `user@realm!token=secret`
-- For username/password auth, call `await client.login()` before other API calls.
-- For self-signed certificates, pass a custom `https.Agent` with `rejectUnauthorized: false`.
-- Some Proxmox functionalities are only accessible with username/password ticket auth (session + CSRF) and are not available to API tokens, even if token permissions are broad.
+## Common Patterns
 
-## Terminal Example (Local TTY)
+### List all nodes and their status
 
-There is a runnable example that opens a VM terminal and binds it to your local terminal (`stdin/stdout`):
+```ts
+const nodes = await client.api.nodes.list();
+
+for (const node of nodes) {
+  console.log(`${node.node}: ${node.status} (${node.uptime}s uptime)`);
+}
+```
+
+### Work with VMs on a node
+
+```ts
+const node = client.api.nodes.get("pve");
+
+// list VMs
+const vms = await node.qemu.list();
+
+// start a VM
+await node.qemu.vmid(100).status.start();
+
+// stop a VM
+await node.qemu.vmid(100).status.stop();
+
+// clone a VM
+await node.qemu.vmid(100).clone({ $body: { newid: 200, name: "clone-vm" } });
+```
+
+### Work with LXC containers
+
+```ts
+const node = client.api.nodes.get("pve");
+
+const containers = await node.lxc.list();
+await node.lxc.id(200).status.start();
+await node.lxc.id(200).config.get();
+```
+
+### Node storage and LXC templates
+
+```ts
+const storage = client.api.nodes.get("pve").storage;
+
+// list available LXC templates
+const templates = await storage.get("local").content.list({
+  $query: { content: "vztmpl" },
+});
+```
+
+### Cluster resources
+
+```ts
+// all VMs across the cluster
+const vms = await client.api.cluster.resources({
+  $query: { type: "vm" },
+});
+```
+
+---
+
+## Task Monitoring
+
+Proxmox operations return a UPID (task ID). Use `client.task` to track completion:
+
+### Wait for a task to finish
+
+```ts
+const upid = await client.request("/nodes/{node}/qemu/{vmid}/status/start", "POST", {
+  $path: { node: "pve", vmid: 100 },
+});
+
+const logs = await client.task.wait(upid, (update) => {
+  console.log(`[${update.status}]`, update.logs.at(-1));
+});
+
+console.log("Task completed:", logs);
+```
+
+### Subscribe to task updates
+
+```ts
+const sub = client.task.listen(upid, async (update) => {
+  if (update.status === "stopped") console.log("Done:", update.logs);
+  if (update.status === "failed")  console.error("Failed:", update.logs);
+}, 1000 /* poll interval ms */);
+
+// cancel early if needed
+sub.stop();
+```
+
+---
+
+## Live Events
+
+`client.events` provides live-polling streams for cluster state:
+
+### Watch cluster resources
+
+```ts
+const monitor = client.events.resources();
+
+monitor.on("qemu/100", (resource) => {
+  console.log("VM 100 updated:", resource.status);
+});
+
+monitor.start(5000); // poll every 5 seconds
+```
+
+### Watch cluster tasks
+
+```ts
+const tasks = client.events.tasks();
+
+tasks.on("task", (task) => {
+  console.log("New task:", task.type, task.status);
+});
+
+tasks.start(3000);
+```
+
+### Stop all monitors
+
+```ts
+client.events.stopListening();
+```
+
+---
+
+## Error Handling
+
+Non-2xx responses throw an `Error` with the HTTP status and response body:
+
+```ts
+try {
+  await client.api.nodes.list();
+} catch (err) {
+  // err.message: "HTTP 401 Unauthorized: ..."
+  console.error(err);
+}
+```
+
+---
+
+## Examples
+
+Runnable examples live in the [`examples/`](examples/) directory. Copy `.env.example` to `.env` and fill in your cluster details.
+
+### Auth check
+
+```bash
+npm run example/auth
+```
+
+### Terminal — attach to a VM console
 
 ```bash
 npm run example/terminal -- 100
-```
-
-Or set `PVE_VMID` in `.env` and run without CLI args:
-
-```bash
+# or set PVE_VMID in .env and omit the argument
 npm run example/terminal
 ```
 
-Example `.env` (username/password required for terminal helper):
+Requires username/password auth. Press `Ctrl-]` to disconnect.
 
-```env
-PVE_BASE_URL=https://pve.example.com:8006
-PVE_USERNAME=root
-PVE_PASSWORD=your-password
-PVE_REALM=pam
-PVE_VMID=100
-```
-
-Controls:
-
-- `Ctrl-]` disconnects from the local bridge.
-- Terminal resize is forwarded automatically.
-
-## Live Tasks Example
-
-There is also a terminal example that continuously displays cluster tasks:
+### Live task feed
 
 ```bash
 npm run example/tasks
 ```
 
-Optional `.env` values:
+**`.env` reference:**
 
 ```env
 # required
 PVE_BASE_URL=https://pve.example.com:8006
 
-# auth: use token OR username/password
+# token auth (recommended)
 PVE_API_TOKEN=PVEAPIToken=root@pam!tokenid=secret
-# or:
+
+# OR username/password (required for terminal)
 PVE_USERNAME=root
 PVE_PASSWORD=your-password
 PVE_REALM=pam
 
-# optional polling interval (default 2000)
+# optional
+PVE_VMID=100
 PVE_TASKS_POLL_INTERVAL_MS=2000
 ```
 
-## Error Handling
-
-Non-2xx responses throw an `Error` including status and response text:
-
-```ts
-try {
-  await client.api.nodes.list();
-} catch (error) {
-  console.error(error);
-}
-```
+---
 
 ## Development
 
 ```bash
-npm run build
-npm test
-npm run test:coverage
-npm run example/auth
-npm run example/terminal -- 100
-npm run example/tasks
+git clone https://github.com/AlexanderSlaa/pve-client.git
+cd pve-client
+npm install
+
+npm run build           # compile TypeScript + Vite bundle
+npm test                # run tests (Vitest)
+npm run test:coverage   # run tests with coverage report
+npm run docs:build      # generate TypeDoc HTML docs
 ```
 
-## Testing
+Test suites cover `Client` authentication, request handling, event polling, task monitoring, and `TimerPulledEventEmitter` internals.
 
-This project uses Vitest in a Node environment.
+---
 
-- `npm test` runs all tests
-- `npm run test:coverage` runs tests and generates coverage reports (`text`, `json`, `html`)
+## Contributing
 
-Current high-value suites cover:
+Contributions are welcome! Here is how you can help:
 
-- `Client` authentication, request handling, events, and task polling
-- `native_fetch` request construction, header/body behavior, and abort handling
-- `TimerPulledEventEmitter` polling, filtering, dedupe, and error flows
+- **Bug reports** — open an [issue](https://github.com/AlexanderSlaa/pve-client/issues) with a minimal reproduction
+- **Feature requests** — start a [discussion](https://github.com/AlexanderSlaa/pve-client/discussions) before opening a PR
+- **Pull requests** — fork, branch off `main`, make your change, open a PR
+
+### Guidelines
+
+- Keep commits in [Conventional Commits](https://www.conventionalcommits.org/) format (`feat:`, `fix:`, `refactor:`, etc.) — releases are automated via semantic-release
+- All new API surface needs a corresponding type in `src/api/`
+- Run `npm test` and `npm run build` before opening a PR
+- Factory files export a single `export default function` — one thing per file
+
+### Reporting Proxmox API gaps
+
+The type definitions are generated from the official Proxmox spec in `res/apidoc.js`. If you find a missing or incorrect endpoint, open an issue referencing the Proxmox API path and the expected parameters/return shape.
+
+---
 
 ## License
 
-Apache-2.0
+[Apache-2.0](LICENSE) © [Alexander Slaa](https://github.com/AlexanderSlaa)
