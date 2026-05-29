@@ -329,6 +329,138 @@ describe("Client", () => {
         }));
     });
 
+    it("login() throws when client uses apiToken", async () => {
+        const client = new Client({
+            baseUrl: "https://pve.local",
+            apiToken: "token",
+            fetch: vi.fn(),
+        });
+
+        await expect(client.login()).rejects.toThrow(
+            "login() is only available for username/password auth."
+        );
+    });
+
+    it("request sends string body directly without encoding", async () => {
+        const fetchMock = vi.fn(async () =>
+            new Response(JSON.stringify({ data: "ok" }), {
+                status: 200,
+                headers: { "content-type": "application/json" },
+            })
+        ) as typeof globalThis.fetch;
+
+        const client = new Client({
+            baseUrl: "https://pve.local",
+            apiToken: "token",
+            fetch: fetchMock,
+        });
+
+        await client.request("/access/ticket", "POST", {
+            $body: "raw-string-body",
+        } as never);
+
+        const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+        expect(init.body).toBe("raw-string-body");
+    });
+
+    it("getNodeFromUPID throws on malformed UPID with no colon", async () => {
+        const client = new Client({
+            baseUrl: "https://pve.local",
+            apiToken: "token",
+            fetch: vi.fn(),
+        });
+
+        vi.spyOn(client, "request").mockResolvedValue({ status: "stopped", exitstatus: "OK" } as never);
+
+        // UPID with no second segment (node) — split gives ["BADUPID"], parts[1] is undefined
+        await expect(
+            client.task.wait("BADUPID")
+        ).rejects.toThrow("Invalid UPID format");
+    });
+
+    it("version factory routes to GET /version", async () => {
+        const client = new Client({
+            baseUrl: "https://pve.local",
+            apiToken: "token",
+            fetch: vi.fn(),
+        });
+        const spy = vi.spyOn(client, "request").mockResolvedValue({ release: "8" } as never);
+        await client.api.version.version();
+        expect(spy).toHaveBeenCalledWith("/version", "GET", expect.anything());
+    });
+
+    it("pools factory routes to GET /pools", async () => {
+        const client = new Client({
+            baseUrl: "https://pve.local",
+            apiToken: "token",
+            fetch: vi.fn(),
+        });
+        const spy = vi.spyOn(client, "request").mockResolvedValue([] as never);
+        await client.api.pools.index();
+        expect(spy).toHaveBeenCalledWith("/pools", "GET", expect.anything());
+    });
+
+    it("storage factory routes to GET /storage", async () => {
+        const client = new Client({
+            baseUrl: "https://pve.local",
+            apiToken: "token",
+            fetch: vi.fn(),
+        });
+        const spy = vi.spyOn(client, "request").mockResolvedValue([] as never);
+        await client.api.storage.index();
+        expect(spy).toHaveBeenCalledWith("/storage", "GET", expect.anything());
+    });
+
+    it("access.users.index → GET /access/users", async () => {
+        const client = new Client({
+            baseUrl: "https://pve.local",
+            apiToken: "token",
+            fetch: vi.fn(),
+        });
+        const spy = vi.spyOn(client, "request").mockResolvedValue([] as never);
+        await client.api.access.users.index();
+        expect(spy).toHaveBeenCalledWith("/access/users", "GET", expect.anything());
+    });
+
+    it("access.groups.index → GET /access/groups", async () => {
+        const client = new Client({
+            baseUrl: "https://pve.local",
+            apiToken: "token",
+            fetch: vi.fn(),
+        });
+        const spy = vi.spyOn(client, "request").mockResolvedValue([] as never);
+        await client.api.access.groups.index();
+        expect(spy).toHaveBeenCalledWith("/access/groups", "GET", expect.anything());
+    });
+
+    it("access.roles.index → GET /access/roles", async () => {
+        const client = new Client({
+            baseUrl: "https://pve.local",
+            apiToken: "token",
+            fetch: vi.fn(),
+        });
+        const spy = vi.spyOn(client, "request").mockResolvedValue([] as never);
+        await client.api.access.roles.index();
+        expect(spy).toHaveBeenCalledWith("/access/roles", "GET", expect.anything());
+    });
+
+    it("task.listen stops itself when task fails", async () => {
+        const client = new Client({
+            baseUrl: "https://pve.local",
+            apiToken: "token",
+            fetch: vi.fn(),
+        });
+
+        vi.spyOn(client, "request").mockImplementation(async (path) => {
+            if (String(path).endsWith("/status")) return { status: "stopped", exitstatus: "ERROR" } as never;
+            return [{ n: 0, t: "failed-line" }] as never;
+        });
+
+        const sub = client.task.listen("UPID:node01:anything", async () => undefined, 250);
+        await vi.advanceTimersByTimeAsync(300);
+        expect(sub.stopped).toBe(true);
+    });
+
     it("caches event monitors and can stop all listeners", () => {
         const client = new Client({
             baseUrl: "https://pve.local",

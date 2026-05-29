@@ -61,91 +61,111 @@ function Nodes(client: Client) {
 				},
 				storage: nodeStorageFactory(client, node),
 				qemu: {
-					...qemuApi,
-					/** Lists VMs on this node. Node is pre-bound; pass remaining args or omit. */
+					/** Lists VMs on this node. Node is pre-bound. */
 					list: (args?: Parameters<typeof qemuApi.list>[1]) =>
 						qemuApi.list(node, args as Parameters<typeof qemuApi.list>[1]),
+					/** Creates a VM on this node. Node is pre-bound. */
+					create: (args?: Parameters<typeof qemuApi.create>[1]) =>
+						qemuApi.create(node, args as Parameters<typeof qemuApi.create>[1]),
 					/** Returns per-VM operations pre-bound to this node and vmid. */
 					vmid: (vmid: number) => ({
-						delete: (args?: Omit<NodesAPI["/nodes/{node}/qemu/{vmid}"]["DELETE"]["parameters"], "$path">) =>
-							qemuApi.delete(node, vmid, ({ $path: { node, vmid }, ...(args ?? {}) } as NodesAPI["/nodes/{node}/qemu/{vmid}"]["DELETE"]["parameters"])),
-						clone: (args: Omit<NodesAPI["/nodes/{node}/qemu/{vmid}/clone"]["POST"]["parameters"], "$path">) =>
-							client.request(
-								"/nodes/{node}/qemu/{vmid}/clone",
-								"POST",
-								{ $path: { node, vmid }, ...(args ?? {}) } as NodesAPI["/nodes/{node}/qemu/{vmid}/clone"]["POST"]["parameters"]
-							),
-						status: {
-							start: (args?: NodesAPI["/nodes/{node}/qemu/{vmid}/status/start"]["POST"]["parameters"]) =>
-								client.request(
-									"/nodes/{node}/qemu/{vmid}/status/start",
-									"POST",
-									{ $path: { node, vmid }, ...(args as object) } as NodesAPI["/nodes/{node}/qemu/{vmid}/status/start"]["POST"]["parameters"]
-								),
-							stop: (args?: NodesAPI["/nodes/{node}/qemu/{vmid}/status/stop"]["POST"]["parameters"]) =>
-								client.request(
-									"/nodes/{node}/qemu/{vmid}/status/stop",
-									"POST",
-									{ $path: { node, vmid }, ...(args as object) } as NodesAPI["/nodes/{node}/qemu/{vmid}/status/stop"]["POST"]["parameters"]
-								),
-							reboot: (args?: NodesAPI["/nodes/{node}/qemu/{vmid}/status/reboot"]["POST"]["parameters"]) =>
-								client.request(
-									"/nodes/{node}/qemu/{vmid}/status/reboot",
-									"POST",
-									{ $path: { node, vmid }, ...(args as object) } as NodesAPI["/nodes/{node}/qemu/{vmid}/status/reboot"]["POST"]["parameters"]
-								),
+						/** DELETE /nodes/{node}/qemu/{vmid} */
+						destroy: (args?: Parameters<typeof qemuApi.delete>[2]) =>
+							qemuApi.delete(node, vmid, args as Parameters<typeof qemuApi.delete>[2]),
+						/** GET /nodes/{node}/qemu/{vmid} */
+						diridx: (args?: Parameters<typeof qemuApi.get>[2]) =>
+							qemuApi.get(node, vmid, args as Parameters<typeof qemuApi.get>[2]),
+						/** POST /nodes/{node}/qemu/{vmid}/clone */
+						clone: (args: Parameters<typeof qemuApi.clone>[2]) =>
+							qemuApi.clone(node, vmid, args as Parameters<typeof qemuApi.clone>[2]),
+						/** GET /nodes/{node}/qemu/{vmid}/agent */
+						agent: {
+							index: (args?: Parameters<typeof qemuApi.agent>[2]) =>
+								qemuApi.agent(node, vmid, args as Parameters<typeof qemuApi.agent>[2]),
 						},
+						/** POST /nodes/{node}/qemu/{vmid}/migrate */
+						migrate: (args: Parameters<typeof qemuApi.migrate>[2]) =>
+							qemuApi.migrate(node, vmid, args as Parameters<typeof qemuApi.migrate>[2]),
+						config: {
+							get: (args?: Parameters<typeof qemuApi.config.get>[2]) =>
+								qemuApi.config.get(node, vmid, args as Parameters<typeof qemuApi.config.get>[2]),
+							/** POST — async config update */
+							update_async: (args?: Parameters<typeof qemuApi.config.post>[2]) =>
+								qemuApi.config.post(node, vmid, args as Parameters<typeof qemuApi.config.post>[2]),
+							/** PUT — synchronous config update */
+							update: (args?: Parameters<typeof qemuApi.config.put>[2]) =>
+								qemuApi.config.put(node, vmid, args as Parameters<typeof qemuApi.config.put>[2]),
+						},
+						snapshot: {
+							list: () => qemuApi.snapshot.list(node, vmid),
+							create: (args: Parameters<typeof qemuApi.snapshot.create>[2]) =>
+								qemuApi.snapshot.create(node, vmid, args as Parameters<typeof qemuApi.snapshot.create>[2]),
+						},
+						status: {
+							current: () => qemuApi.status.current(node, vmid),
+							start: (args?: Parameters<typeof qemuApi.status.start>[2]) =>
+								qemuApi.status.start(node, vmid, args as Parameters<typeof qemuApi.status.start>[2]),
+							stop: (args?: Parameters<typeof qemuApi.status.stop>[2]) =>
+								qemuApi.status.stop(node, vmid, args as Parameters<typeof qemuApi.status.stop>[2]),
+							reboot: (args?: Parameters<typeof qemuApi.status.reboot>[2]) =>
+								qemuApi.status.reboot(node, vmid, args as Parameters<typeof qemuApi.status.reboot>[2]),
+						},
+						termproxy: (args?: Parameters<typeof qemuApi.termproxy>[2]) =>
+							qemuApi.termproxy(node, vmid, args as Parameters<typeof qemuApi.termproxy>[2]),
+						vncproxy: (args?: Parameters<typeof qemuApi.vncproxy>[2]) =>
+							qemuApi.vncproxy(node, vmid, args as Parameters<typeof qemuApi.vncproxy>[2]),
+						vncwebsocket: (args?: Parameters<typeof qemuApi.vncwebsocket>[2]) =>
+							qemuApi.vncwebsocket(node, vmid, args as Parameters<typeof qemuApi.vncwebsocket>[2]),
 					}),
 				},
 				lxc: {
-					...lxcApi,
-					/** Lists containers on this node. Node is pre-bound; pass remaining args or omit. */
+					/** Lists containers on this node. Node is pre-bound. */
 					list: (args?: Parameters<typeof lxcApi.list>[1]) =>
 						lxcApi.list(node, args as Parameters<typeof lxcApi.list>[1]),
+					/** Creates a container on this node. Node is pre-bound. */
+					create: (args?: Parameters<typeof lxcApi.create>[1]) =>
+						lxcApi.create(node, args as Parameters<typeof lxcApi.create>[1]),
 					/** Returns per-container operations pre-bound to this node and vmid. */
 					id: (vmid: number) => ({
-						delete: (args?: Omit<NodesAPI["/nodes/{node}/lxc/{vmid}"]["DELETE"]["parameters"], "$path">) =>
-							lxcApi.delete(node, vmid, ({ $path: { node, vmid }, ...(args ?? {}) } as NodesAPI["/nodes/{node}/lxc/{vmid}"]["DELETE"]["parameters"])),
-						clone: (args: Omit<NodesAPI["/nodes/{node}/lxc/{vmid}/clone"]["POST"]["parameters"], "$path">) =>
-							client.request(
-								"/nodes/{node}/lxc/{vmid}/clone",
-								"POST",
-								{ $path: { node, vmid }, ...(args ?? {}) } as NodesAPI["/nodes/{node}/lxc/{vmid}/clone"]["POST"]["parameters"]
-							),
-						interfaces: (): Promise<NodesAPI["/nodes/{node}/lxc/{vmid}/interfaces"]["GET"]["return"]> =>
-							client.request(
-								"/nodes/{node}/lxc/{vmid}/interfaces",
-								"GET",
-								{ $path: { node, vmid } }
-							),
+						/** DELETE /nodes/{node}/lxc/{vmid} */
+						destroy: (args?: Parameters<typeof lxcApi.delete>[2]) =>
+							lxcApi.delete(node, vmid, args as Parameters<typeof lxcApi.delete>[2]),
+						/** GET /nodes/{node}/lxc/{vmid} */
+						diridx: (args?: Parameters<typeof lxcApi.get>[2]) =>
+							lxcApi.get(node, vmid, args as Parameters<typeof lxcApi.get>[2]),
+						/** POST /nodes/{node}/lxc/{vmid}/clone */
+						clone: (args: Parameters<typeof lxcApi.clone>[2]) =>
+							lxcApi.clone(node, vmid, args as Parameters<typeof lxcApi.clone>[2]),
+						/** GET /nodes/{node}/lxc/{vmid}/interfaces */
+						interfaces: (args?: Parameters<typeof lxcApi.interfaces>[2]) =>
+							lxcApi.interfaces(node, vmid),
 						config: {
-							get: (args?: Omit<NodesAPI["/nodes/{node}/lxc/{vmid}/config"]["GET"]["parameters"], "$path">): Promise<NodesAPI["/nodes/{node}/lxc/{vmid}/config"]["GET"]["return"]> =>
-								client.request(
-									"/nodes/{node}/lxc/{vmid}/config",
-									"GET",
-									{ $path: { node, vmid }, ...(args ?? {}) } as NodesAPI["/nodes/{node}/lxc/{vmid}/config"]["GET"]["parameters"]
-								),
+							get: (args?: Parameters<typeof lxcApi.config.get>[2]) =>
+								lxcApi.config.get(node, vmid, args as Parameters<typeof lxcApi.config.get>[2]),
+							/** PUT /nodes/{node}/lxc/{vmid}/config */
+							update: (args?: Parameters<typeof lxcApi.config.put>[2]) =>
+								lxcApi.config.put(node, vmid, args as Parameters<typeof lxcApi.config.put>[2]),
+						},
+						snapshot: {
+							list: () => lxcApi.snapshot.list(node, vmid),
+							create: (args: Parameters<typeof lxcApi.snapshot.create>[2]) =>
+								lxcApi.snapshot.create(node, vmid, args as Parameters<typeof lxcApi.snapshot.create>[2]),
 						},
 						status: {
-							start: (args?: NodesAPI["/nodes/{node}/lxc/{vmid}/status/start"]["POST"]["parameters"]) =>
-								client.request(
-									"/nodes/{node}/lxc/{vmid}/status/start",
-									"POST",
-									{ $path: { node, vmid }, ...(args as object) } as NodesAPI["/nodes/{node}/lxc/{vmid}/status/start"]["POST"]["parameters"]
-								),
-							stop: (args?: NodesAPI["/nodes/{node}/lxc/{vmid}/status/stop"]["POST"]["parameters"]) =>
-								client.request(
-									"/nodes/{node}/lxc/{vmid}/status/stop",
-									"POST",
-									{ $path: { node, vmid }, ...(args as object) } as NodesAPI["/nodes/{node}/lxc/{vmid}/status/stop"]["POST"]["parameters"]
-								),
-							reboot: (args?: NodesAPI["/nodes/{node}/lxc/{vmid}/status/reboot"]["POST"]["parameters"]) =>
-								client.request(
-									"/nodes/{node}/lxc/{vmid}/status/reboot",
-									"POST",
-									{ $path: { node, vmid }, ...(args as object) } as NodesAPI["/nodes/{node}/lxc/{vmid}/status/reboot"]["POST"]["parameters"]
-								),
+							current: () => lxcApi.status.current(node, vmid),
+							start: (args?: Parameters<typeof lxcApi.status.start>[2]) =>
+								lxcApi.status.start(node, vmid, args as Parameters<typeof lxcApi.status.start>[2]),
+							stop: (args?: Parameters<typeof lxcApi.status.stop>[2]) =>
+								lxcApi.status.stop(node, vmid, args as Parameters<typeof lxcApi.status.stop>[2]),
+							reboot: (args?: Parameters<typeof lxcApi.status.reboot>[2]) =>
+								lxcApi.status.reboot(node, vmid, args as Parameters<typeof lxcApi.status.reboot>[2]),
 						},
+						termproxy: (args?: Parameters<typeof lxcApi.termproxy>[2]) =>
+							lxcApi.termproxy(node, vmid, args as Parameters<typeof lxcApi.termproxy>[2]),
+						vncproxy: (args?: Parameters<typeof lxcApi.vncproxy>[2]) =>
+							lxcApi.vncproxy(node, vmid, args as Parameters<typeof lxcApi.vncproxy>[2]),
+						vncwebsocket: (args?: Parameters<typeof lxcApi.vncwebsocket>[2]) =>
+							lxcApi.vncwebsocket(node, vmid, args as Parameters<typeof lxcApi.vncwebsocket>[2]),
 					}),
 				},
 				tasks: {
