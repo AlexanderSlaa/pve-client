@@ -9,7 +9,6 @@
 [![npm version](https://img.shields.io/npm/v/pve-client?style=flat-square&color=CB3837&logo=npm)](https://www.npmjs.com/package/pve-client)
 [![JSR](https://img.shields.io/badge/JSR-%40sourceregistry%2Fproxmox-F7DF1E?style=flat-square&logo=deno)](https://jsr.io/@sourceregistry/proxmox)
 [![License](https://img.shields.io/github/license/AlexanderSlaa/pve-client?style=flat-square)](LICENSE)
-[![Tests](https://github.com/AlexanderSlaa/pve-client/actions/workflows/test.yml/badge.svg?style=flat-square)](https://github.com/AlexanderSlaa/pve-client/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/AlexanderSlaa/pve-client/graph/badge.svg?style=flat-square)](https://codecov.io/gh/AlexanderSlaa/pve-client)
 [![Node.js](https://img.shields.io/node/v/pve-client?style=flat-square&logo=node.js)](https://nodejs.org)
 

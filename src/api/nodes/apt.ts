@@ -3,6 +3,7 @@ import { Client } from "../../index";
 
 import type { NodesAPI } from "./types";
 import type { ArgsTuple } from "../index";
+
 export default function aptFactory(client: Client) {
     function stripPath<T extends { $path?: any }>(obj: T | undefined): Omit<T, "$path"> | undefined {
         if (!obj) return obj;
