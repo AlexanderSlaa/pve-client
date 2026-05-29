@@ -2,7 +2,7 @@ import type { Client } from "../../index";
 import type { ClusterAPI } from "./types";
 import type { ArgsTuple } from "../index";
 
-export function sdnFactory(client: Client) {
+export default function sdnFactory(client: Client) {
     return {
         index: (
             ...args: ArgsTuple<ClusterAPI["/cluster/sdn"]["GET"]['parameters']>

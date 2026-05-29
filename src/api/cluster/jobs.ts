@@ -2,7 +2,7 @@ import type { ClusterAPI } from "./types";
 import type { ArgsTuple, PathContext } from "../index";
 import { Client } from "../../index";
 
-export function jobsFactory(client: Client) {
+export default function jobsFactory(client: Client) {
     return {
         index: (...args: ArgsTuple<ClusterAPI["/cluster/jobs"]["GET"]['parameters']>) => client.request("/cluster/jobs", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/jobs"]["GET"]['parameters']),
         realm_sync: {

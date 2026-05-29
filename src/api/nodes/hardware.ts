@@ -3,7 +3,7 @@ import { Client } from "../../index";
 import type { NodesAPI } from "./types";
 import type { ArgsTuple } from "../index";
 
-export function hardwareFactory(client: Client) {
+export default function hardwareFactory(client: Client) {
     return {
         get: (
             node: string,

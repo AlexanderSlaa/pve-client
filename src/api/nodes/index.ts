@@ -1,20 +1,20 @@
 
-export { hardwareFactory } from "./hardware";
-export { aptFactory } from "./apt";
-export { cephFactory } from "./ceph";
-export { lxcFactory } from "./lxc";
-export { qemuFactory } from "./qemu";
-export { firewallFactory } from "./firewall";
-export { disksFactory } from "./disks";
+export { default as hardwareFactory } from "./hardware";
+export { default as aptFactory } from "./apt";
+export { default as cephFactory } from "./ceph";
+export { default as lxcFactory } from "./lxc";
+export { default as qemuFactory } from "./qemu";
+export { default as firewallFactory } from "./firewall";
+export { default as disksFactory } from "./disks";
 
 
-import { aptFactory } from "./apt";
-import { cephFactory } from "./ceph";
-import { disksFactory } from "./disks";
-import { firewallFactory } from "./firewall";
-import { hardwareFactory } from "./hardware";
-import { lxcFactory } from "./lxc";
-import { qemuFactory } from "./qemu";
+import aptFactory from "./apt";
+import cephFactory from "./ceph";
+import disksFactory from "./disks";
+import firewallFactory from "./firewall";
+import hardwareFactory from "./hardware";
+import lxcFactory from "./lxc";
+import qemuFactory from "./qemu";
 import type { Client } from "../../index";
 import type { NodesAPI } from "./types";
 import nodeStorageFactory from "./storage";

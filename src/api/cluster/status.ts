@@ -2,7 +2,7 @@ import type { Client } from "../../index";
 import type { ClusterAPI } from "./types";
 import type { ArgsTuple } from "../index";
 
-export function statusFactory(client: Client) {
+export default function statusFactory(client: Client) {
     return {
         index: (
             ...args: ArgsTuple<ClusterAPI["/cluster/ha/status"]["GET"]['parameters']>

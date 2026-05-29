@@ -2,7 +2,7 @@ import type { Client } from "../../index";
 import type { ClusterAPI } from "./types";
 import type { ArgsTuple } from "../index";
 
-export function optionsFactory(client: Client) {
+export default function optionsFactory(client: Client) {
     return {
         get_options: (
             ...args: ArgsTuple<ClusterAPI["/cluster/options"]["GET"]['parameters']>

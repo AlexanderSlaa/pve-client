@@ -10,7 +10,7 @@ function stripPath<T extends { $path?: any }>(obj: T | undefined): Omit<T, "$pat
     return rest;
 }
 
-export function qemuFactory(client: Client) {
+export default function qemuFactory(client: Client) {
     return {
         list: (
             node: string,

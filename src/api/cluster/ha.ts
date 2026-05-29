@@ -2,7 +2,7 @@ import type { ClusterAPI } from "./types";
 import type { ArgsTuple, PathContext } from "../index";
 import { Client } from "../../index";
 
-export function haFactory(client: Client) {
+export default function haFactory(client: Client) {
     return {
         index: (...args: ArgsTuple<ClusterAPI["/cluster/ha"]["GET"]['parameters']>) => client.request("/cluster/ha", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/ha"]["GET"]['parameters']),
         status: {

@@ -2,7 +2,7 @@ import type { ClusterAPI } from "./types";
 import type { ArgsTuple, PathContext } from "../index";
 import { Client } from "../../index";
 
-export function firewallFactory(client: Client) {
+export default function firewallFactory(client: Client) {
     return {
         index: (...args: ArgsTuple<ClusterAPI["/cluster/firewall"]["GET"]['parameters']>) => client.request("/cluster/firewall", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/firewall"]["GET"]['parameters']),
         options: (...args: ArgsTuple<ClusterAPI["/cluster/firewall/options"]["GET"]['parameters']>) => client.request("/cluster/firewall/options", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/firewall/options"]["GET"]['parameters']),

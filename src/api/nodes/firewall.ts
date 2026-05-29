@@ -10,7 +10,7 @@ function stripPath<T extends { $path?: any }>(obj: T | undefined): Omit<T, "$pat
     return rest;
 }
 
-export function firewallFactory(client: Client) {
+export default function firewallFactory(client: Client) {
     return {
         get: (
             node: string,

@@ -2,7 +2,7 @@ import type { Client } from "../../index";
 import type { ClusterAPI } from "./types";
 import type { ArgsTuple, PathContext } from "../index";
 
-export function metricsFactory(client: Client) {
+export default function metricsFactory(client: Client) {
     return {
         index: (
             ...args: ArgsTuple<ClusterAPI["/cluster/metrics"]["GET"]['parameters']>

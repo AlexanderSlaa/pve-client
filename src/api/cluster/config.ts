@@ -2,7 +2,7 @@ import type { ClusterAPI } from "./types";
 import type { ArgsTuple, PathContext } from "../index";
 import { Client } from "../../index";
 
-export function configFactory(client: Client) {
+export default function configFactory(client: Client) {
   return {
     index: (...args: ArgsTuple<ClusterAPI["/cluster/config"]["GET"]['parameters']>) => client.request("/cluster/config", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/config"]["GET"]['parameters']),
     apiversion: (...args: ArgsTuple<ClusterAPI["/cluster/config/apiversion"]["GET"]['parameters']>) => client.request("/cluster/config/apiversion", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/config/apiversion"]["GET"]['parameters']),

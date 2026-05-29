@@ -2,7 +2,7 @@ import type { ClusterAPI } from "./types";
 import type { ArgsTuple, PathContext } from "../index";
 import { Client } from "../../index";
 
-export function cephFactory(client: Client) {
+export default function cephFactory(client: Client) {
     return {
         index: (...args: ArgsTuple<ClusterAPI["/cluster/ceph"]["GET"]['parameters']>) => client.request("/cluster/ceph", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/ceph"]["GET"]['parameters']),
         flags: {

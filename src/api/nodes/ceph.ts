@@ -10,7 +10,7 @@ function stripPath<T extends { $path?: any }>(obj: T | undefined): Omit<T, "$pat
     return rest;
 }
 
-export function cephFactory(client: Client) {
+export default function cephFactory(client: Client) {
     return {
         index: (
             node: string,

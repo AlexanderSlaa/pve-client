@@ -1,6 +1,6 @@
 import { Client } from "../../index";
 
-export function backupFactory(client: Client) {
+export default function backupFactory(client: Client) {
     return {
         index: (...args: any[]) => client.request("/cluster/backup", "GET", (args[0] ?? {})),
         create_job: (...args: any[]) => client.request("/cluster/backup", "POST", (args[0] ?? {})),

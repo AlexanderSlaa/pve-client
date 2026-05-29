@@ -10,7 +10,7 @@ function stripPath<T extends { $path?: any }>(obj: T | undefined): Omit<T, "$pat
     return rest;
 }
 
-export function disksFactory(client: Client) {
+export default function disksFactory(client: Client) {
     return {
         list: (
             node: string,
