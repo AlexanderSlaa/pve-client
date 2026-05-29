@@ -1,3 +1,17 @@
+# [1.2.0](https://github.com/AlexanderSlaa/pve-client/compare/v1.1.0...v1.2.0) (2026-05-29)
+
+
+### Bug Fixes
+
+* update README.md documentation with new features and complete feature gap. ([b9bcb4f](https://github.com/AlexanderSlaa/pve-client/commit/b9bcb4f7b43df20179b34b7b5b5799cf59712276))
+
+
+### Features
+
+* **api/types:** complete API coverage to 675/675 endpoints ([8a767e6](https://github.com/AlexanderSlaa/pve-client/commit/8a767e6958477b92351553992c741c86e6cfae95))
+* **api:** close all remaining factory gaps - 444/444 paths callable ([7624a72](https://github.com/AlexanderSlaa/pve-client/commit/7624a72bd837fb13507f93053124856360e15b66))
+* **api:** complete factory layer for all 675 endpoints ([7ecf6fd](https://github.com/AlexanderSlaa/pve-client/commit/7ecf6fd08a89641e3d5f624f4746f7f93f7325db))
+
 # [1.1.0](https://github.com/AlexanderSlaa/pve-client/compare/v1.0.0...v1.1.0) (2026-04-09)
 
 
