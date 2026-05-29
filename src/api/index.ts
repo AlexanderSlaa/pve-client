@@ -1,7 +1,7 @@
 // ----------------- API Mapping -----------------
 import {AccessAPI} from "./access";
-import {ClusterAPI} from "./cluster";
-import {NodesAPI} from "./nodes";
+import {ClusterAPI} from "./cluster/types";
+import {NodesAPI} from "./nodes/types";
 import {PoolsAPI} from "./pools";
 import {StorageAPI} from "./storage";
 import {VersionAPI} from "./version";

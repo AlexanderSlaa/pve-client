@@ -6,6 +6,7 @@ import packageJson from "./package.json";
 
 const externalPackages = new Set([
     ...Object.keys(packageJson.dependencies ?? {}),
+    // @ts-ignore
     ...Object.keys(packageJson.peerDependencies ?? {}),
 ]);
 

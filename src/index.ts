@@ -5,9 +5,9 @@
 import {Agent} from "node:https";
 import native_fetch from "./fetch";
 import Access from "./api/access";
-import type {ClusterAPI} from "./api/cluster";
+import type {ClusterAPI} from "./api/cluster/types";
 import Cluster from "./api/cluster";
-import type {NodesAPI} from "./api/nodes";
+import type {NodesAPI} from "./api/nodes/types";
 import Nodes from "./api/nodes";
 import Pools from "./api/pools";
 import Storage from "./api/storage";
