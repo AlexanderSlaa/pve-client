@@ -49,6 +49,7 @@ type ClusterTask = ClusterAPI["/cluster/tasks"]["GET"]["return"][number];
 type TaskStatusReturn = NodesAPI["/nodes/{node}/tasks/{upid}/status"]["GET"]["return"];
 type TaskLogLine = NodesAPI["/nodes/{node}/tasks/{upid}/log"]["GET"]["return"][number];
 type LoginResponse = { ticket: string; CSRFPreventionToken: string };
+type DestroyableMonitor = { destroy(): void };
 
 export type TaskState = "running" | "stopped" | "failed";
 export type TaskUpdate = {
@@ -99,8 +100,7 @@ export class Client {
     private readonly fetchImpl: FetchLike;
     private readonly opts: ClientOptions;
     private auth: AuthState = {};
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private readonly eventMonitors = new Map<string, TimerPulledEventEmitter<any>>();
+    private readonly eventMonitors = new Map<string, DestroyableMonitor>();
 
     /**
      * Structured API surface generated from the spec.
@@ -280,7 +280,7 @@ export class Client {
 
         stopListening: (): void => {
             for (const monitor of this.eventMonitors.values()) {
-                (monitor as TimerPulledEventEmitter<Record<string, unknown>>).destroy();
+                monitor.destroy();
             }
             this.eventMonitors.clear();
         },

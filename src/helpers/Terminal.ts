@@ -200,12 +200,6 @@ function isSingleNavigationSequence(payload: Buffer): boolean {
 }
 
 function repairOrphanNavigationFragments(payload: Buffer, recentNavigation: boolean): Buffer {
-            // TEMP DEBUG: Log input and output for test diagnosis
-            // if (process.env.DEBUG_NAV_REPAIR === '1') {
-            //     // eslint-disable-next-line no-console
-            //     console.log('[repairOrphanNavigationFragments] input:', payload, payload.toString('utf8'));
-            // }
-        const ESC = "\u001b";
     if (!recentNavigation) return payload;
 
     const text = payload.toString("utf8");
@@ -226,7 +220,7 @@ function repairOrphanNavigationFragments(payload: Buffer, recentNavigation: bool
     // Some repeats leak as mixed bracket/final bursts (for example "[DD[D").
     // Rebuild them into discrete CSI navigation sequences when the payload is
     // entirely composed of navigation final bytes and '[' markers.
-    if (/^[\[ABCDHF]{2,24}$/.test(text) && text.includes("[")) {
+    if (/^[[]ABCDHF]{2,24}$/.test(text) && text.includes("[")) {
         let repaired: string[] = [];
         for (let index = 0; index < text.length; ) {
             if (text[index] === "[") {
@@ -241,12 +235,7 @@ function repairOrphanNavigationFragments(payload: Buffer, recentNavigation: bool
             }
         }
         if (repaired.length > 0) {
-            const out = Buffer.from(repaired.join(""), "utf8");
-            // if (process.env.DEBUG_NAV_REPAIR === '1') {
-            //     // eslint-disable-next-line no-console
-            //     console.log('[repairOrphanNavigationFragments] output:', out, out.toString('utf8'));
-            // }
-            return out;
+            return Buffer.from(repaired.join(""), "utf8");
         }
     }
 

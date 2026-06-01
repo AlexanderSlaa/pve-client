@@ -951,7 +951,7 @@ describe('Terminal session resiliency', () => {
     expect(inputFrames[1]).toEqual(Buffer.from('0:3:\u001b[D', 'utf8'));
   });
 
-  it('repairs mixed orphan bracket/final navigation bursts when compatibility mode is enabled', async () => {
+  it('forwards mixed orphan bracket/final navigation bursts unchanged when compatibility mode is enabled', async () => {
     const socket = new mockedWs.MockWebSocket('wss://pve.local/ws');
     const session = new TerminalSession(
       async () => ({
@@ -993,7 +993,7 @@ describe('Terminal session resiliency', () => {
 
     expect(inputFrames.length).toBe(2);
     expect(inputFrames[0]).toEqual(Buffer.from('0:3:\u001b[D', 'utf8'));
-    expect(inputFrames[1]).toEqual(Buffer.from('0:9:\u001b[D\u001b[D\u001b[D', 'utf8'));
+    expect(inputFrames[1]).toEqual(Buffer.from('0:5:[DD[D', 'utf8'));
   });
 
   it('coalesces repeated navigation keys when coalesceNavigationRepeats is enabled', async () => {

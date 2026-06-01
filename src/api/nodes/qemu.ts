@@ -3,11 +3,11 @@ import { Client } from "../../index.js";
 import type { NodesAPI } from "./types.js";
 import type { ArgsTuple } from "../index.js";
 
-function stripPath<T extends { $path?: any }>(obj: T | undefined): Omit<T, "$path"> | undefined {
+function stripPath<T extends { $path?: unknown }>(obj: T | undefined): Omit<T, "$path"> | undefined {
     if (!obj) return obj;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { $path, ...rest } = obj;
-    return rest;
+    const copy = {...obj};
+    delete copy.$path;
+    return copy as Omit<T, "$path">;
 }
 
 export function qemuFactory(client: Client) {
