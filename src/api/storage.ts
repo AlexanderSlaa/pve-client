@@ -96,7 +96,11 @@ export type StorageAPI = {
             parameters: {
                 $path: { "storage": string },
             }
-            return: Record<string, unknown>
+            return: {
+                "config"?: { "encryption-key"?: string };
+                "storage": string;
+                "type": "btrfs" | "cephfs" | "cifs" | "dir" | "esxi" | "iscsi" | "iscsidirect" | "lvm" | "lvmthin" | "nfs" | "pbs" | "rbd" | "zfs" | "zfspool"
+            }
         },
         "PUT": {
             parameters: {

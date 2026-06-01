@@ -27,20 +27,16 @@ function Nodes(client: Client) {
 	const r = (path: string, method: string, args?: A) =>
 		(client.request as A)(path, method, args ?? {});
 
-	return {
-		/** Lists all cluster nodes. Calls GET /nodes. */
-		list: (): Promise<NodesAPI["/nodes"]["GET"]["return"]> =>
-			client.request("/nodes", "GET", {}),
+	const qemuApi = qemuFactory(client);
+	const lxcApi = lxcFactory(client);
+	const aptApi = aptFactory(client);
+	const cephApi = cephFactory(client);
+	const disksApi = disksFactory(client);
+	const firewallApi = firewallFactory(client);
+	const hardwareApi = hardwareFactory(client);
+	const nodeCache = new Map<string, ReturnType<typeof buildNode>>();
 
-		/** Returns node-scoped sub-APIs for the given node name. */
-		get: (node: string) => {
-			const qemuApi = qemuFactory(client);
-			const lxcApi = lxcFactory(client);
-			const aptApi = aptFactory(client);
-			const cephApi = cephFactory(client);
-			const disksApi = disksFactory(client);
-			const firewallApi = firewallFactory(client);
-			const hardwareApi = hardwareFactory(client);
+	function buildNode(node: string) {
 
 			return {
 				// ── Node index ──────────────────────────────────────────────
@@ -164,7 +160,7 @@ function Nodes(client: Client) {
 				disks: {
 					index:    () => disksApi.list(node, undefined as any),
 					list:     (args?: A) => disksApi.list(node, args),
-					list_disks: (args?: A) => (disksApi as any).list_disks(node, args),
+					list_disks: (args?: A) => disksApi.list_disks(node, args),
 					directory: {
 						index:  () => r("/nodes/{node}/disks/directory", "GET", { $path: { node } }),
 						create: (args?: A) => r("/nodes/{node}/disks/directory", "POST", { ...args, $path: { node } }),
@@ -564,16 +560,30 @@ function Nodes(client: Client) {
 				query_oci_repo_tags:  (args?: A) => r("/nodes/{node}/query-oci-repo-tags",  "GET", { ...args, $path: { node } }),
 				query_url_metadata:   (args?: A) => r("/nodes/{node}/query-url-metadata",   "GET", { ...args, $path: { node } }),
 			};
+	}
+
+	return {
+		/** Lists all cluster nodes. Calls GET /nodes. */
+		list: (): Promise<NodesAPI["/nodes"]["GET"]["return"]> =>
+			client.request("/nodes", "GET", {}),
+
+		/** Returns node-scoped sub-APIs for the given node name. Memoized per node. */
+		get: (node: string) => {
+			const cached = nodeCache.get(node);
+			if (cached) return cached;
+			const api = buildNode(node);
+			nodeCache.set(node, api);
+			return api;
 		},
 
 		// Top-level unscoped factory references
-		apt:      aptFactory(client),
-		ceph:     cephFactory(client),
-		disks:    disksFactory(client),
-		firewall: firewallFactory(client),
-		hardware: hardwareFactory(client),
-		lxc:      lxcFactory(client),
-		qemu:     qemuFactory(client),
+		apt:      aptApi,
+		ceph:     cephApi,
+		disks:    disksApi,
+		firewall: firewallApi,
+		hardware: hardwareApi,
+		lxc:      lxcApi,
+		qemu:     qemuApi,
 	};
 }
 

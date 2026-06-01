@@ -53,23 +53,36 @@ function Cluster(client: Client) {
 				client.request("/cluster/backup-info/not-backed-up", "GET", args ?? {}),
 		},
 		bulk_action: {
-			index:    () => client.request("/cluster/bulk-action", "GET", {}),
-			guest:    () => (client.request as any)("/cluster/bulk-action/guest", "GET", {}),
-			migrate:  (args?: any) => (client.request as any)("/cluster/bulk-action/guest/migrate",  "POST", args ?? {}),
-			shutdown: (args?: any) => (client.request as any)("/cluster/bulk-action/guest/shutdown", "POST", args ?? {}),
-			start:    (args?: any) => (client.request as any)("/cluster/bulk-action/guest/start",    "POST", args ?? {}),
-			suspend:  (args?: any) => (client.request as any)("/cluster/bulk-action/guest/suspend",  "POST", args ?? {}),
+			index:    (): Promise<ClusterAPI["/cluster/bulk-action"]["GET"]["return"]> =>
+				client.request("/cluster/bulk-action", "GET", {}),
+			guest:    (): Promise<ClusterAPI["/cluster/bulk-action/guest"]["GET"]["return"]> =>
+				client.request("/cluster/bulk-action/guest", "GET", {}),
+			migrate:  (args: ClusterAPI["/cluster/bulk-action/guest/migrate"]["POST"]["parameters"]): Promise<ClusterAPI["/cluster/bulk-action/guest/migrate"]["POST"]["return"]> =>
+				client.request("/cluster/bulk-action/guest/migrate", "POST", args),
+			shutdown: (args: ClusterAPI["/cluster/bulk-action/guest/shutdown"]["POST"]["parameters"]): Promise<ClusterAPI["/cluster/bulk-action/guest/shutdown"]["POST"]["return"]> =>
+				client.request("/cluster/bulk-action/guest/shutdown", "POST", args),
+			start:    (args: ClusterAPI["/cluster/bulk-action/guest/start"]["POST"]["parameters"]): Promise<ClusterAPI["/cluster/bulk-action/guest/start"]["POST"]["return"]> =>
+				client.request("/cluster/bulk-action/guest/start", "POST", args),
+			suspend:  (args: ClusterAPI["/cluster/bulk-action/guest/suspend"]["POST"]["parameters"]): Promise<ClusterAPI["/cluster/bulk-action/guest/suspend"]["POST"]["return"]> =>
+				client.request("/cluster/bulk-action/guest/suspend", "POST", args),
 		},
 		qemu: {
-			index:          () => (client.request as any)("/cluster/qemu",                      "GET", {}),
-			cpu_flags:      () => (client.request as any)("/cluster/qemu/cpu-flags",            "GET", {}),
+			index:     (): Promise<ClusterAPI["/cluster/qemu"]["GET"]["return"]> =>
+				client.request("/cluster/qemu", "GET", {}),
+			cpu_flags: (args?: ClusterAPI["/cluster/qemu/cpu-flags"]["GET"]["parameters"]): Promise<ClusterAPI["/cluster/qemu/cpu-flags"]["GET"]["return"]> =>
+				client.request("/cluster/qemu/cpu-flags", "GET", args ?? {}),
 			custom_cpu: {
-				index:  () => (client.request as any)("/cluster/qemu/custom-cpu-models",        "GET", {}),
-				create: (args?: any) => (client.request as any)("/cluster/qemu/custom-cpu-models", "POST", args ?? {}),
+				index:  (): Promise<ClusterAPI["/cluster/qemu/custom-cpu-models"]["GET"]["return"]> =>
+					client.request("/cluster/qemu/custom-cpu-models", "GET", {}),
+				create: (args: ClusterAPI["/cluster/qemu/custom-cpu-models"]["POST"]["parameters"]): Promise<ClusterAPI["/cluster/qemu/custom-cpu-models"]["POST"]["return"]> =>
+					client.request("/cluster/qemu/custom-cpu-models", "POST", args),
 				cputype: (cputype: string) => ({
-					get:    () => (client.request as any)("/cluster/qemu/custom-cpu-models/{cputype}", "GET",    { $path: { cputype } }),
-					update: (args?: any) => (client.request as any)("/cluster/qemu/custom-cpu-models/{cputype}", "PUT",    { ...args, $path: { cputype } }),
-					delete: () => (client.request as any)("/cluster/qemu/custom-cpu-models/{cputype}", "DELETE", { $path: { cputype } }),
+					get:    (): Promise<ClusterAPI["/cluster/qemu/custom-cpu-models/{cputype}"]["GET"]["return"]> =>
+						client.request("/cluster/qemu/custom-cpu-models/{cputype}", "GET", { $path: { cputype } }),
+					update: (args?: ClusterAPI["/cluster/qemu/custom-cpu-models/{cputype}"]["PUT"]["parameters"]): Promise<ClusterAPI["/cluster/qemu/custom-cpu-models/{cputype}"]["PUT"]["return"]> =>
+						client.request("/cluster/qemu/custom-cpu-models/{cputype}", "PUT", { ...(args ?? {}), $path: { cputype } } as ClusterAPI["/cluster/qemu/custom-cpu-models/{cputype}"]["PUT"]["parameters"]),
+					delete: (): Promise<ClusterAPI["/cluster/qemu/custom-cpu-models/{cputype}"]["DELETE"]["return"]> =>
+						client.request("/cluster/qemu/custom-cpu-models/{cputype}", "DELETE", { $path: { cputype } }),
 				}),
 			},
 		},
