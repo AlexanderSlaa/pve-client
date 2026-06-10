@@ -251,6 +251,9 @@ export class Terminal {
 
     async createTicket(): Promise<TerminalTicket> {
         const vm = await this.getRunningVm();
+        const requestBody = vm.type === "qemu"
+            ? {serial: "serial0"}
+            : undefined;
         const ticket = await this.client.request(
             `/nodes/{node}/${vm.type}/{vmid}/termproxy`,
             "POST",
@@ -259,6 +262,8 @@ export class Terminal {
                     node: vm.node,
                     vmid: vm.vmid,
                 },
+                // QEMU termproxy needs the guest serial console selector or it can attach to the wrong console and stall.
+                ...(requestBody ? {$body: requestBody} : {}),
             } as any
         );
         this.cachedTicket = ticket as TerminalTicket;

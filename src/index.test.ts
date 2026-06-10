@@ -178,6 +178,44 @@ describe("Client", () => {
         );
     });
 
+    it("uses the VM serial console when creating a qemu terminal ticket", async () => {
+        const client = new Client({
+            baseUrl: "https://pve.local",
+            username: "root",
+            password: "pass",
+            fetch: vi.fn(),
+        });
+
+        vi.spyOn(client, "request").mockImplementation(async (path, method, init) => {
+            if (String(path) === "/cluster/resources") {
+                return [{vmid: 101, node: "pve1", type: "qemu", status: "running"}] as never;
+            }
+
+            if (String(path) === "/nodes/{node}/qemu/{vmid}/termproxy") {
+                return {
+                    port: 5900,
+                    ticket: "ticket-value",
+                    upid: "UPID:pve1:test",
+                    user: "root@pam",
+                } as never;
+            }
+
+            throw new Error(`Unexpected request in test: ${String(method)} ${String(path)} ${JSON.stringify(init)}`);
+        });
+
+        const terminal = client.helpers.terminal(101);
+        await terminal.createTicket();
+
+        expect(client.request).toHaveBeenCalledWith(
+            "/nodes/{node}/qemu/{vmid}/termproxy",
+            "POST",
+            expect.objectContaining({
+                $path: {node: "pve1", vmid: 101},
+                $body: {serial: "serial0"},
+            })
+        );
+    });
+
     it("exposes create methods for both lxc and qemu nodes APIs", async () => {
         const client = new Client({
             baseUrl: "https://pve.local",
