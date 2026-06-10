@@ -119,7 +119,8 @@ export class Display {
                     vmid: vm.vmid,
                 },
                 $body: {
-                    websocket: true,
+                    // Proxmox form parsing for this endpoint expects numeric boolean values.
+                    websocket: 1,
                 },
             } as any
         );
