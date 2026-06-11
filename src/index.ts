@@ -8,6 +8,7 @@ import Access from "./api/access";
 import type {ClusterAPI} from "./api/cluster/types";
 import Cluster from "./api/cluster";
 import type {NodesAPI} from "./api/nodes/types";
+import type { NodeScopedAPI } from "./api/nodes";
 import Nodes from "./api/nodes";
 import Pools from "./api/pools";
 import Storage from "./api/storage";
@@ -446,3 +447,5 @@ export function createAPI(client: Client): APIClient {
         }
     ) as const;
 }
+
+export type { NodeScopedAPI } from "./api/nodes";

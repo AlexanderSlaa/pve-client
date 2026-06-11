@@ -1,4 +1,3 @@
-
 export { default as hardwareFactory } from "./hardware";
 export { default as aptFactory } from "./apt";
 export { default as cephFactory } from "./ceph";
@@ -588,3 +587,6 @@ function Nodes(client: Client) {
 }
 
 export default Nodes;
+
+// Node-scoped API returned by client.api.nodes.get(nodeName)
+export type NodeScopedAPI = ReturnType<ReturnType<typeof Nodes>['get']>
