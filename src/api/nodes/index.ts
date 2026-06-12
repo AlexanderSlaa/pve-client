@@ -36,6 +36,22 @@ function Nodes(client: Client) {
 			const hardwareApi = hardwareFactory(client);
 
 			return {
+				/** Gets or controls node status (GET/POST /nodes/{node}/status). */
+				status: {
+					get: (): Promise<NodesAPI["/nodes/{node}/status"]["GET"]["return"]> =>
+						client.request(
+							"/nodes/{node}/status",
+							"GET",
+							{ $path: { node } }
+						),
+					post: (body?: Omit<NodesAPI["/nodes/{node}/status"]["POST"]["parameters"], "$path">) =>
+						client.request(
+							"/nodes/{node}/status",
+							"POST",
+							{ $path: { node }, ...(body ?? {}) } as NodesAPI["/nodes/{node}/status"]["POST"]["parameters"]
+						),
+				},
+
 				apt: {
 					index: (args?: Parameters<typeof aptApi.index>[1]) => aptApi.index(node, args as Parameters<typeof aptApi.index>[1]),
 					changelog: (args?: Parameters<typeof aptApi.changelog>[1]) => aptApi.changelog(node, args as Parameters<typeof aptApi.changelog>[1]),
