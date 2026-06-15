@@ -5,13 +5,13 @@ import type {PathContext} from "./index.js";
 export type AccessAPI = {
     "/access": {
         "GET": {
-            parameters: Record<string, unknown>
+            parameters: {}
             return: { "subdir": string }[]
         }
     },
     "/access/acl": {
         "GET": {
-            parameters: Record<string, unknown>
+            parameters: {}
             return: {
                 "path": string;
                 "propagate"?: boolean;

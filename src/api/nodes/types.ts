@@ -1430,23 +1430,22 @@ export type NodesAPI = {
                 $query?: { "current"?: boolean; "snapshot"?: string },
             }
             return: {
+                "digest": string;
                 "arch"?: "amd64" | "i386" | "arm64" | "armhf" | "riscv32" | "riscv64";
                 "cmode"?: "shell" | "console" | "tty";
                 "console"?: boolean;
                 "cores"?: number;
                 "cpulimit"?: number;
                 "cpuunits"?: number;
-                "debug"?: boolean;
                 "description"?: string;
                 "dev[n]"?: string;
-                "digest": string;
                 "entrypoint"?: string;
                 "env"?: string;
                 "features"?: string;
                 "hookscript"?: string;
                 "hostname"?: string;
                 "lock"?: "backup" | "create" | "destroyed" | "disk" | "fstrim" | "migrate" | "mounted" | "rollback" | "snapshot" | "snapshot-delete";
-                "lxc"?: string[][];
+                "lxc"?: { "key": string; "value": string }[];
                 "memory"?: number;
                 "mp[n]"?: string;
                 "nameserver"?: string;
@@ -1476,16 +1475,17 @@ export type NodesAPI = {
                     "cores"?: number;
                     "cpulimit"?: number;
                     "cpuunits"?: number;
-                    "debug"?: boolean;
                     "delete"?: string;
                     "description"?: string;
-                    "dev[n]"?: string;
                     "digest"?: string;
+                    "dev[n]"?: string;
                     "entrypoint"?: string;
                     "env"?: string;
                     "features"?: string;
+                    "ha-managed"?: boolean;
                     "hookscript"?: string;
                     "hostname"?: string;
+                    "lxc"?: { "key": string; "value": string }[];
                     "lock"?: "backup" | "create" | "destroyed" | "disk" | "fstrim" | "migrate" | "mounted" | "rollback" | "snapshot" | "snapshot-delete";
                     "memory"?: number;
                     "mp[n]"?: string;
@@ -1497,7 +1497,9 @@ export type NodesAPI = {
                     "revert"?: string;
                     "rootfs"?: string;
                     "searchdomain"?: string;
+                    "skiplock"?: boolean;
                     "startup"?: string;
+                    "storage"?: string;
                     "swap"?: number;
                     "tags"?: string;
                     "template"?: boolean;
@@ -1510,13 +1512,22 @@ export type NodesAPI = {
             return: unknown
         }
     },
+    "/nodes/{node}/lxc/{vmid}/dbus-vmstate": {
+        "POST": {
+            parameters: {
+                $path: { "node": string; "vmid": number },
+                $body: { "action": "start" | "stop" },
+            }
+            return: unknown
+        }
+    },
     "/nodes/{node}/lxc/{vmid}/feature": {
         "GET": {
             parameters: {
                 $path: { "node": string; "vmid": number },
                 $query?: { "feature": "snapshot" | "clone" | "copy"; "snapname"?: string },
             }
-            return: { "hasFeature": boolean }
+            return: { "hasFeature": boolean; "nodes": string[] }
         }
     },
     "/nodes/{node}/lxc/{vmid}/firewall": {
@@ -1597,28 +1608,6 @@ export type NodesAPI = {
             parameters: {
                 $path: { "node": string; "vmid": number; "name": string },
                 $body: { "cidr": string; "comment"?: string; "nomatch"?: boolean },
-            }
-            return: unknown
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}/{cidr}": {
-        "DELETE": {
-            parameters: {
-                $path: { "node": string; "vmid": number; "name": string; "cidr": string },
-                $query?: { "digest"?: string },
-            }
-            return: unknown
-        },
-        "GET": {
-            parameters: {
-                $path: { "node": string; "vmid": number; "name": string; "cidr": string },
-            }
-            return: Record<string, unknown>
-        },
-        "PUT": {
-            parameters: {
-                $path: { "node": string; "vmid": number; "name": string; "cidr": string },
-                $body: { "comment"?: string; "digest"?: string; "nomatch"?: boolean },
             }
             return: unknown
         }
@@ -1782,513 +1771,6 @@ export type NodesAPI = {
             return: unknown
         }
     },
-    "/nodes/{node}/lxc/{vmid}/interfaces": {
-        "GET": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-            }
-            return: {
-                "hardware-address": string;
-                "hwaddr": string;
-                "inet"?: string;
-                "inet6"?: string;
-                "ip-addresses": { "ip-address"?: string; "ip-address-type"?: string; "prefix"?: number }[];
-                "name": string
-            }[]
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/migrate": {
-        "GET": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-                $query?: { "target"?: string },
-            }
-            return: {
-                "allowed-nodes"?: string[];
-                "dependent-ha-resources"?: string[];
-                "not-allowed-nodes"?: { "blocking-ha-resources"?: { "cause": "resource-affinity"; "sid": string }[] };
-                "running": boolean
-            }
-        },
-        "POST": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-                $body: {
-                    "bwlimit"?: number;
-                    "online"?: boolean;
-                    "restart"?: boolean;
-                    "target": string;
-                    "target-storage"?: string;
-                    "timeout"?: number
-                },
-            }
-            return: string
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/move_volume": {
-        "POST": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-                $body: {
-                    "bwlimit"?: number;
-                    "delete"?: boolean;
-                    "digest"?: string;
-                    "storage"?: string;
-                    "target-digest"?: string;
-                    "target-vmid"?: number;
-                    "target-volume"?: "rootfs" | "mp0" | "mp1" | "mp2" | "mp3" | "mp4" | "mp5" | "mp6" | "mp7" | "mp8" | "mp9" | "mp10" | "mp11" | "mp12" | "mp13" | "mp14" | "mp15" | "mp16" | "mp17" | "mp18" | "mp19" | "mp20" | "mp21" | "mp22" | "mp23" | "mp24" | "mp25" | "mp26" | "mp27" | "mp28" | "mp29" | "mp30" | "mp31" | "mp32" | "mp33" | "mp34" | "mp35" | "mp36" | "mp37" | "mp38" | "mp39" | "mp40" | "mp41" | "mp42" | "mp43" | "mp44" | "mp45" | "mp46" | "mp47" | "mp48" | "mp49" | "mp50" | "mp51" | "mp52" | "mp53" | "mp54" | "mp55" | "mp56" | "mp57" | "mp58" | "mp59" | "mp60" | "mp61" | "mp62" | "mp63" | "mp64" | "mp65" | "mp66" | "mp67" | "mp68" | "mp69" | "mp70" | "mp71" | "mp72" | "mp73" | "mp74" | "mp75" | "mp76" | "mp77" | "mp78" | "mp79" | "mp80" | "mp81" | "mp82" | "mp83" | "mp84" | "mp85" | "mp86" | "mp87" | "mp88" | "mp89" | "mp90" | "mp91" | "mp92" | "mp93" | "mp94" | "mp95" | "mp96" | "mp97" | "mp98" | "mp99" | "mp100" | "mp101" | "mp102" | "mp103" | "mp104" | "mp105" | "mp106" | "mp107" | "mp108" | "mp109" | "mp110" | "mp111" | "mp112" | "mp113" | "mp114" | "mp115" | "mp116" | "mp117" | "mp118" | "mp119" | "mp120" | "mp121" | "mp122" | "mp123" | "mp124" | "mp125" | "mp126" | "mp127" | "mp128" | "mp129" | "mp130" | "mp131" | "mp132" | "mp133" | "mp134" | "mp135" | "mp136" | "mp137" | "mp138" | "mp139" | "mp140" | "mp141" | "mp142" | "mp143" | "mp144" | "mp145" | "mp146" | "mp147" | "mp148" | "mp149" | "mp150" | "mp151" | "mp152" | "mp153" | "mp154" | "mp155" | "mp156" | "mp157" | "mp158" | "mp159" | "mp160" | "mp161" | "mp162" | "mp163" | "mp164" | "mp165" | "mp166" | "mp167" | "mp168" | "mp169" | "mp170" | "mp171" | "mp172" | "mp173" | "mp174" | "mp175" | "mp176" | "mp177" | "mp178" | "mp179" | "mp180" | "mp181" | "mp182" | "mp183" | "mp184" | "mp185" | "mp186" | "mp187" | "mp188" | "mp189" | "mp190" | "mp191" | "mp192" | "mp193" | "mp194" | "mp195" | "mp196" | "mp197" | "mp198" | "mp199" | "mp200" | "mp201" | "mp202" | "mp203" | "mp204" | "mp205" | "mp206" | "mp207" | "mp208" | "mp209" | "mp210" | "mp211" | "mp212" | "mp213" | "mp214" | "mp215" | "mp216" | "mp217" | "mp218" | "mp219" | "mp220" | "mp221" | "mp222" | "mp223" | "mp224" | "mp225" | "mp226" | "mp227" | "mp228" | "mp229" | "mp230" | "mp231" | "mp232" | "mp233" | "mp234" | "mp235" | "mp236" | "mp237" | "mp238" | "mp239" | "mp240" | "mp241" | "mp242" | "mp243" | "mp244" | "mp245" | "mp246" | "mp247" | "mp248" | "mp249" | "mp250" | "mp251" | "mp252" | "mp253" | "mp254" | "mp255" | "unused0" | "unused1" | "unused2" | "unused3" | "unused4" | "unused5" | "unused6" | "unused7" | "unused8" | "unused9" | "unused10" | "unused11" | "unused12" | "unused13" | "unused14" | "unused15" | "unused16" | "unused17" | "unused18" | "unused19" | "unused20" | "unused21" | "unused22" | "unused23" | "unused24" | "unused25" | "unused26" | "unused27" | "unused28" | "unused29" | "unused30" | "unused31" | "unused32" | "unused33" | "unused34" | "unused35" | "unused36" | "unused37" | "unused38" | "unused39" | "unused40" | "unused41" | "unused42" | "unused43" | "unused44" | "unused45" | "unused46" | "unused47" | "unused48" | "unused49" | "unused50" | "unused51" | "unused52" | "unused53" | "unused54" | "unused55" | "unused56" | "unused57" | "unused58" | "unused59" | "unused60" | "unused61" | "unused62" | "unused63" | "unused64" | "unused65" | "unused66" | "unused67" | "unused68" | "unused69" | "unused70" | "unused71" | "unused72" | "unused73" | "unused74" | "unused75" | "unused76" | "unused77" | "unused78" | "unused79" | "unused80" | "unused81" | "unused82" | "unused83" | "unused84" | "unused85" | "unused86" | "unused87" | "unused88" | "unused89" | "unused90" | "unused91" | "unused92" | "unused93" | "unused94" | "unused95" | "unused96" | "unused97" | "unused98" | "unused99" | "unused100" | "unused101" | "unused102" | "unused103" | "unused104" | "unused105" | "unused106" | "unused107" | "unused108" | "unused109" | "unused110" | "unused111" | "unused112" | "unused113" | "unused114" | "unused115" | "unused116" | "unused117" | "unused118" | "unused119" | "unused120" | "unused121" | "unused122" | "unused123" | "unused124" | "unused125" | "unused126" | "unused127" | "unused128" | "unused129" | "unused130" | "unused131" | "unused132" | "unused133" | "unused134" | "unused135" | "unused136" | "unused137" | "unused138" | "unused139" | "unused140" | "unused141" | "unused142" | "unused143" | "unused144" | "unused145" | "unused146" | "unused147" | "unused148" | "unused149" | "unused150" | "unused151" | "unused152" | "unused153" | "unused154" | "unused155" | "unused156" | "unused157" | "unused158" | "unused159" | "unused160" | "unused161" | "unused162" | "unused163" | "unused164" | "unused165" | "unused166" | "unused167" | "unused168" | "unused169" | "unused170" | "unused171" | "unused172" | "unused173" | "unused174" | "unused175" | "unused176" | "unused177" | "unused178" | "unused179" | "unused180" | "unused181" | "unused182" | "unused183" | "unused184" | "unused185" | "unused186" | "unused187" | "unused188" | "unused189" | "unused190" | "unused191" | "unused192" | "unused193" | "unused194" | "unused195" | "unused196" | "unused197" | "unused198" | "unused199" | "unused200" | "unused201" | "unused202" | "unused203" | "unused204" | "unused205" | "unused206" | "unused207" | "unused208" | "unused209" | "unused210" | "unused211" | "unused212" | "unused213" | "unused214" | "unused215" | "unused216" | "unused217" | "unused218" | "unused219" | "unused220" | "unused221" | "unused222" | "unused223" | "unused224" | "unused225" | "unused226" | "unused227" | "unused228" | "unused229" | "unused230" | "unused231" | "unused232" | "unused233" | "unused234" | "unused235" | "unused236" | "unused237" | "unused238" | "unused239" | "unused240" | "unused241" | "unused242" | "unused243" | "unused244" | "unused245" | "unused246" | "unused247" | "unused248" | "unused249" | "unused250" | "unused251" | "unused252" | "unused253" | "unused254" | "unused255";
-                    "volume": "rootfs" | "mp0" | "mp1" | "mp2" | "mp3" | "mp4" | "mp5" | "mp6" | "mp7" | "mp8" | "mp9" | "mp10" | "mp11" | "mp12" | "mp13" | "mp14" | "mp15" | "mp16" | "mp17" | "mp18" | "mp19" | "mp20" | "mp21" | "mp22" | "mp23" | "mp24" | "mp25" | "mp26" | "mp27" | "mp28" | "mp29" | "mp30" | "mp31" | "mp32" | "mp33" | "mp34" | "mp35" | "mp36" | "mp37" | "mp38" | "mp39" | "mp40" | "mp41" | "mp42" | "mp43" | "mp44" | "mp45" | "mp46" | "mp47" | "mp48" | "mp49" | "mp50" | "mp51" | "mp52" | "mp53" | "mp54" | "mp55" | "mp56" | "mp57" | "mp58" | "mp59" | "mp60" | "mp61" | "mp62" | "mp63" | "mp64" | "mp65" | "mp66" | "mp67" | "mp68" | "mp69" | "mp70" | "mp71" | "mp72" | "mp73" | "mp74" | "mp75" | "mp76" | "mp77" | "mp78" | "mp79" | "mp80" | "mp81" | "mp82" | "mp83" | "mp84" | "mp85" | "mp86" | "mp87" | "mp88" | "mp89" | "mp90" | "mp91" | "mp92" | "mp93" | "mp94" | "mp95" | "mp96" | "mp97" | "mp98" | "mp99" | "mp100" | "mp101" | "mp102" | "mp103" | "mp104" | "mp105" | "mp106" | "mp107" | "mp108" | "mp109" | "mp110" | "mp111" | "mp112" | "mp113" | "mp114" | "mp115" | "mp116" | "mp117" | "mp118" | "mp119" | "mp120" | "mp121" | "mp122" | "mp123" | "mp124" | "mp125" | "mp126" | "mp127" | "mp128" | "mp129" | "mp130" | "mp131" | "mp132" | "mp133" | "mp134" | "mp135" | "mp136" | "mp137" | "mp138" | "mp139" | "mp140" | "mp141" | "mp142" | "mp143" | "mp144" | "mp145" | "mp146" | "mp147" | "mp148" | "mp149" | "mp150" | "mp151" | "mp152" | "mp153" | "mp154" | "mp155" | "mp156" | "mp157" | "mp158" | "mp159" | "mp160" | "mp161" | "mp162" | "mp163" | "mp164" | "mp165" | "mp166" | "mp167" | "mp168" | "mp169" | "mp170" | "mp171" | "mp172" | "mp173" | "mp174" | "mp175" | "mp176" | "mp177" | "mp178" | "mp179" | "mp180" | "mp181" | "mp182" | "mp183" | "mp184" | "mp185" | "mp186" | "mp187" | "mp188" | "mp189" | "mp190" | "mp191" | "mp192" | "mp193" | "mp194" | "mp195" | "mp196" | "mp197" | "mp198" | "mp199" | "mp200" | "mp201" | "mp202" | "mp203" | "mp204" | "mp205" | "mp206" | "mp207" | "mp208" | "mp209" | "mp210" | "mp211" | "mp212" | "mp213" | "mp214" | "mp215" | "mp216" | "mp217" | "mp218" | "mp219" | "mp220" | "mp221" | "mp222" | "mp223" | "mp224" | "mp225" | "mp226" | "mp227" | "mp228" | "mp229" | "mp230" | "mp231" | "mp232" | "mp233" | "mp234" | "mp235" | "mp236" | "mp237" | "mp238" | "mp239" | "mp240" | "mp241" | "mp242" | "mp243" | "mp244" | "mp245" | "mp246" | "mp247" | "mp248" | "mp249" | "mp250" | "mp251" | "mp252" | "mp253" | "mp254" | "mp255" | "unused0" | "unused1" | "unused2" | "unused3" | "unused4" | "unused5" | "unused6" | "unused7" | "unused8" | "unused9" | "unused10" | "unused11" | "unused12" | "unused13" | "unused14" | "unused15" | "unused16" | "unused17" | "unused18" | "unused19" | "unused20" | "unused21" | "unused22" | "unused23" | "unused24" | "unused25" | "unused26" | "unused27" | "unused28" | "unused29" | "unused30" | "unused31" | "unused32" | "unused33" | "unused34" | "unused35" | "unused36" | "unused37" | "unused38" | "unused39" | "unused40" | "unused41" | "unused42" | "unused43" | "unused44" | "unused45" | "unused46" | "unused47" | "unused48" | "unused49" | "unused50" | "unused51" | "unused52" | "unused53" | "unused54" | "unused55" | "unused56" | "unused57" | "unused58" | "unused59" | "unused60" | "unused61" | "unused62" | "unused63" | "unused64" | "unused65" | "unused66" | "unused67" | "unused68" | "unused69" | "unused70" | "unused71" | "unused72" | "unused73" | "unused74" | "unused75" | "unused76" | "unused77" | "unused78" | "unused79" | "unused80" | "unused81" | "unused82" | "unused83" | "unused84" | "unused85" | "unused86" | "unused87" | "unused88" | "unused89" | "unused90" | "unused91" | "unused92" | "unused93" | "unused94" | "unused95" | "unused96" | "unused97" | "unused98" | "unused99" | "unused100" | "unused101" | "unused102" | "unused103" | "unused104" | "unused105" | "unused106" | "unused107" | "unused108" | "unused109" | "unused110" | "unused111" | "unused112" | "unused113" | "unused114" | "unused115" | "unused116" | "unused117" | "unused118" | "unused119" | "unused120" | "unused121" | "unused122" | "unused123" | "unused124" | "unused125" | "unused126" | "unused127" | "unused128" | "unused129" | "unused130" | "unused131" | "unused132" | "unused133" | "unused134" | "unused135" | "unused136" | "unused137" | "unused138" | "unused139" | "unused140" | "unused141" | "unused142" | "unused143" | "unused144" | "unused145" | "unused146" | "unused147" | "unused148" | "unused149" | "unused150" | "unused151" | "unused152" | "unused153" | "unused154" | "unused155" | "unused156" | "unused157" | "unused158" | "unused159" | "unused160" | "unused161" | "unused162" | "unused163" | "unused164" | "unused165" | "unused166" | "unused167" | "unused168" | "unused169" | "unused170" | "unused171" | "unused172" | "unused173" | "unused174" | "unused175" | "unused176" | "unused177" | "unused178" | "unused179" | "unused180" | "unused181" | "unused182" | "unused183" | "unused184" | "unused185" | "unused186" | "unused187" | "unused188" | "unused189" | "unused190" | "unused191" | "unused192" | "unused193" | "unused194" | "unused195" | "unused196" | "unused197" | "unused198" | "unused199" | "unused200" | "unused201" | "unused202" | "unused203" | "unused204" | "unused205" | "unused206" | "unused207" | "unused208" | "unused209" | "unused210" | "unused211" | "unused212" | "unused213" | "unused214" | "unused215" | "unused216" | "unused217" | "unused218" | "unused219" | "unused220" | "unused221" | "unused222" | "unused223" | "unused224" | "unused225" | "unused226" | "unused227" | "unused228" | "unused229" | "unused230" | "unused231" | "unused232" | "unused233" | "unused234" | "unused235" | "unused236" | "unused237" | "unused238" | "unused239" | "unused240" | "unused241" | "unused242" | "unused243" | "unused244" | "unused245" | "unused246" | "unused247" | "unused248" | "unused249" | "unused250" | "unused251" | "unused252" | "unused253" | "unused254" | "unused255"
-                },
-            }
-            return: string
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/mtunnel": {
-        "POST": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-                $body: { "bridges"?: string; "storages"?: string },
-            }
-            return: { "socket": string; "ticket": string; "upid": string }
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/mtunnelwebsocket": {
-        "GET": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-                $query?: { "socket": string; "ticket": string },
-            }
-            return: { "port"?: string; "socket"?: string }
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/pending": {
-        "GET": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-            }
-            return: { "delete"?: number; "key": string; "pending"?: string; "value"?: string }[]
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/remote_migrate": {
-        "POST": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-                $body: {
-                    "bwlimit"?: number;
-                    "delete"?: boolean;
-                    "online"?: boolean;
-                    "restart"?: boolean;
-                    "target-bridge": string;
-                    "target-endpoint": string;
-                    "target-storage": string;
-                    "target-vmid"?: number;
-                    "timeout"?: number
-                },
-            }
-            return: string
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/resize": {
-        "PUT": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-                $body: {
-                    "digest"?: string;
-                    "disk": "rootfs" | "mp0" | "mp1" | "mp2" | "mp3" | "mp4" | "mp5" | "mp6" | "mp7" | "mp8" | "mp9" | "mp10" | "mp11" | "mp12" | "mp13" | "mp14" | "mp15" | "mp16" | "mp17" | "mp18" | "mp19" | "mp20" | "mp21" | "mp22" | "mp23" | "mp24" | "mp25" | "mp26" | "mp27" | "mp28" | "mp29" | "mp30" | "mp31" | "mp32" | "mp33" | "mp34" | "mp35" | "mp36" | "mp37" | "mp38" | "mp39" | "mp40" | "mp41" | "mp42" | "mp43" | "mp44" | "mp45" | "mp46" | "mp47" | "mp48" | "mp49" | "mp50" | "mp51" | "mp52" | "mp53" | "mp54" | "mp55" | "mp56" | "mp57" | "mp58" | "mp59" | "mp60" | "mp61" | "mp62" | "mp63" | "mp64" | "mp65" | "mp66" | "mp67" | "mp68" | "mp69" | "mp70" | "mp71" | "mp72" | "mp73" | "mp74" | "mp75" | "mp76" | "mp77" | "mp78" | "mp79" | "mp80" | "mp81" | "mp82" | "mp83" | "mp84" | "mp85" | "mp86" | "mp87" | "mp88" | "mp89" | "mp90" | "mp91" | "mp92" | "mp93" | "mp94" | "mp95" | "mp96" | "mp97" | "mp98" | "mp99" | "mp100" | "mp101" | "mp102" | "mp103" | "mp104" | "mp105" | "mp106" | "mp107" | "mp108" | "mp109" | "mp110" | "mp111" | "mp112" | "mp113" | "mp114" | "mp115" | "mp116" | "mp117" | "mp118" | "mp119" | "mp120" | "mp121" | "mp122" | "mp123" | "mp124" | "mp125" | "mp126" | "mp127" | "mp128" | "mp129" | "mp130" | "mp131" | "mp132" | "mp133" | "mp134" | "mp135" | "mp136" | "mp137" | "mp138" | "mp139" | "mp140" | "mp141" | "mp142" | "mp143" | "mp144" | "mp145" | "mp146" | "mp147" | "mp148" | "mp149" | "mp150" | "mp151" | "mp152" | "mp153" | "mp154" | "mp155" | "mp156" | "mp157" | "mp158" | "mp159" | "mp160" | "mp161" | "mp162" | "mp163" | "mp164" | "mp165" | "mp166" | "mp167" | "mp168" | "mp169" | "mp170" | "mp171" | "mp172" | "mp173" | "mp174" | "mp175" | "mp176" | "mp177" | "mp178" | "mp179" | "mp180" | "mp181" | "mp182" | "mp183" | "mp184" | "mp185" | "mp186" | "mp187" | "mp188" | "mp189" | "mp190" | "mp191" | "mp192" | "mp193" | "mp194" | "mp195" | "mp196" | "mp197" | "mp198" | "mp199" | "mp200" | "mp201" | "mp202" | "mp203" | "mp204" | "mp205" | "mp206" | "mp207" | "mp208" | "mp209" | "mp210" | "mp211" | "mp212" | "mp213" | "mp214" | "mp215" | "mp216" | "mp217" | "mp218" | "mp219" | "mp220" | "mp221" | "mp222" | "mp223" | "mp224" | "mp225" | "mp226" | "mp227" | "mp228" | "mp229" | "mp230" | "mp231" | "mp232" | "mp233" | "mp234" | "mp235" | "mp236" | "mp237" | "mp238" | "mp239" | "mp240" | "mp241" | "mp242" | "mp243" | "mp244" | "mp245" | "mp246" | "mp247" | "mp248" | "mp249" | "mp250" | "mp251" | "mp252" | "mp253" | "mp254" | "mp255";
-                    "size": string
-                },
-            }
-            return: string
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/rrd": {
-        "GET": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-                $query?: {
-                    "cf"?: "AVERAGE" | "MAX";
-                    "ds": string;
-                    "timeframe": "hour" | "day" | "week" | "month" | "year"
-                },
-            }
-            return: { "filename": string }
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/rrddata": {
-        "GET": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-                $query?: { "cf"?: "AVERAGE" | "MAX"; "timeframe": "hour" | "day" | "week" | "month" | "year" },
-            }
-            return: Record<string, unknown>[]
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/snapshot": {
-        "GET": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-            }
-            return: { "description": string; "name": string; "parent"?: string; "snaptime"?: number }[]
-        },
-        "POST": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-                $body: { "description"?: string; "snapname": string },
-            }
-            return: string
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/snapshot/{snapname}": {
-        "DELETE": {
-            parameters: {
-                $path: { "node": string; "vmid": number; "snapname": string },
-                $query?: { "force"?: boolean },
-            }
-            return: string
-        },
-        "GET": {
-            parameters: {
-                $path: { "node": string; "vmid": number; "snapname": string },
-            }
-            return: Record<string, unknown>[]
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/snapshot/{snapname}/config": {
-        "GET": {
-            parameters: {
-                $path: { "node": string; "vmid": number; "snapname": string },
-            }
-            return: Record<string, unknown>
-        },
-        "PUT": {
-            parameters: {
-                $path: { "node": string; "vmid": number; "snapname": string },
-                $body: { "description"?: string },
-            }
-            return: unknown
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/snapshot/{snapname}/rollback": {
-        "POST": {
-            parameters: {
-                $path: { "node": string; "vmid": number; "snapname": string },
-                $body: { "start"?: boolean },
-            }
-            return: string
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/spiceproxy": {
-        "POST": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-                $body: { "proxy"?: string },
-            }
-            return: { "host": string; "password": string; "proxy": string; "tls-port": number; "type": string }
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/status": {
-        "GET": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-            }
-            return: { "subdir": string }[]
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/status/current": {
-        "GET": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-            }
-            return: {
-                "cpu"?: number;
-                "cpus"?: number;
-                "disk"?: number;
-                "diskread"?: number;
-                "diskwrite"?: number;
-                "ha": Record<string, unknown>;
-                "lock"?: string;
-                "maxdisk"?: number;
-                "maxmem"?: number;
-                "maxswap"?: number;
-                "mem"?: number;
-                "name"?: string;
-                "netin"?: number;
-                "netout"?: number;
-                "pressurecpusome"?: number;
-                "pressureiofull"?: number;
-                "pressureiosome"?: number;
-                "pressurememoryfull"?: number;
-                "pressurememorysome"?: number;
-                "status": "stopped" | "running";
-                "tags"?: string;
-                "template"?: boolean;
-                "uptime"?: number;
-                "vmid": number
-            }
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/status/reboot": {
-        "POST": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-                $body: { "timeout"?: number },
-            }
-            return: string
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/status/resume": {
-        "POST": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-            }
-            return: string
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/status/shutdown": {
-        "POST": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-                $body: { "forceStop"?: boolean; "timeout"?: number },
-            }
-            return: string
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/status/start": {
-        "POST": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-                $body: { "debug"?: boolean; "skiplock"?: boolean },
-            }
-            return: string
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/status/stop": {
-        "POST": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-                $body: { "overrule-shutdown"?: boolean; "skiplock"?: boolean },
-            }
-            return: string
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/status/suspend": {
-        "POST": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-            }
-            return: string
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/template": {
-        "POST": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-            }
-            return: unknown
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/termproxy": {
-        "POST": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-            }
-            return: { "port": number; "ticket": string; "upid": string; "user": string }
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/vncproxy": {
-        "POST": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-                $body: { "height"?: number; "websocket"?: boolean; "width"?: number },
-            }
-            return: { "cert": string; "port": number; "ticket": string; "upid": string; "user": string }
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/vncwebsocket": {
-        "GET": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-                $query?: { "port": number; "vncticket": string },
-            }
-            return: { "port": string }
-        }
-    },
-    "/nodes/{node}/migrateall": {
-        "POST": {
-            parameters: {
-                $path: { "node": string },
-                $body: { "maxworkers"?: number; "target": string; "vms"?: string; "with-local-disks"?: boolean },
-            }
-            return: string
-        }
-    },
-    "/nodes/{node}/netstat": {
-        "GET": {
-            parameters: {
-                $path: { "node": string },
-            }
-            return: Record<string, unknown>[]
-        }
-    },
-    "/nodes/{node}/network": {
-        "DELETE": {
-            parameters: {
-                $path: { "node": string },
-            }
-            return: unknown
-        },
-        "GET": {
-            parameters: {
-                $path: { "node": string },
-                $query?: {
-                    "type"?: "bridge" | "bond" | "eth" | "alias" | "vlan" | "fabric" | "OVSBridge" | "OVSBond" | "OVSPort" | "OVSIntPort" | "vnet" | "any_bridge" | "any_local_bridge" | "include_sdn"
-                },
-            }
-            return: {
-                "active"?: boolean;
-                "address"?: string;
-                "address6"?: string;
-                "autostart"?: boolean;
-                "bond-primary"?: string;
-                "bond_mode"?: "balance-rr" | "active-backup" | "balance-xor" | "broadcast" | "802.3ad" | "balance-tlb" | "balance-alb" | "balance-slb" | "lacp-balance-slb" | "lacp-balance-tcp";
-                "bond_xmit_hash_policy"?: "layer2" | "layer2+3" | "layer3+4";
-                "bridge-access"?: number;
-                "bridge-arp-nd-suppress"?: boolean;
-                "bridge-learning"?: boolean;
-                "bridge-multicast-flood"?: boolean;
-                "bridge-unicast-flood"?: boolean;
-                "bridge_ports"?: string;
-                "bridge_vids"?: string;
-                "bridge_vlan_aware"?: boolean;
-                "cidr"?: string;
-                "cidr6"?: string;
-                "comments"?: string;
-                "comments6"?: string;
-                "exists"?: boolean;
-                "families"?: "inet" | "inet6"[];
-                "gateway"?: string;
-                "gateway6"?: string;
-                "iface": string;
-                "link-type"?: string;
-                "method"?: "loopback" | "dhcp" | "manual" | "static" | "auto";
-                "method6"?: "loopback" | "dhcp" | "manual" | "static" | "auto";
-                "mtu"?: number;
-                "netmask"?: string;
-                "netmask6"?: number;
-                "options"?: string[];
-                "options6"?: string[];
-                "ovs_bonds"?: string;
-                "ovs_bridge"?: string;
-                "ovs_options"?: string;
-                "ovs_ports"?: string;
-                "ovs_tag"?: number;
-                "priority"?: number;
-                "slaves"?: string;
-                "type": "bridge" | "bond" | "eth" | "alias" | "vlan" | "fabric" | "OVSBridge" | "OVSBond" | "OVSPort" | "OVSIntPort" | "vnet" | "unknown";
-                "uplink-id"?: string;
-                "vlan-id"?: number;
-                "vlan-protocol"?: "802.1ad" | "802.1q";
-                "vlan-raw-device"?: string;
-                "vxlan-id"?: number;
-                "vxlan-local-tunnelip"?: string;
-                "vxlan-physdev"?: string;
-                "vxlan-svcnodeip"?: string
-            }[]
-        },
-        "POST": {
-            parameters: {
-                $path: { "node": string },
-                $body: {
-                    "address"?: string;
-                    "address6"?: string;
-                    "autostart"?: boolean;
-                    "bond-primary"?: string;
-                    "bond_mode"?: "balance-rr" | "active-backup" | "balance-xor" | "broadcast" | "802.3ad" | "balance-tlb" | "balance-alb" | "balance-slb" | "lacp-balance-slb" | "lacp-balance-tcp";
-                    "bond_xmit_hash_policy"?: "layer2" | "layer2+3" | "layer3+4";
-                    "bridge_ports"?: string;
-                    "bridge_vids"?: string;
-                    "bridge_vlan_aware"?: boolean;
-                    "cidr"?: string;
-                    "cidr6"?: string;
-                    "comments"?: string;
-                    "comments6"?: string;
-                    "gateway"?: string;
-                    "gateway6"?: string;
-                    "iface": string;
-                    "mtu"?: number;
-                    "netmask"?: string;
-                    "netmask6"?: number;
-                    "ovs_bonds"?: string;
-                    "ovs_bridge"?: string;
-                    "ovs_options"?: string;
-                    "ovs_ports"?: string;
-                    "ovs_tag"?: number;
-                    "slaves"?: string;
-                    "type": "bridge" | "bond" | "eth" | "alias" | "vlan" | "fabric" | "OVSBridge" | "OVSBond" | "OVSPort" | "OVSIntPort" | "vnet" | "unknown";
-                    "vlan-id"?: number;
-                    "vlan-raw-device"?: string
-                },
-            }
-            return: unknown
-        },
-        "PUT": {
-            parameters: {
-                $path: { "node": string },
-                $body: { "regenerate-frr"?: boolean },
-            }
-            return: string
-        }
-    },
-    "/nodes/{node}/network/{iface}": {
-        "DELETE": {
-            parameters: {
-                $path: { "node": string; "iface": string },
-            }
-            return: unknown
-        },
-        "GET": {
-            parameters: {
-                $path: { "node": string; "iface": string },
-            }
-            return: { "method": string; "type": string }
-        },
-        "PUT": {
-            parameters: {
-                $path: { "node": string; "iface": string },
-                $body: {
-                    "address"?: string;
-                    "address6"?: string;
-                    "autostart"?: boolean;
-                    "bond-primary"?: string;
-                    "bond_mode"?: "balance-rr" | "active-backup" | "balance-xor" | "broadcast" | "802.3ad" | "balance-tlb" | "balance-alb" | "balance-slb" | "lacp-balance-slb" | "lacp-balance-tcp";
-                    "bond_xmit_hash_policy"?: "layer2" | "layer2+3" | "layer3+4";
-                    "bridge_ports"?: string;
-                    "bridge_vids"?: string;
-                    "bridge_vlan_aware"?: boolean;
-                    "cidr"?: string;
-                    "cidr6"?: string;
-                    "comments"?: string;
-                    "comments6"?: string;
-                    "delete"?: string;
-                    "gateway"?: string;
-                    "gateway6"?: string;
-                    "mtu"?: number;
-                    "netmask"?: string;
-                    "netmask6"?: number;
-                    "ovs_bonds"?: string;
-                    "ovs_bridge"?: string;
-                    "ovs_options"?: string;
-                    "ovs_ports"?: string;
-                    "ovs_tag"?: number;
-                    "slaves"?: string;
-                    "type": "bridge" | "bond" | "eth" | "alias" | "vlan" | "fabric" | "OVSBridge" | "OVSBond" | "OVSPort" | "OVSIntPort" | "vnet" | "unknown";
-                    "vlan-id"?: number;
-                    "vlan-raw-device"?: string
-                },
-            }
-            return: unknown
-        }
-    },
     "/nodes/{node}/qemu": {
         "GET": {
             parameters: {
@@ -2336,7 +1818,6 @@ export type NodesAPI = {
                     "allow-ksm"?: boolean;
                     "amd-sev"?: string;
                     "arch"?: "x86_64" | "aarch64";
-                    "archive"?: string;
                     "args"?: string;
                     "audio0"?: string;
                     "autostart"?: boolean;
@@ -2368,6 +1849,10 @@ export type NodesAPI = {
                     "import-working-storage"?: string;
                     "intel-tdx"?: string;
                     "ipconfig[n]"?: string;
+                    "ipconfig0"?: string;
+                    "ipconfig1"?: string;
+                    "ipconfig2"?: string;
+                    "ipconfig3"?: string;
                     "ivshmem"?: string;
                     "keephugepages"?: boolean;
                     "keyboard"?: "de" | "de-ch" | "da" | "en-gb" | "en-us" | "es" | "fi" | "fr" | "fr-be" | "fr-ca" | "fr-ch" | "hu" | "is" | "it" | "ja" | "lt" | "mk" | "nl" | "no" | "pl" | "pt" | "pt-br" | "sv" | "sl" | "tr";
@@ -2722,283 +2207,83 @@ export type NodesAPI = {
                 $query?: { "current"?: boolean; "snapshot"?: string },
             }
             return: {
-                "acpi"?: boolean;
-                "affinity"?: string;
-                "agent"?: string;
-                "allow-ksm"?: boolean;
-                "amd-sev"?: string;
-                "arch"?: "x86_64" | "aarch64";
-                "args"?: string;
-                "audio0"?: string;
-                "autostart"?: boolean;
-                "balloon"?: number;
-                "bios"?: "seabios" | "ovmf";
-                "boot"?: string;
-                "bootdisk"?: string;
-                "cdrom"?: string;
-                "cicustom"?: string;
-                "cipassword"?: string;
-                "citype"?: "configdrive2" | "nocloud" | "opennebula";
-                "ciupgrade"?: boolean;
-                "ciuser"?: string;
+                "digest": string;
+                "arch"?: "amd64" | "i386" | "arm64" | "armhf" | "riscv32" | "riscv64";
+                "cmode"?: "shell" | "console" | "tty";
+                "console"?: boolean;
                 "cores"?: number;
-                "cpu"?: string;
                 "cpulimit"?: number;
                 "cpuunits"?: number;
                 "description"?: string;
-                "digest": string;
-                "efidisk0"?: string;
-                "freeze"?: boolean;
+                "dev[n]"?: string;
+                "entrypoint"?: string;
+                "env"?: string;
+                "features"?: string;
                 "hookscript"?: string;
-                "hostpci[n]"?: string;
-                "hotplug"?: string;
-                "hugepages"?: "any" | "2" | "1024";
-                "ide[n]"?: string;
-                "intel-tdx"?: string;
-                "ipconfig[n]"?: string;
-                "ivshmem"?: string;
-                "keephugepages"?: boolean;
-                "keyboard"?: "de" | "de-ch" | "da" | "en-gb" | "en-us" | "es" | "fi" | "fr" | "fr-be" | "fr-ca" | "fr-ch" | "hu" | "is" | "it" | "ja" | "lt" | "mk" | "nl" | "no" | "pl" | "pt" | "pt-br" | "sv" | "sl" | "tr";
-                "kvm"?: boolean;
-                "localtime"?: boolean;
-                "lock"?: "backup" | "clone" | "create" | "migrate" | "rollback" | "snapshot" | "snapshot-delete" | "suspending" | "suspended";
-                "machine"?: string;
-                "memory"?: string;
-                "meta"?: string;
-                "migrate_downtime"?: number;
-                "migrate_speed"?: number;
-                "name"?: string;
+                "hostname"?: string;
+                "lock"?: "backup" | "create" | "destroyed" | "disk" | "fstrim" | "migrate" | "mounted" | "rollback" | "snapshot" | "snapshot-delete";
+                "lxc"?: { "key": string; "value": string }[];
+                "memory"?: number;
+                "mp[n]"?: string;
                 "nameserver"?: string;
                 "net[n]"?: string;
-                "numa"?: boolean;
-                "numa[n]"?: string;
                 "onboot"?: boolean;
-                "ostype"?: "other" | "wxp" | "w2k" | "w2k3" | "w2k8" | "wvista" | "win7" | "win8" | "win10" | "win11" | "l24" | "l26" | "solaris";
-                "parallel[n]"?: string;
-                "parent"?: string;
+                "ostype"?: "debian" | "devuan" | "ubuntu" | "centos" | "fedora" | "opensuse" | "archlinux" | "alpine" | "gentoo" | "nixos" | "unmanaged";
                 "protection"?: boolean;
-                "reboot"?: boolean;
-                "rng0"?: string;
-                "running-nets-host-mtu"?: string;
-                "runningcpu"?: string;
-                "runningmachine"?: string;
-                "sata[n]"?: string;
-                "scsi[n]"?: string;
-                "scsihw"?: "lsi" | "lsi53c810" | "virtio-scsi-pci" | "virtio-scsi-single" | "megasas" | "pvscsi";
+                "rootfs"?: string;
                 "searchdomain"?: string;
-                "serial[n]"?: string;
-                "shares"?: number;
-                "smbios1"?: string;
-                "smp"?: number;
-                "snaptime"?: number;
-                "sockets"?: number;
-                "spice_enhancements"?: string;
-                "sshkeys"?: string;
-                "startdate"?: string;
                 "startup"?: string;
-                "tablet"?: boolean;
+                "swap"?: number;
                 "tags"?: string;
-                "tdf"?: boolean;
                 "template"?: boolean;
-                "tpmstate0"?: string;
-                "unused[n]"?: string;
-                "usb[n]"?: string;
-                "vcpus"?: number;
-                "vga"?: string;
-                "virtio[n]"?: string;
-                "virtiofs[n]"?: string;
-                "vmgenid"?: string;
-                "vmstate"?: string;
-                "vmstatestorage"?: string;
-                "watchdog"?: string
+                "timezone"?: string;
+                "tty"?: number;
+                "unprivileged"?: boolean;
+                "unused[n]"?: string
             }
-        },
-        "POST": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-                $body: {
-                    "acpi"?: boolean;
-                    "affinity"?: string;
-                    "agent"?: string;
-                    "allow-ksm"?: boolean;
-                    "amd-sev"?: string;
-                    "arch"?: "x86_64" | "aarch64";
-                    "args"?: string;
-                    "audio0"?: string;
-                    "autostart"?: boolean;
-                    "background_delay"?: number;
-                    "balloon"?: number;
-                    "bios"?: "seabios" | "ovmf";
-                    "boot"?: string;
-                    "bootdisk"?: string;
-                    "cdrom"?: string;
-                    "cicustom"?: string;
-                    "cipassword"?: string;
-                    "citype"?: "configdrive2" | "nocloud" | "opennebula";
-                    "ciupgrade"?: boolean;
-                    "ciuser"?: string;
-                    "cores"?: number;
-                    "cpu"?: string;
-                    "cpulimit"?: number;
-                    "cpuunits"?: number;
-                    "delete"?: string;
-                    "description"?: string;
-                    "digest"?: string;
-                    "efidisk0"?: string;
-                    "force"?: boolean;
-                    "freeze"?: boolean;
-                    "hookscript"?: string;
-                    "hostpci[n]"?: string;
-                    "hotplug"?: string;
-                    "hugepages"?: "any" | "2" | "1024";
-                    "ide[n]"?: string;
-                    "import-working-storage"?: string;
-                    "intel-tdx"?: string;
-                    "ipconfig[n]"?: string;
-                    "ivshmem"?: string;
-                    "keephugepages"?: boolean;
-                    "keyboard"?: "de" | "de-ch" | "da" | "en-gb" | "en-us" | "es" | "fi" | "fr" | "fr-be" | "fr-ca" | "fr-ch" | "hu" | "is" | "it" | "ja" | "lt" | "mk" | "nl" | "no" | "pl" | "pt" | "pt-br" | "sv" | "sl" | "tr";
-                    "kvm"?: boolean;
-                    "localtime"?: boolean;
-                    "lock"?: "backup" | "clone" | "create" | "migrate" | "rollback" | "snapshot" | "snapshot-delete" | "suspending" | "suspended";
-                    "machine"?: string;
-                    "memory"?: string;
-                    "migrate_downtime"?: number;
-                    "migrate_speed"?: number;
-                    "name"?: string;
-                    "nameserver"?: string;
-                    "net[n]"?: string;
-                    "numa"?: boolean;
-                    "numa[n]"?: string;
-                    "onboot"?: boolean;
-                    "ostype"?: "other" | "wxp" | "w2k" | "w2k3" | "w2k8" | "wvista" | "win7" | "win8" | "win10" | "win11" | "l24" | "l26" | "solaris";
-                    "parallel[n]"?: string;
-                    "protection"?: boolean;
-                    "reboot"?: boolean;
-                    "revert"?: string;
-                    "rng0"?: string;
-                    "sata[n]"?: string;
-                    "scsi[n]"?: string;
-                    "scsihw"?: "lsi" | "lsi53c810" | "virtio-scsi-pci" | "virtio-scsi-single" | "megasas" | "pvscsi";
-                    "searchdomain"?: string;
-                    "serial[n]"?: string;
-                    "shares"?: number;
-                    "skiplock"?: boolean;
-                    "smbios1"?: string;
-                    "smp"?: number;
-                    "sockets"?: number;
-                    "spice_enhancements"?: string;
-                    "sshkeys"?: string;
-                    "startdate"?: string;
-                    "startup"?: string;
-                    "tablet"?: boolean;
-                    "tags"?: string;
-                    "tdf"?: boolean;
-                    "template"?: boolean;
-                    "tpmstate0"?: string;
-                    "unused[n]"?: string;
-                    "usb[n]"?: string;
-                    "vcpus"?: number;
-                    "vga"?: string;
-                    "virtio[n]"?: string;
-                    "virtiofs[n]"?: string;
-                    "vmgenid"?: string;
-                    "vmstatestorage"?: string;
-                    "watchdog"?: string
-                },
-            }
-            return: string
         },
         "PUT": {
             parameters: {
                 $path: { "node": string; "vmid": number },
                 $body: {
-                    "acpi"?: boolean;
-                    "affinity"?: string;
-                    "agent"?: string;
-                    "allow-ksm"?: boolean;
-                    "amd-sev"?: string;
-                    "arch"?: "x86_64" | "aarch64";
-                    "args"?: string;
-                    "audio0"?: string;
-                    "autostart"?: boolean;
-                    "balloon"?: number;
-                    "bios"?: "seabios" | "ovmf";
-                    "boot"?: string;
-                    "bootdisk"?: string;
-                    "cdrom"?: string;
-                    "cicustom"?: string;
-                    "cipassword"?: string;
-                    "citype"?: "configdrive2" | "nocloud" | "opennebula";
-                    "ciupgrade"?: boolean;
-                    "ciuser"?: string;
+                    "arch"?: "amd64" | "i386" | "arm64" | "armhf" | "riscv32" | "riscv64";
+                    "cmode"?: "shell" | "console" | "tty";
+                    "console"?: boolean;
                     "cores"?: number;
-                    "cpu"?: string;
                     "cpulimit"?: number;
                     "cpuunits"?: number;
                     "delete"?: string;
                     "description"?: string;
                     "digest"?: string;
-                    "efidisk0"?: string;
-                    "force"?: boolean;
-                    "freeze"?: boolean;
+                    "dev[n]"?: string;
+                    "entrypoint"?: string;
+                    "env"?: string;
+                    "features"?: string;
+                    "ha-managed"?: boolean;
                     "hookscript"?: string;
-                    "hostpci[n]"?: string;
-                    "hotplug"?: string;
-                    "hugepages"?: "any" | "2" | "1024";
-                    "ide[n]"?: string;
-                    "intel-tdx"?: string;
-                    "ipconfig[n]"?: string;
-                    "ivshmem"?: string;
-                    "keephugepages"?: boolean;
-                    "keyboard"?: "de" | "de-ch" | "da" | "en-gb" | "en-us" | "es" | "fi" | "fr" | "fr-be" | "fr-ca" | "fr-ch" | "hu" | "is" | "it" | "ja" | "lt" | "mk" | "nl" | "no" | "pl" | "pt" | "pt-br" | "sv" | "sl" | "tr";
-                    "kvm"?: boolean;
-                    "localtime"?: boolean;
-                    "lock"?: "backup" | "clone" | "create" | "migrate" | "rollback" | "snapshot" | "snapshot-delete" | "suspending" | "suspended";
-                    "machine"?: string;
-                    "memory"?: string;
-                    "migrate_downtime"?: number;
-                    "migrate_speed"?: number;
-                    "name"?: string;
+                    "hostname"?: string;
+                    "lxc"?: { "key": string; "value": string }[];
+                    "lock"?: "backup" | "create" | "destroyed" | "disk" | "fstrim" | "migrate" | "mounted" | "rollback" | "snapshot" | "snapshot-delete";
+                    "memory"?: number;
+                    "mp[n]"?: string;
                     "nameserver"?: string;
                     "net[n]"?: string;
-                    "numa"?: boolean;
-                    "numa[n]"?: string;
                     "onboot"?: boolean;
-                    "ostype"?: "other" | "wxp" | "w2k" | "w2k3" | "w2k8" | "wvista" | "win7" | "win8" | "win10" | "win11" | "l24" | "l26" | "solaris";
-                    "parallel[n]"?: string;
+                    "ostype"?: "debian" | "devuan" | "ubuntu" | "centos" | "fedora" | "opensuse" | "archlinux" | "alpine" | "gentoo" | "nixos" | "unmanaged";
                     "protection"?: boolean;
-                    "reboot"?: boolean;
                     "revert"?: string;
-                    "rng0"?: string;
-                    "sata[n]"?: string;
-                    "scsi[n]"?: string;
-                    "scsihw"?: "lsi" | "lsi53c810" | "virtio-scsi-pci" | "virtio-scsi-single" | "megasas" | "pvscsi";
+                    "rootfs"?: string;
                     "searchdomain"?: string;
-                    "serial[n]"?: string;
-                    "shares"?: number;
                     "skiplock"?: boolean;
-                    "smbios1"?: string;
-                    "smp"?: number;
-                    "sockets"?: number;
-                    "spice_enhancements"?: string;
-                    "sshkeys"?: string;
-                    "startdate"?: string;
                     "startup"?: string;
-                    "tablet"?: boolean;
+                    "storage"?: string;
+                    "swap"?: number;
                     "tags"?: string;
-                    "tdf"?: boolean;
                     "template"?: boolean;
-                    "tpmstate0"?: string;
-                    "unused[n]"?: string;
-                    "usb[n]"?: string;
-                    "vcpus"?: number;
-                    "vga"?: string;
-                    "virtio[n]"?: string;
-                    "virtiofs[n]"?: string;
-                    "vmgenid"?: string;
-                    "vmstatestorage"?: string;
-                    "watchdog"?: string
+                    "timezone"?: string;
+                    "tty"?: number;
+                    "unprivileged"?: boolean;
+                    "unused[n]"?: string
                 },
             }
             return: unknown
@@ -3100,28 +2385,6 @@ export type NodesAPI = {
             parameters: {
                 $path: { "node": string; "vmid": number; "name": string },
                 $body: { "cidr": string; "comment"?: string; "nomatch"?: boolean },
-            }
-            return: unknown
-        }
-    },
-    "/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}/{cidr}": {
-        "DELETE": {
-            parameters: {
-                $path: { "node": string; "vmid": number; "name": string; "cidr": string },
-                $query?: { "digest"?: string },
-            }
-            return: unknown
-        },
-        "GET": {
-            parameters: {
-                $path: { "node": string; "vmid": number; "name": string; "cidr": string },
-            }
-            return: Record<string, unknown>
-        },
-        "PUT": {
-            parameters: {
-                $path: { "node": string; "vmid": number; "name": string; "cidr": string },
-                $body: { "comment"?: string; "digest"?: string; "nomatch"?: boolean },
             }
             return: unknown
         }
@@ -3400,10 +2663,8 @@ export type NodesAPI = {
             parameters: {
                 $path: { "node": string; "vmid": number },
                 $body: {
-                    "digest"?: string;
-                    "disk": "ide0" | "ide1" | "ide2" | "ide3" | "scsi0" | "scsi1" | "scsi2" | "scsi3" | "scsi4" | "scsi5" | "scsi6" | "scsi7" | "scsi8" | "scsi9" | "scsi10" | "scsi11" | "scsi12" | "scsi13" | "scsi14" | "scsi15" | "scsi16" | "scsi17" | "scsi18" | "scsi19" | "scsi20" | "scsi21" | "scsi22" | "scsi23" | "scsi24" | "scsi25" | "scsi26" | "scsi27" | "scsi28" | "scsi29" | "scsi30" | "virtio0" | "virtio1" | "virtio2" | "virtio3" | "virtio4" | "virtio5" | "virtio6" | "virtio7" | "virtio8" | "virtio9" | "virtio10" | "virtio11" | "virtio12" | "virtio13" | "virtio14" | "virtio15" | "sata0" | "sata1" | "sata2" | "sata3" | "sata4" | "sata5" | "efidisk0" | "tpmstate0";
-                    "size": string;
-                    "skiplock"?: boolean
+                    "disk": "rootfs";
+                    "size": string
                 },
             }
             return: string
@@ -4649,6 +3910,326 @@ export type NodesAPI = {
                 $path: { "node": string },
             }
             return: string
+        }
+    },
+    "/nodes/{node}/lxc/{vmid}/interfaces": {
+        "GET": {
+            parameters: {
+                $path: { "node": string; "vmid": number },
+            }
+            return: {
+                "hardware": string;
+                "ip_address"?: { "ip": string; "prefix": number }[];
+                "macaddr": string;
+                "name": string;
+                "type": string
+            }[]
+        }
+    },
+    "/nodes/{node}/lxc/{vmid}/status/start": {
+        "POST": {
+            parameters: {
+                $path: { "node": string; "vmid": number },
+                $body: {
+                    "skiplock"?: boolean;
+                    "stateuri"?: string;
+                    "timeout"?: number
+                },
+            }
+            return: string
+        }
+    },
+    "/nodes/{node}/lxc/{vmid}/status/stop": {
+        "POST": {
+            parameters: {
+                $path: { "node": string; "vmid": number },
+                $body: {
+                    "skiplock"?: boolean;
+                    "status"?: string;
+                    "timeout"?: number
+                },
+            }
+            return: string
+        }
+    },
+    "/nodes/{node}/lxc/{vmid}/status/reboot": {
+        "POST": {
+            parameters: {
+                $path: { "node": string; "vmid": number },
+                $body: {
+                    "skiplock"?: boolean;
+                    "stateuri"?: string;
+                    "timeout"?: number
+                },
+            }
+            return: string
+        }
+    },
+    "/nodes/{node}/lxc/{vmid}/termproxy": {
+        "POST": {
+            parameters: {
+                $path: { "node": string; "vmid": number },
+                $body?: {
+                    "type"?: "shell"
+                },
+            }
+            return: {
+                "port": number;
+                "ticket": string;
+                "upid": string;
+                "user": string
+            }
+        }
+    },
+    "/nodes/{node}/lxc/{vmid}/vncproxy": {
+        "POST": {
+            parameters: {
+                $path: { "node": string; "vmid": number },
+                $body: {
+                    "generate-password"?: boolean;
+                    "viewlink"?: boolean;
+                    "websocket"?: boolean
+                },
+            }
+            return: {
+                "cert": string;
+                "password"?: string;
+                "port": number;
+                "ticket": string;
+                "upid": string;
+                "user": string
+            }
+        }
+    },
+    "/nodes/{node}/lxc/{vmid}/resize": {
+        "PUT": {
+            parameters: {
+                $path: { "node": string; "vmid": number },
+                $body: {
+                    "disk": "rootfs";
+                    "size": string
+                },
+            }
+            return: string
+        }
+    },
+    "/nodes/{node}/lxc/{vmid}/template": {
+        "POST": {
+            parameters: {
+                $path: { "node": string; "vmid": number },
+            }
+            return: string
+        }
+    },
+    "/nodes/{node}/network": {
+        "GET": {
+            parameters: {
+                $path: { "node": string },
+                $query?: { "type"?: "bridge" | "bond" | "eth" | "alias" | "vlan" | "fabric" | "OVSBridge" | "OVSBond" | "OVSPort" | "OVSIntPort" | "vnet" | "any_bridge" | "any_local_bridge" | "include_sdn" },
+            }
+            return: {
+                "iface": string;
+                "type": "bridge" | "bond" | "eth" | "alias" | "vlan" | "fabric" | "OVSBridge" | "OVSBond" | "OVSPort" | "OVSIntPort" | "vnet" | "unknown";
+                "active"?: boolean;
+                "address"?: string;
+                "address6"?: string;
+                "autostart"?: boolean;
+                "bond-primary"?: string;
+                "bond_mode"?: "balance-rr" | "active-backup" | "balance-xor" | "broadcast" | "802.3ad" | "balance-tlb" | "balance-alb" | "balance-slb" | "lacp-balance-slb" | "lacp-balance-tcp";
+                "bond_xmit_hash_policy"?: "layer2" | "layer2+3" | "layer3+4";
+                "bridge-access"?: number;
+                "bridge-arp-nd-suppress"?: boolean;
+                "bridge-learning"?: boolean;
+                "bridge-multicast-flood"?: boolean;
+                "bridge-unicast-flood"?: boolean;
+                "bridge_ports"?: string;
+                "bridge_vids"?: string;
+                "bridge_vlan_aware"?: boolean;
+                "cidr"?: string;
+                "cidr6"?: string;
+                "comments"?: string;
+                "comments6"?: string;
+                "exists"?: boolean;
+                "families"?: ("inet" | "inet6")[];
+                "gateway"?: string;
+                "gateway6"?: string;
+                "link-type"?: string;
+                "method"?: "loopback" | "dhcp" | "manual" | "static" | "auto";
+                "method6"?: "loopback" | "dhcp" | "manual" | "static" | "auto";
+                "mtu"?: number;
+                "netmask"?: string;
+                "netmask6"?: number;
+                "options"?: string[];
+                "options6"?: string[];
+                "ovs_bridge"?: string;
+                "ovs_options"?: string;
+                "ovs_ports"?: string;
+                "ovs_tag"?: number;
+                "priority"?: number;
+                "slaves"?: string;
+                "uplink-id"?: string;
+                "vlan-id"?: number;
+                "vlan-protocol"?: "802.1ad" | "802.1q";
+                "vlan-raw-device"?: string;
+                "vxlan-id"?: number;
+                "vxlan-local-tunnelip"?: string;
+                "vxlan-physdev"?: string;
+                "vxlan-svcnodeip"?: string
+            }[]
+        },
+        "POST": {
+            parameters: {
+                $path: { "node": string },
+                $body: {
+                    "address"?: string;
+                    "address6"?: string;
+                    "autostart"?: boolean;
+                    "bond-primary"?: string;
+                    "bond_mode"?: "balance-rr" | "active-backup" | "balance-xor" | "broadcast" | "802.3ad" | "balance-tlb" | "balance-alb" | "balance-slb" | "lacp-balance-slb" | "lacp-balance-tcp";
+                    "bond_xmit_hash_policy"?: "layer2" | "layer2+3" | "layer3+4";
+                    "bridge-arp-nd-suppress"?: boolean;
+                    "bridge-learning"?: boolean;
+                    "bridge-multicast-flood"?: boolean;
+                    "bridge-unicast-flood"?: boolean;
+                    "bridge_ports"?: string;
+                    "bridge_vids"?: string;
+                    "bridge_vlan_aware"?: boolean;
+                    "cidr"?: string;
+                    "cidr6"?: string;
+                    "comments"?: string;
+                    "comments6"?: string;
+                    "gateway"?: string;
+                    "gateway6"?: string;
+                    "iface": string;
+                    "method"?: "loopback" | "dhcp" | "manual" | "static" | "auto";
+                    "method6"?: "loopback" | "dhcp" | "manual" | "static" | "auto";
+                    "mtu"?: number;
+                    "netmask"?: string;
+                    "netmask6"?: number;
+                    "ovs_bridge"?: string;
+                    "ovs_options"?: string;
+                    "ovs_ports"?: string;
+                    "ovs_tag"?: number;
+                    "slaves"?: string;
+                    "type": "bridge" | "bond" | "eth" | "vlan" | "OVSBridge" | "OVSBond" | "OVSPort" | "OVSIntPort";
+                    "vlan-id"?: number;
+                    "vlan-protocol"?: "802.1ad" | "802.1q";
+                    "vlan-raw-device"?: string
+                },
+            }
+            return: unknown
+        },
+        "PUT": {
+            parameters: {
+                $path: { "node": string },
+                $body: {
+                    "apply"?: boolean;
+                    "iface"?: string;
+                    "method"?: "loopback" | "dhcp" | "manual" | "static" | "auto"
+                },
+            }
+            return: unknown
+        },
+        "DELETE": {
+            parameters: {
+                $path: { "node": string },
+                $body: {
+                    "iface": string;
+                    "verify_digest"?: string
+                },
+            }
+            return: unknown
+        }
+    },
+    "/nodes/{node}/network/{iface}": {
+        "GET": {
+            parameters: {
+                $path: { "node": string; "iface": string },
+            }
+            return: {
+                "address"?: string;
+                "address6"?: string;
+                "autostart"?: boolean;
+                "bond-primary"?: string;
+                "bond_mode"?: "balance-rr" | "active-backup" | "balance-xor" | "broadcast" | "802.3ad" | "balance-tlb" | "balance-alb" | "balance-slb" | "lacp-balance-slb" | "lacp-balance-tcp";
+                "bond_xmit_hash_policy"?: "layer2" | "layer2+3" | "layer3+4";
+                "bridge-arp-nd-suppress"?: boolean;
+                "bridge-learning"?: boolean;
+                "bridge-multicast-flood"?: boolean;
+                "bridge-unicast-flood"?: boolean;
+                "bridge_ports"?: string;
+                "bridge_vids"?: string;
+                "bridge_vlan_aware"?: boolean;
+                "cidr"?: string;
+                "cidr6"?: string;
+                "comments"?: string;
+                "comments6"?: string;
+                "gateway"?: string;
+                "gateway6"?: string;
+                "method": "loopback" | "dhcp" | "manual" | "static" | "auto";
+                "method6"?: "loopback" | "dhcp" | "manual" | "static" | "auto";
+                "mtu"?: number;
+                "netmask"?: string;
+                "netmask6"?: number;
+                "ovs_bridge"?: string;
+                "ovs_options"?: string;
+                "ovs_ports"?: string;
+                "ovs_tag"?: number;
+                "slaves"?: string;
+                "type": "bridge" | "bond" | "eth" | "alias" | "vlan" | "fabric" | "OVSBridge" | "OVSBond" | "OVSPort" | "OVSIntPort" | "vnet" | "unknown";
+                "vlan-id"?: number;
+                "vlan-protocol"?: "802.1ad" | "802.1q";
+                "vlan-raw-device"?: string
+            }
+        },
+        "PUT": {
+            parameters: {
+                $path: { "node": string; "iface": string },
+                $body: {
+                    "autostart"?: boolean;
+                    "bond-primary"?: string;
+                    "bond_mode"?: "balance-rr" | "active-backup" | "balance-xor" | "broadcast" | "802.3ad" | "balance-tlb" | "balance-alb" | "balance-slb" | "lacp-balance-slb" | "lacp-balance-tcp";
+                    "bond_xmit_hash_policy"?: "layer2" | "layer2+3" | "layer3+4";
+                    "bridge-arp-nd-suppress"?: boolean;
+                    "bridge-learning"?: boolean;
+                    "bridge-multicast-flood"?: boolean;
+                    "bridge-unicast-flood"?: boolean;
+                    "bridge_ports"?: string;
+                    "bridge_vids"?: string;
+                    "bridge_vlan_aware"?: boolean;
+                    "cidr"?: string;
+                    "cidr6"?: string;
+                    "comments"?: string;
+                    "comments6"?: string;
+                    "delete"?: string;
+                    "digest"?: string;
+                    "gateway"?: string;
+                    "gateway6"?: string;
+                    "inet"?: "dhcp" | "manual" | "static" | "auto";
+                    "inet6"?: "dhcp" | "manual" | "static" | "auto";
+                    "mtu"?: number;
+                    "netmask"?: string;
+                    "netmask6"?: number;
+                    "ovs_bridge"?: string;
+                    "ovs_options"?: string;
+                    "ovs_ports"?: string;
+                    "ovs_tag"?: number;
+                    "slaves"?: string;
+                    "vlan-id"?: number;
+                    "vlan-protocol"?: "802.1ad" | "802.1q";
+                    "vlan-raw-device"?: string
+                },
+            }
+            return: unknown
+        },
+        "DELETE": {
+            parameters: {
+                $path: { "node": string; "iface": string },
+                $body: {
+                    "verify_digest"?: string
+                },
+            }
+            return: unknown
         }
     },
 };
