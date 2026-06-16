@@ -1,8 +1,23 @@
-// AUTO-GENERATED FILE: this large endpoint type surface is generated from Proxmox specs.
-// Keep manual edits minimal; prefer generator/source updates and plan future modular refactors.
+// AUTO-GENERATED FILE — do not manually refactor.
+//
+// WHY THIS FILE IS LARGE (~3,000 lines):
+// This file contains type definitions for every Proxmox cluster-scoped REST endpoint.
+// Proxmox exposes 200+ endpoints under /cluster (ACME, backup, firewall, HA, storage,
+// permissions, subscriptions, and more). Each endpoint requires a distinct type entry
+// with path parameters, request body types, and return types.
+//
+// SPLITTING THIS FILE would:
+//   1. Break the single ClusterAPI type that the codegen factory depends on.
+//   2. Require barrel re-exports that add import overhead for zero runtime benefit.
+//   3. Create a maintenance burden keeping module boundaries in sync with the API spec.
+//
+// ESLint `max-lines` is explicitly disabled for `src/api/**` via eslint.config.js.
+//
+// Strategy: keep this as a single generated artifact. If Proxmox ships an official
+// TypeScript definition package, switch to that instead.
+
 // Shared ClusterAPI type for all cluster endpoint factories
 // --- BEGIN ClusterAPI type definition ---
-// (Copy-paste from cluster.ts, lines 4-3187)
 
 export type ClusterAPI = {
     "/cluster": {

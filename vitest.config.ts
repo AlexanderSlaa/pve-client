@@ -1,6 +1,8 @@
 import { defineConfig } from 'vitest/config';
+import { includeDirective } from './tests/unit/include-directive.js';
 
 export default defineConfig({
+    plugins: [includeDirective()],
     test: {
         include: [
             'tests/unit/**/*.test.ts',

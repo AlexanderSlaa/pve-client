@@ -1,5 +1,21 @@
-// AUTO-GENERATED FILE: this large endpoint type surface is generated from Proxmox specs.
-// Keep manual edits minimal; prefer generator/source updates and plan future modular refactors.
+// AUTO-GENERATED FILE — do not manually refactor.
+//
+// WHY THIS FILE IS LARGE (~4,200 lines):
+// This file contains type definitions for every Proxmox node-scoped REST endpoint.
+// Proxmox exposes 250+ endpoints per node (APT, Ceph, disks, firewall, LXC, QEMU,
+// services, storage, tasks, and more). Each endpoint requires a distinct type entry
+// with path parameters, request body types, and return types.
+//
+// SPLITTING THIS FILE would:
+//   1. Break the single NodesAPI type that the codegen factory depends on.
+//   2. Require barrel re-exports that add import overhead for zero runtime benefit.
+//   3. Create a maintenance burden keeping module boundaries in sync with the API spec.
+//
+// ESLint `max-lines` is explicitly disabled for `src/api/**` via eslint.config.js.
+//
+// Strategy: keep this as a single generated artifact. If Proxmox ships an official
+// TypeScript definition package, switch to that instead.
+
 // Shared types for nodes endpoint group modules
 
 export type Service =
@@ -1430,342 +1446,307 @@ export type NodesAPI = {
                 $query?: { "current"?: boolean; "snapshot"?: string },
             }
             return: {
-                "digest": string;
-                "arch"?: "amd64" | "i386" | "arm64" | "armhf" | "riscv32" | "riscv64";
-                "cmode"?: "shell" | "console" | "tty";
-                "console"?: boolean;
+                "acpi"?: boolean;
+                "affinity"?: string;
+                "agent"?: string;
+                "allow-ksm"?: boolean;
+                "amd-sev"?: string;
+                "arch"?: "x86_64" | "aarch64";
+                "args"?: string;
+                "audio0"?: string;
+                "autostart"?: boolean;
+                "balloon"?: number;
+                "bios"?: "seabios" | "ovmf";
+                "boot"?: string;
+                "bootdisk"?: string;
+                "cdrom"?: string;
+                "cicustom"?: string;
+                "cipassword"?: string;
+                "citype"?: "configdrive2" | "nocloud" | "opennebula";
+                "ciupgrade"?: boolean;
+                "ciuser"?: string;
                 "cores"?: number;
+                "cpu"?: string;
                 "cpulimit"?: number;
                 "cpuunits"?: number;
+                "delete"?: string;
                 "description"?: string;
-                "dev[n]"?: string;
-                "entrypoint"?: string;
-                "env"?: string;
-                "features"?: string;
+                "digest"?: string;
+                "efidisk0"?: string;
+                "force"?: boolean;
+                "freeze"?: boolean;
                 "hookscript"?: string;
-                "hostname"?: string;
-                "lock"?: "backup" | "create" | "destroyed" | "disk" | "fstrim" | "migrate" | "mounted" | "rollback" | "snapshot" | "snapshot-delete";
-                "lxc"?: { "key": string; "value": string }[];
-                "memory"?: number;
-                "mp[n]"?: string;
+                "hostpci[n]"?: string;
+                "hotplug"?: string;
+                "hugepages"?: "any" | "2" | "1024";
+                "ide[n]"?: string;
+                "import-working-storage"?: string;
+                "intel-tdx"?: string;
+                "ipconfig[n]"?: string;
+                "ipconfig0"?: string;
+                "ipconfig1"?: string;
+                "ipconfig2"?: string;
+                "ipconfig3"?: string;
+                "ivshmem"?: string;
+                "keephugepages"?: boolean;
+                "keyboard"?: "de" | "de-ch" | "da" | "en-gb" | "en-us" | "es" | "fi" | "fr" | "fr-be" | "fr-ca" | "fr-ch" | "hu" | "is" | "it" | "ja" | "lt" | "mk" | "nl" | "no" | "pl" | "pt" | "pt-br" | "sv" | "sl" | "tr";
+                "kvm"?: boolean;
+                "localtime"?: boolean;
+                "lock"?: "backup" | "clone" | "create" | "migrate" | "rollback" | "snapshot" | "snapshot-delete" | "suspending" | "suspended";
+                "machine"?: string;
+                "memory"?: string;
+                "meta"?: string;
+                "migrate_downtime"?: number;
+                "migrate_speed"?: number;
+                "name"?: string;
                 "nameserver"?: string;
                 "net[n]"?: string;
+                "numa"?: boolean;
+                "numa[n]"?: string;
                 "onboot"?: boolean;
-                "ostype"?: "debian" | "devuan" | "ubuntu" | "centos" | "fedora" | "opensuse" | "archlinux" | "alpine" | "gentoo" | "nixos" | "unmanaged";
+                "ostype"?: "other" | "wxp" | "w2k" | "w2k3" | "w2k8" | "wvista" | "win7" | "win8" | "win10" | "win11" | "l24" | "l26" | "solaris";
+                "parallel[n]"?: string;
+                "parent"?: string;
                 "protection"?: boolean;
-                "rootfs"?: string;
+                "reboot"?: boolean;
+                "rng0"?: string;
+                "running-nets-host-mtu"?: string;
+                "runningcpu"?: string;
+                "runningmachine"?: string;
+                "sata[n]"?: string;
+                "scsi[n]"?: string;
+                "scsihw"?: "lsi" | "lsi53c810" | "virtio-scsi-pci" | "virtio-scsi-single" | "megasas" | "pvscsi";
                 "searchdomain"?: string;
+                "serial[n]"?: string;
+                "shares"?: number;
+                "smbios1"?: string;
+                "smp"?: number;
+                "snaptime"?: number;
+                "sockets"?: number;
+                "spice_enhancements"?: string;
+                "sshkeys"?: string;
+                "startdate"?: string;
                 "startup"?: string;
-                "swap"?: number;
+                "tablet"?: boolean;
                 "tags"?: string;
+                "tdf"?: boolean;
                 "template"?: boolean;
-                "timezone"?: string;
-                "tty"?: number;
-                "unprivileged"?: boolean;
-                "unused[n]"?: string
+                "tpmstate0"?: string;
+                "unused[n]"?: string;
+                "usb[n]"?: string;
+                "vcpus"?: number;
+                "vga"?: string;
+                "virtio[n]"?: string;
+                "virtiofs[n]"?: string;
+                "vmgenid"?: string;
+                "vmstate"?: string;
+                "vmstatestorage"?: string;
+                "watchdog"?: string
             }
         },
-        "PUT": {
+        "POST": {
             parameters: {
                 $path: { "node": string; "vmid": number },
                 $body: {
-                    "arch"?: "amd64" | "i386" | "arm64" | "armhf" | "riscv32" | "riscv64";
-                    "cmode"?: "shell" | "console" | "tty";
-                    "console"?: boolean;
+                    "acpi"?: boolean;
+                    "affinity"?: string;
+                    "agent"?: string;
+                    "allow-ksm"?: boolean;
+                    "amd-sev"?: string;
+                    "arch"?: "x86_64" | "aarch64";
+                    "args"?: string;
+                    "audio0"?: string;
+                    "autostart"?: boolean;
+                    "background_delay"?: number;
+                    "balloon"?: number;
+                    "bios"?: "seabios" | "ovmf";
+                    "boot"?: string;
+                    "bootdisk"?: string;
+                    "bwlimit"?: number;
+                    "cdrom"?: string;
+                    "cicustom"?: string;
+                    "cipassword"?: string;
+                    "citype"?: "configdrive2" | "nocloud" | "opennebula";
+                    "ciupgrade"?: boolean;
+                    "ciuser"?: string;
                     "cores"?: number;
+                    "cpu"?: string;
                     "cpulimit"?: number;
                     "cpuunits"?: number;
                     "delete"?: string;
                     "description"?: string;
                     "digest"?: string;
-                    "dev[n]"?: string;
-                    "entrypoint"?: string;
-                    "env"?: string;
-                    "features"?: string;
+                    "efidisk0"?: string;
+                    "force"?: boolean;
+                    "freeze"?: boolean;
                     "ha-managed"?: boolean;
                     "hookscript"?: string;
-                    "hostname"?: string;
-                    "lxc"?: { "key": string; "value": string }[];
-                    "lock"?: "backup" | "create" | "destroyed" | "disk" | "fstrim" | "migrate" | "mounted" | "rollback" | "snapshot" | "snapshot-delete";
-                    "memory"?: number;
-                    "mp[n]"?: string;
+                    "hostpci[n]"?: string;
+                    "hotplug"?: string;
+                    "hugepages"?: "any" | "2" | "1024";
+                    "ide[n]"?: string;
+                    "import-working-storage"?: string;
+                    "intel-tdx"?: string;
+                    "ipconfig[n]"?: string;
+                    "ipconfig0"?: string;
+                    "ipconfig1"?: string;
+                    "ipconfig2"?: string;
+                    "ipconfig3"?: string;
+                    "ivshmem"?: string;
+                    "keephugepages"?: boolean;
+                    "keyboard"?: "de" | "de-ch" | "da" | "en-gb" | "en-us" | "es" | "fi" | "fr" | "fr-be" | "fr-ca" | "fr-ch" | "hu" | "is" | "it" | "ja" | "lt" | "mk" | "nl" | "no" | "pl" | "pt" | "pt-br" | "sv" | "sl" | "tr";
+                    "kvm"?: boolean;
+                    "live-restore"?: boolean;
+                    "localtime"?: boolean;
+                    "lock"?: "backup" | "clone" | "create" | "migrate" | "rollback" | "snapshot" | "snapshot-delete" | "suspending" | "suspended";
+                    "machine"?: string;
+                    "memory"?: string;
+                    "migrate_downtime"?: number;
+                    "migrate_speed"?: number;
+                    "name"?: string;
                     "nameserver"?: string;
                     "net[n]"?: string;
+                    "numa"?: boolean;
+                    "numa[n]"?: string;
                     "onboot"?: boolean;
-                    "ostype"?: "debian" | "devuan" | "ubuntu" | "centos" | "fedora" | "opensuse" | "archlinux" | "alpine" | "gentoo" | "nixos" | "unmanaged";
+                    "ostype"?: "other" | "wxp" | "w2k" | "w2k3" | "w2k8" | "wvista" | "win7" | "win8" | "win10" | "win11" | "l24" | "l26" | "solaris";
+                    "parallel[n]"?: string;
                     "protection"?: boolean;
+                    "reboot"?: boolean;
                     "revert"?: string;
-                    "rootfs"?: string;
+                    "rng0"?: string;
+                    "sata[n]"?: string;
+                    "scsi[n]"?: string;
+                    "scsihw"?: "lsi" | "lsi53c810" | "virtio-scsi-pci" | "virtio-scsi-single" | "megasas" | "pvscsi";
                     "searchdomain"?: string;
+                    "serial[n]"?: string;
+                    "shares"?: number;
                     "skiplock"?: boolean;
+                    "smbios1"?: string;
+                    "smp"?: number;
+                    "sockets"?: number;
+                    "spice_enhancements"?: string;
+                    "sshkeys"?: string;
+                    "start"?: boolean;
+                    "startdate"?: string;
                     "startup"?: string;
                     "storage"?: string;
-                    "swap"?: number;
+                    "tablet"?: boolean;
                     "tags"?: string;
+                    "tdf"?: boolean;
                     "template"?: boolean;
-                    "timezone"?: string;
-                    "tty"?: number;
-                    "unprivileged"?: boolean;
-                    "unused[n]"?: string
+                    "tpmstate0"?: string;
+                    "unused[n]"?: string;
+                    "usb[n]"?: string;
+                    "vcpus"?: number;
+                    "vga"?: string;
+                    "virtio[n]"?: string;
+                    "virtiofs[n]"?: string;
+                    "vmgenid"?: string;
+                    "vmid": number;
+                    "vmstatestorage"?: string;
+                    "watchdog"?: string
                 },
             }
-            return: unknown
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/dbus-vmstate": {
-        "POST": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-                $body: { "action": "start" | "stop" },
-            }
-            return: unknown
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/feature": {
-        "GET": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-                $query?: { "feature": "snapshot" | "clone" | "copy"; "snapname"?: string },
-            }
-            return: { "hasFeature": boolean; "nodes": string[] }
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/firewall": {
-        "GET": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-            }
-            return: Record<string, unknown>[]
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/firewall/aliases": {
-        "GET": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-            }
-            return: { "cidr": string; "comment"?: string; "digest": string; "name": string }[]
-        },
-        "POST": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-                $body: { "cidr": string; "comment"?: string; "name": string },
-            }
-            return: unknown
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/firewall/aliases/{name}": {
-        "DELETE": {
-            parameters: {
-                $path: { "node": string; "vmid": number; "name": string },
-                $query?: { "digest"?: string },
-            }
-            return: unknown
-        },
-        "GET": {
-            parameters: {
-                $path: { "node": string; "vmid": number; "name": string },
-            }
-            return: Record<string, unknown>
-        },
-        "PUT": {
-            parameters: {
-                $path: { "node": string; "vmid": number; "name": string },
-                $body: { "cidr": string; "comment"?: string; "digest"?: string; "rename"?: string },
-            }
-            return: unknown
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/firewall/ipset": {
-        "GET": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-            }
-            return: { "comment"?: string; "digest": string; "name": string }[]
-        },
-        "POST": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-                $body: { "comment"?: string; "digest"?: string; "name": string; "rename"?: string },
-            }
-            return: unknown
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}": {
-        "DELETE": {
-            parameters: {
-                $path: { "node": string; "vmid": number; "name": string },
-                $query?: { "force"?: boolean },
-            }
-            return: unknown
-        },
-        "GET": {
-            parameters: {
-                $path: { "node": string; "vmid": number; "name": string },
-            }
-            return: { "cidr": string; "comment"?: string; "digest": string; "nomatch"?: boolean }[]
-        },
-        "POST": {
-            parameters: {
-                $path: { "node": string; "vmid": number; "name": string },
-                $body: { "cidr": string; "comment"?: string; "nomatch"?: boolean },
-            }
-            return: unknown
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/firewall/log": {
-        "GET": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-                $query?: { "limit"?: number; "since"?: number; "start"?: number; "until"?: number },
-            }
-            return: { "n": number; "t": string }[]
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/firewall/options": {
-        "GET": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-            }
-            return: {
-                "dhcp"?: boolean;
-                "enable"?: boolean;
-                "ipfilter"?: boolean;
-                "log_level_in"?: "emerg" | "alert" | "crit" | "err" | "warning" | "notice" | "info" | "debug" | "nolog";
-                "log_level_out"?: "emerg" | "alert" | "crit" | "err" | "warning" | "notice" | "info" | "debug" | "nolog";
-                "macfilter"?: boolean;
-                "ndp"?: boolean;
-                "policy_in"?: "ACCEPT" | "REJECT" | "DROP";
-                "policy_out"?: "ACCEPT" | "REJECT" | "DROP";
-                "radv"?: boolean
-            }
+            return: string
         },
         "PUT": {
             parameters: {
                 $path: { "node": string; "vmid": number },
                 $body: {
+                    "acpi"?: boolean;
+                    "affinity"?: string;
+                    "agent"?: string;
+                    "allow-ksm"?: boolean;
+                    "amd-sev"?: string;
+                    "arch"?: "x86_64" | "aarch64";
+                    "args"?: string;
+                    "audio0"?: string;
+                    "autostart"?: boolean;
+                    "balloon"?: number;
+                    "bios"?: "seabios" | "ovmf";
+                    "boot"?: string;
+                    "bootdisk"?: string;
+                    "cdrom"?: string;
+                    "cicustom"?: string;
+                    "cipassword"?: string;
+                    "citype"?: "configdrive2" | "nocloud" | "opennebula";
+                    "ciupgrade"?: boolean;
+                    "ciuser"?: string;
+                    "cores"?: number;
+                    "cpu"?: string;
+                    "cpulimit"?: number;
+                    "cpuunits"?: number;
                     "delete"?: string;
-                    "dhcp"?: boolean;
+                    "description"?: string;
                     "digest"?: string;
-                    "enable"?: boolean;
-                    "ipfilter"?: boolean;
-                    "log_level_in"?: "emerg" | "alert" | "crit" | "err" | "warning" | "notice" | "info" | "debug" | "nolog";
-                    "log_level_out"?: "emerg" | "alert" | "crit" | "err" | "warning" | "notice" | "info" | "debug" | "nolog";
-                    "macfilter"?: boolean;
-                    "ndp"?: boolean;
-                    "policy_in"?: "ACCEPT" | "REJECT" | "DROP";
-                    "policy_out"?: "ACCEPT" | "REJECT" | "DROP";
-                    "radv"?: boolean
-                },
-            }
-            return: unknown
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/firewall/refs": {
-        "GET": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-                $query?: { "type"?: "alias" | "ipset" },
-            }
-            return: { "comment"?: string; "name": string; "ref": string; "scope": string; "type": "alias" | "ipset" }[]
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/firewall/rules": {
-        "GET": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-            }
-            return: {
-                "action": string;
-                "comment"?: string;
-                "dest"?: string;
-                "dport"?: string;
-                "enable"?: number;
-                "icmp-type"?: string;
-                "iface"?: string;
-                "ipversion"?: number;
-                "log"?: "emerg" | "alert" | "crit" | "err" | "warning" | "notice" | "info" | "debug" | "nolog";
-                "macro"?: string;
-                "pos": number;
-                "proto"?: string;
-                "source"?: string;
-                "sport"?: string;
-                "type": string
-            }[]
-        },
-        "POST": {
-            parameters: {
-                $path: { "node": string; "vmid": number },
-                $body: {
-                    "action": string;
-                    "comment"?: string;
-                    "dest"?: string;
-                    "digest"?: string;
-                    "dport"?: string;
-                    "enable"?: number;
-                    "icmp-type"?: string;
-                    "iface"?: string;
-                    "log"?: "emerg" | "alert" | "crit" | "err" | "warning" | "notice" | "info" | "debug" | "nolog";
-                    "macro"?: string;
-                    "pos"?: number;
-                    "proto"?: string;
-                    "source"?: string;
-                    "sport"?: string;
-                    "type": "in" | "out" | "forward" | "group"
-                },
-            }
-            return: unknown
-        }
-    },
-    "/nodes/{node}/lxc/{vmid}/firewall/rules/{pos}": {
-        "DELETE": {
-            parameters: {
-                $path: { "node": string; "vmid": number; "pos": number },
-                $query?: { "digest"?: string },
-            }
-            return: unknown
-        },
-        "GET": {
-            parameters: {
-                $path: { "node": string; "vmid": number; "pos": number },
-            }
-            return: {
-                "action": string;
-                "comment"?: string;
-                "dest"?: string;
-                "dport"?: string;
-                "enable"?: number;
-                "icmp-type"?: string;
-                "iface"?: string;
-                "ipversion"?: number;
-                "log"?: "emerg" | "alert" | "crit" | "err" | "warning" | "notice" | "info" | "debug" | "nolog";
-                "macro"?: string;
-                "pos": number;
-                "proto"?: string;
-                "source"?: string;
-                "sport"?: string;
-                "type": string
-            }
-        },
-        "PUT": {
-            parameters: {
-                $path: { "node": string; "vmid": number; "pos": number },
-                $body: {
-                    "action"?: string;
-                    "comment"?: string;
-                    "delete"?: string;
-                    "dest"?: string;
-                    "digest"?: string;
-                    "dport"?: string;
-                    "enable"?: number;
-                    "icmp-type"?: string;
-                    "iface"?: string;
-                    "log"?: "emerg" | "alert" | "crit" | "err" | "warning" | "notice" | "info" | "debug" | "nolog";
-                    "macro"?: string;
-                    "moveto"?: number;
-                    "proto"?: string;
-                    "source"?: string;
-                    "sport"?: string;
-                    "type"?: "in" | "out" | "forward" | "group"
+                    "efidisk0"?: string;
+                    "force"?: boolean;
+                    "freeze"?: boolean;
+                    "hookscript"?: string;
+                    "hostpci[n]"?: string;
+                    "hotplug"?: string;
+                    "hugepages"?: "any" | "2" | "1024";
+                    "ide[n]"?: string;
+                    "import-working-storage"?: string;
+                    "intel-tdx"?: string;
+                    "ipconfig[n]"?: string;
+                    "ipconfig0"?: string;
+                    "ipconfig1"?: string;
+                    "ipconfig2"?: string;
+                    "ipconfig3"?: string;
+                    "ivshmem"?: string;
+                    "keephugepages"?: boolean;
+                    "keyboard"?: "de" | "de-ch" | "da" | "en-gb" | "en-us" | "es" | "fi" | "fr" | "fr-be" | "fr-ca" | "fr-ch" | "hu" | "is" | "it" | "ja" | "lt" | "mk" | "nl" | "no" | "pl" | "pt" | "pt-br" | "sv" | "sl" | "tr";
+                    "kvm"?: boolean;
+                    "localtime"?: boolean;
+                    "lock"?: "backup" | "clone" | "create" | "migrate" | "rollback" | "snapshot" | "snapshot-delete" | "suspending" | "suspended";
+                    "machine"?: string;
+                    "memory"?: string;
+                    "migrate_downtime"?: number;
+                    "migrate_speed"?: number;
+                    "name"?: string;
+                    "nameserver"?: string;
+                    "net[n]"?: string;
+                    "numa"?: boolean;
+                    "numa[n]"?: string;
+                    "onboot"?: boolean;
+                    "ostype"?: "other" | "wxp" | "w2k" | "w2k3" | "w2k8" | "wvista" | "win7" | "win8" | "win10" | "win11" | "l24" | "l26" | "solaris";
+                    "parallel[n]"?: string;
+                    "protection"?: boolean;
+                    "reboot"?: boolean;
+                    "revert"?: string;
+                    "rng0"?: string;
+                    "sata[n]"?: string;
+                    "scsi[n]"?: string;
+                    "scsihw"?: "lsi" | "lsi53c810" | "virtio-scsi-pci" | "virtio-scsi-single" | "megasas" | "pvscsi";
+                    "searchdomain"?: string;
+                    "serial[n]"?: string;
+                    "shares"?: number;
+                    "skiplock"?: boolean;
+                    "smbios1"?: string;
+                    "smp"?: number;
+                    "sockets"?: number;
+                    "spice_enhancements"?: string;
+                    "sshkeys"?: string;
+                    "start"?: boolean;
+                    "startdate"?: string;
+                    "startup"?: string;
+                    "storage"?: string;
+                    "tablet"?: boolean;
+                    "tags"?: string;
+                    "tdf"?: boolean;
+                    "template"?: boolean;
+                    "tpmstate0"?: string;
+                    "unused[n]"?: string;
+                    "usb[n]"?: string;
+                    "vcpus"?: number;
+                    "vga"?: string;
+                    "virtio[n]"?: string;
+                    "virtiofs[n]"?: string;
+                    "vmgenid"?: string;
+                    "vmstatestorage"?: string;
+                    "watchdog"?: string
                 },
             }
             return: unknown
@@ -2207,83 +2188,308 @@ export type NodesAPI = {
                 $query?: { "current"?: boolean; "snapshot"?: string },
             }
             return: {
-                "digest": string;
-                "arch"?: "amd64" | "i386" | "arm64" | "armhf" | "riscv32" | "riscv64";
-                "cmode"?: "shell" | "console" | "tty";
-                "console"?: boolean;
+                "acpi"?: boolean;
+                "affinity"?: string;
+                "agent"?: string;
+                "allow-ksm"?: boolean;
+                "amd-sev"?: string;
+                "arch"?: "x86_64" | "aarch64";
+                "args"?: string;
+                "audio0"?: string;
+                "autostart"?: boolean;
+                "balloon"?: number;
+                "bios"?: "seabios" | "ovmf";
+                "boot"?: string;
+                "bootdisk"?: string;
+                "cdrom"?: string;
+                "cicustom"?: string;
+                "cipassword"?: string;
+                "citype"?: "configdrive2" | "nocloud" | "opennebula";
+                "ciupgrade"?: boolean;
+                "ciuser"?: string;
                 "cores"?: number;
+                "cpu"?: string;
                 "cpulimit"?: number;
                 "cpuunits"?: number;
+                "delete"?: string;
                 "description"?: string;
-                "dev[n]"?: string;
-                "entrypoint"?: string;
-                "env"?: string;
-                "features"?: string;
+                "digest"?: string;
+                "efidisk0"?: string;
+                "force"?: boolean;
+                "freeze"?: boolean;
                 "hookscript"?: string;
-                "hostname"?: string;
-                "lock"?: "backup" | "create" | "destroyed" | "disk" | "fstrim" | "migrate" | "mounted" | "rollback" | "snapshot" | "snapshot-delete";
-                "lxc"?: { "key": string; "value": string }[];
-                "memory"?: number;
-                "mp[n]"?: string;
+                "hostpci[n]"?: string;
+                "hotplug"?: string;
+                "hugepages"?: "any" | "2" | "1024";
+                "ide[n]"?: string;
+                "import-working-storage"?: string;
+                "intel-tdx"?: string;
+                "ipconfig[n]"?: string;
+                "ipconfig0"?: string;
+                "ipconfig1"?: string;
+                "ipconfig2"?: string;
+                "ipconfig3"?: string;
+                "ivshmem"?: string;
+                "keephugepages"?: boolean;
+                "keyboard"?: "de" | "de-ch" | "da" | "en-gb" | "en-us" | "es" | "fi" | "fr" | "fr-be" | "fr-ca" | "fr-ch" | "hu" | "is" | "it" | "ja" | "lt" | "mk" | "nl" | "no" | "pl" | "pt" | "pt-br" | "sv" | "sl" | "tr";
+                "kvm"?: boolean;
+                "localtime"?: boolean;
+                "lock"?: "backup" | "clone" | "create" | "migrate" | "rollback" | "snapshot" | "snapshot-delete" | "suspending" | "suspended";
+                "machine"?: string;
+                "memory"?: string;
+                "meta"?: string;
+                "migrate_downtime"?: number;
+                "migrate_speed"?: number;
+                "name"?: string;
                 "nameserver"?: string;
                 "net[n]"?: string;
+                "numa"?: boolean;
+                "numa[n]"?: string;
                 "onboot"?: boolean;
-                "ostype"?: "debian" | "devuan" | "ubuntu" | "centos" | "fedora" | "opensuse" | "archlinux" | "alpine" | "gentoo" | "nixos" | "unmanaged";
+                "ostype"?: "other" | "wxp" | "w2k" | "w2k3" | "w2k8" | "wvista" | "win7" | "win8" | "win10" | "win11" | "l24" | "l26" | "solaris";
+                "parallel[n]"?: string;
+                "parent"?: string;
                 "protection"?: boolean;
-                "rootfs"?: string;
+                "reboot"?: boolean;
+                "rng0"?: string;
+                "running-nets-host-mtu"?: string;
+                "runningcpu"?: string;
+                "runningmachine"?: string;
+                "sata[n]"?: string;
+                "scsi[n]"?: string;
+                "scsihw"?: "lsi" | "lsi53c810" | "virtio-scsi-pci" | "virtio-scsi-single" | "megasas" | "pvscsi";
                 "searchdomain"?: string;
+                "serial[n]"?: string;
+                "shares"?: number;
+                "smbios1"?: string;
+                "smp"?: number;
+                "snaptime"?: number;
+                "sockets"?: number;
+                "spice_enhancements"?: string;
+                "sshkeys"?: string;
+                "start"?: boolean;
+                "startdate"?: string;
                 "startup"?: string;
-                "swap"?: number;
+                "storage"?: string;
+                "tablet"?: boolean;
                 "tags"?: string;
+                "tdf"?: boolean;
                 "template"?: boolean;
-                "timezone"?: string;
-                "tty"?: number;
-                "unprivileged"?: boolean;
-                "unused[n]"?: string
+                "tpmstate0"?: string;
+                "unused[n]"?: string;
+                "usb[n]"?: string;
+                "vcpus"?: number;
+                "vga"?: string;
+                "virtio[n]"?: string;
+                "virtiofs[n]"?: string;
+                "vmgenid"?: string;
+                "vmstate"?: string;
+                "vmstatestorage"?: string;
+                "watchdog"?: string
             }
         },
-        "PUT": {
+        "POST": {
             parameters: {
                 $path: { "node": string; "vmid": number },
                 $body: {
-                    "arch"?: "amd64" | "i386" | "arm64" | "armhf" | "riscv32" | "riscv64";
-                    "cmode"?: "shell" | "console" | "tty";
-                    "console"?: boolean;
+                    "acpi"?: boolean;
+                    "affinity"?: string;
+                    "agent"?: string;
+                    "allow-ksm"?: boolean;
+                    "amd-sev"?: string;
+                    "arch"?: "x86_64" | "aarch64";
+                    "args"?: string;
+                    "audio0"?: string;
+                    "autostart"?: boolean;
+                    "background_delay"?: number;
+                    "balloon"?: number;
+                    "bios"?: "seabios" | "ovmf";
+                    "boot"?: string;
+                    "bootdisk"?: string;
+                    "cdrom"?: string;
+                    "cicustom"?: string;
+                    "cipassword"?: string;
+                    "citype"?: "configdrive2" | "nocloud" | "opennebula";
+                    "ciupgrade"?: boolean;
+                    "ciuser"?: string;
                     "cores"?: number;
+                    "cpu"?: string;
                     "cpulimit"?: number;
                     "cpuunits"?: number;
                     "delete"?: string;
                     "description"?: string;
                     "digest"?: string;
-                    "dev[n]"?: string;
-                    "entrypoint"?: string;
-                    "env"?: string;
-                    "features"?: string;
+                    "efidisk0"?: string;
+                    "force"?: boolean;
+                    "freeze"?: boolean;
                     "ha-managed"?: boolean;
                     "hookscript"?: string;
-                    "hostname"?: string;
-                    "lxc"?: { "key": string; "value": string }[];
-                    "lock"?: "backup" | "create" | "destroyed" | "disk" | "fstrim" | "migrate" | "mounted" | "rollback" | "snapshot" | "snapshot-delete";
-                    "memory"?: number;
-                    "mp[n]"?: string;
+                    "hostpci[n]"?: string;
+                    "hotplug"?: string;
+                    "hugepages"?: "any" | "2" | "1024";
+                    "ide[n]"?: string;
+                    "import-working-storage"?: string;
+                    "intel-tdx"?: string;
+                    "ipconfig[n]"?: string;
+                    "ipconfig0"?: string;
+                    "ipconfig1"?: string;
+                    "ipconfig2"?: string;
+                    "ipconfig3"?: string;
+                    "ivshmem"?: string;
+                    "keephugepages"?: boolean;
+                    "keyboard"?: "de" | "de-ch" | "da" | "en-gb" | "en-us" | "es" | "fi" | "fr" | "fr-be" | "fr-ca" | "fr-ch" | "hu" | "is" | "it" | "ja" | "lt" | "mk" | "nl" | "no" | "pl" | "pt" | "pt-br" | "sv" | "sl" | "tr";
+                    "kvm"?: boolean;
+                    "live-restore"?: boolean;
+                    "localtime"?: boolean;
+                    "lock"?: "backup" | "clone" | "create" | "migrate" | "rollback" | "snapshot" | "snapshot-delete" | "suspending" | "suspended";
+                    "machine"?: string;
+                    "memory"?: string;
+                    "migrate_downtime"?: number;
+                    "migrate_speed"?: number;
+                    "name"?: string;
                     "nameserver"?: string;
                     "net[n]"?: string;
+                    "numa"?: boolean;
+                    "numa[n]"?: string;
                     "onboot"?: boolean;
-                    "ostype"?: "debian" | "devuan" | "ubuntu" | "centos" | "fedora" | "opensuse" | "archlinux" | "alpine" | "gentoo" | "nixos" | "unmanaged";
+                    "ostype"?: "other" | "wxp" | "w2k" | "w2k3" | "w2k8" | "wvista" | "win7" | "win8" | "win10" | "win11" | "l24" | "l26" | "solaris";
+                    "parallel[n]"?: string;
                     "protection"?: boolean;
+                    "reboot"?: boolean;
                     "revert"?: string;
-                    "rootfs"?: string;
+                    "rng0"?: string;
+                    "sata[n]"?: string;
+                    "scsi[n]"?: string;
+                    "scsihw"?: "lsi" | "lsi53c810" | "virtio-scsi-pci" | "virtio-scsi-single" | "megasas" | "pvscsi";
                     "searchdomain"?: string;
+                    "serial[n]"?: string;
+                    "shares"?: number;
                     "skiplock"?: boolean;
+                    "smbios1"?: string;
+                    "smp"?: number;
+                    "sockets"?: number;
+                    "spice_enhancements"?: string;
+                    "sshkeys"?: string;
+                    "start"?: boolean;
+                    "startdate"?: string;
                     "startup"?: string;
                     "storage"?: string;
-                    "swap"?: number;
+                    "tablet"?: boolean;
                     "tags"?: string;
+                    "tdf"?: boolean;
                     "template"?: boolean;
-                    "timezone"?: string;
-                    "tty"?: number;
-                    "unprivileged"?: boolean;
-                    "unused[n]"?: string
+                    "tpmstate0"?: string;
+                    "unused[n]"?: string;
+                    "usb[n]"?: string;
+                    "vcpus"?: number;
+                    "vga"?: string;
+                    "virtio[n]"?: string;
+                    "virtiofs[n]"?: string;
+                    "vmgenid"?: string;
+                    "vmid": number;
+                    "vmstatestorage"?: string;
+                    "watchdog"?: string
+                },
+            }
+            return: string
+        },
+        "PUT": {
+            parameters: {
+                $path: { "node": string; "vmid": number },
+                $body: {
+                    "acpi"?: boolean;
+                    "affinity"?: string;
+                    "agent"?: string;
+                    "allow-ksm"?: boolean;
+                    "amd-sev"?: string;
+                    "arch"?: "x86_64" | "aarch64";
+                    "args"?: string;
+                    "audio0"?: string;
+                    "autostart"?: boolean;
+                    "balloon"?: number;
+                    "bios"?: "seabios" | "ovmf";
+                    "boot"?: string;
+                    "bootdisk"?: string;
+                    "cdrom"?: string;
+                    "cicustom"?: string;
+                    "cipassword"?: string;
+                    "citype"?: "configdrive2" | "nocloud" | "opennebula";
+                    "ciupgrade"?: boolean;
+                    "ciuser"?: string;
+                    "cores"?: number;
+                    "cpu"?: string;
+                    "cpulimit"?: number;
+                    "cpuunits"?: number;
+                    "delete"?: string;
+                    "description"?: string;
+                    "digest"?: string;
+                    "efidisk0"?: string;
+                    "force"?: boolean;
+                    "freeze"?: boolean;
+                    "hookscript"?: string;
+                    "hostpci[n]"?: string;
+                    "hotplug"?: string;
+                    "hugepages"?: "any" | "2" | "1024";
+                    "ide[n]"?: string;
+                    "import-working-storage"?: string;
+                    "intel-tdx"?: string;
+                    "ipconfig[n]"?: string;
+                    "ipconfig0"?: string;
+                    "ipconfig1"?: string;
+                    "ipconfig2"?: string;
+                    "ipconfig3"?: string;
+                    "ivshmem"?: string;
+                    "keephugepages"?: boolean;
+                    "keyboard"?: "de" | "de-ch" | "da" | "en-gb" | "en-us" | "es" | "fi" | "fr" | "fr-be" | "fr-ca" | "fr-ch" | "hu" | "is" | "it" | "ja" | "lt" | "mk" | "nl" | "no" | "pl" | "pt" | "pt-br" | "sv" | "sl" | "tr";
+                    "kvm"?: boolean;
+                    "localtime"?: boolean;
+                    "lock"?: "backup" | "clone" | "create" | "migrate" | "rollback" | "snapshot" | "snapshot-delete" | "suspending" | "suspended";
+                    "machine"?: string;
+                    "memory"?: string;
+                    "migrate_downtime"?: number;
+                    "migrate_speed"?: number;
+                    "name"?: string;
+                    "nameserver"?: string;
+                    "net[n]"?: string;
+                    "numa"?: boolean;
+                    "numa[n]"?: string;
+                    "onboot"?: boolean;
+                    "ostype"?: "other" | "wxp" | "w2k" | "w2k3" | "w2k8" | "wvista" | "win7" | "win8" | "win10" | "win11" | "l24" | "l26" | "solaris";
+                    "parallel[n]"?: string;
+                    "protection"?: boolean;
+                    "reboot"?: boolean;
+                    "revert"?: string;
+                    "rng0"?: string;
+                    "sata[n]"?: string;
+                    "scsi[n]"?: string;
+                    "scsihw"?: "lsi" | "lsi53c810" | "virtio-scsi-pci" | "virtio-scsi-single" | "megasas" | "pvscsi";
+                    "searchdomain"?: string;
+                    "serial[n]"?: string;
+                    "shares"?: number;
+                    "skiplock"?: boolean;
+                    "smbios1"?: string;
+                    "smp"?: number;
+                    "sockets"?: number;
+                    "spice_enhancements"?: string;
+                    "sshkeys"?: string;
+                    "start"?: boolean;
+                    "startdate"?: string;
+                    "startup"?: string;
+                    "storage"?: string;
+                    "tablet"?: boolean;
+                    "tags"?: string;
+                    "tdf"?: boolean;
+                    "template"?: boolean;
+                    "tpmstate0"?: string;
+                    "unused[n]"?: string;
+                    "usb[n]"?: string;
+                    "vcpus"?: number;
+                    "vga"?: string;
+                    "virtio[n]"?: string;
+                    "virtiofs[n]"?: string;
+                    "vmgenid"?: string;
+                    "vmstatestorage"?: string;
+                    "watchdog"?: string
                 },
             }
             return: unknown
@@ -4019,217 +4225,6 @@ export type NodesAPI = {
                 $path: { "node": string; "vmid": number },
             }
             return: string
-        }
-    },
-    "/nodes/{node}/network": {
-        "GET": {
-            parameters: {
-                $path: { "node": string },
-                $query?: { "type"?: "bridge" | "bond" | "eth" | "alias" | "vlan" | "fabric" | "OVSBridge" | "OVSBond" | "OVSPort" | "OVSIntPort" | "vnet" | "any_bridge" | "any_local_bridge" | "include_sdn" },
-            }
-            return: {
-                "iface": string;
-                "type": "bridge" | "bond" | "eth" | "alias" | "vlan" | "fabric" | "OVSBridge" | "OVSBond" | "OVSPort" | "OVSIntPort" | "vnet" | "unknown";
-                "active"?: boolean;
-                "address"?: string;
-                "address6"?: string;
-                "autostart"?: boolean;
-                "bond-primary"?: string;
-                "bond_mode"?: "balance-rr" | "active-backup" | "balance-xor" | "broadcast" | "802.3ad" | "balance-tlb" | "balance-alb" | "balance-slb" | "lacp-balance-slb" | "lacp-balance-tcp";
-                "bond_xmit_hash_policy"?: "layer2" | "layer2+3" | "layer3+4";
-                "bridge-access"?: number;
-                "bridge-arp-nd-suppress"?: boolean;
-                "bridge-learning"?: boolean;
-                "bridge-multicast-flood"?: boolean;
-                "bridge-unicast-flood"?: boolean;
-                "bridge_ports"?: string;
-                "bridge_vids"?: string;
-                "bridge_vlan_aware"?: boolean;
-                "cidr"?: string;
-                "cidr6"?: string;
-                "comments"?: string;
-                "comments6"?: string;
-                "exists"?: boolean;
-                "families"?: ("inet" | "inet6")[];
-                "gateway"?: string;
-                "gateway6"?: string;
-                "link-type"?: string;
-                "method"?: "loopback" | "dhcp" | "manual" | "static" | "auto";
-                "method6"?: "loopback" | "dhcp" | "manual" | "static" | "auto";
-                "mtu"?: number;
-                "netmask"?: string;
-                "netmask6"?: number;
-                "options"?: string[];
-                "options6"?: string[];
-                "ovs_bridge"?: string;
-                "ovs_options"?: string;
-                "ovs_ports"?: string;
-                "ovs_tag"?: number;
-                "priority"?: number;
-                "slaves"?: string;
-                "uplink-id"?: string;
-                "vlan-id"?: number;
-                "vlan-protocol"?: "802.1ad" | "802.1q";
-                "vlan-raw-device"?: string;
-                "vxlan-id"?: number;
-                "vxlan-local-tunnelip"?: string;
-                "vxlan-physdev"?: string;
-                "vxlan-svcnodeip"?: string
-            }[]
-        },
-        "POST": {
-            parameters: {
-                $path: { "node": string },
-                $body: {
-                    "address"?: string;
-                    "address6"?: string;
-                    "autostart"?: boolean;
-                    "bond-primary"?: string;
-                    "bond_mode"?: "balance-rr" | "active-backup" | "balance-xor" | "broadcast" | "802.3ad" | "balance-tlb" | "balance-alb" | "balance-slb" | "lacp-balance-slb" | "lacp-balance-tcp";
-                    "bond_xmit_hash_policy"?: "layer2" | "layer2+3" | "layer3+4";
-                    "bridge-arp-nd-suppress"?: boolean;
-                    "bridge-learning"?: boolean;
-                    "bridge-multicast-flood"?: boolean;
-                    "bridge-unicast-flood"?: boolean;
-                    "bridge_ports"?: string;
-                    "bridge_vids"?: string;
-                    "bridge_vlan_aware"?: boolean;
-                    "cidr"?: string;
-                    "cidr6"?: string;
-                    "comments"?: string;
-                    "comments6"?: string;
-                    "gateway"?: string;
-                    "gateway6"?: string;
-                    "iface": string;
-                    "method"?: "loopback" | "dhcp" | "manual" | "static" | "auto";
-                    "method6"?: "loopback" | "dhcp" | "manual" | "static" | "auto";
-                    "mtu"?: number;
-                    "netmask"?: string;
-                    "netmask6"?: number;
-                    "ovs_bridge"?: string;
-                    "ovs_options"?: string;
-                    "ovs_ports"?: string;
-                    "ovs_tag"?: number;
-                    "slaves"?: string;
-                    "type": "bridge" | "bond" | "eth" | "vlan" | "OVSBridge" | "OVSBond" | "OVSPort" | "OVSIntPort";
-                    "vlan-id"?: number;
-                    "vlan-protocol"?: "802.1ad" | "802.1q";
-                    "vlan-raw-device"?: string
-                },
-            }
-            return: unknown
-        },
-        "PUT": {
-            parameters: {
-                $path: { "node": string },
-                $body: {
-                    "apply"?: boolean;
-                    "iface"?: string;
-                    "method"?: "loopback" | "dhcp" | "manual" | "static" | "auto"
-                },
-            }
-            return: unknown
-        },
-        "DELETE": {
-            parameters: {
-                $path: { "node": string },
-                $body: {
-                    "iface": string;
-                    "verify_digest"?: string
-                },
-            }
-            return: unknown
-        }
-    },
-    "/nodes/{node}/network/{iface}": {
-        "GET": {
-            parameters: {
-                $path: { "node": string; "iface": string },
-            }
-            return: {
-                "address"?: string;
-                "address6"?: string;
-                "autostart"?: boolean;
-                "bond-primary"?: string;
-                "bond_mode"?: "balance-rr" | "active-backup" | "balance-xor" | "broadcast" | "802.3ad" | "balance-tlb" | "balance-alb" | "balance-slb" | "lacp-balance-slb" | "lacp-balance-tcp";
-                "bond_xmit_hash_policy"?: "layer2" | "layer2+3" | "layer3+4";
-                "bridge-arp-nd-suppress"?: boolean;
-                "bridge-learning"?: boolean;
-                "bridge-multicast-flood"?: boolean;
-                "bridge-unicast-flood"?: boolean;
-                "bridge_ports"?: string;
-                "bridge_vids"?: string;
-                "bridge_vlan_aware"?: boolean;
-                "cidr"?: string;
-                "cidr6"?: string;
-                "comments"?: string;
-                "comments6"?: string;
-                "gateway"?: string;
-                "gateway6"?: string;
-                "method": "loopback" | "dhcp" | "manual" | "static" | "auto";
-                "method6"?: "loopback" | "dhcp" | "manual" | "static" | "auto";
-                "mtu"?: number;
-                "netmask"?: string;
-                "netmask6"?: number;
-                "ovs_bridge"?: string;
-                "ovs_options"?: string;
-                "ovs_ports"?: string;
-                "ovs_tag"?: number;
-                "slaves"?: string;
-                "type": "bridge" | "bond" | "eth" | "alias" | "vlan" | "fabric" | "OVSBridge" | "OVSBond" | "OVSPort" | "OVSIntPort" | "vnet" | "unknown";
-                "vlan-id"?: number;
-                "vlan-protocol"?: "802.1ad" | "802.1q";
-                "vlan-raw-device"?: string
-            }
-        },
-        "PUT": {
-            parameters: {
-                $path: { "node": string; "iface": string },
-                $body: {
-                    "autostart"?: boolean;
-                    "bond-primary"?: string;
-                    "bond_mode"?: "balance-rr" | "active-backup" | "balance-xor" | "broadcast" | "802.3ad" | "balance-tlb" | "balance-alb" | "balance-slb" | "lacp-balance-slb" | "lacp-balance-tcp";
-                    "bond_xmit_hash_policy"?: "layer2" | "layer2+3" | "layer3+4";
-                    "bridge-arp-nd-suppress"?: boolean;
-                    "bridge-learning"?: boolean;
-                    "bridge-multicast-flood"?: boolean;
-                    "bridge-unicast-flood"?: boolean;
-                    "bridge_ports"?: string;
-                    "bridge_vids"?: string;
-                    "bridge_vlan_aware"?: boolean;
-                    "cidr"?: string;
-                    "cidr6"?: string;
-                    "comments"?: string;
-                    "comments6"?: string;
-                    "delete"?: string;
-                    "digest"?: string;
-                    "gateway"?: string;
-                    "gateway6"?: string;
-                    "inet"?: "dhcp" | "manual" | "static" | "auto";
-                    "inet6"?: "dhcp" | "manual" | "static" | "auto";
-                    "mtu"?: number;
-                    "netmask"?: string;
-                    "netmask6"?: number;
-                    "ovs_bridge"?: string;
-                    "ovs_options"?: string;
-                    "ovs_ports"?: string;
-                    "ovs_tag"?: number;
-                    "slaves"?: string;
-                    "vlan-id"?: number;
-                    "vlan-protocol"?: "802.1ad" | "802.1q";
-                    "vlan-raw-device"?: string
-                },
-            }
-            return: unknown
-        },
-        "DELETE": {
-            parameters: {
-                $path: { "node": string; "iface": string },
-                $body: {
-                    "verify_digest"?: string
-                },
-            }
-            return: unknown
         }
     },
 };
