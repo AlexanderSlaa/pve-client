@@ -8,13 +8,13 @@ const {api} = await new Client({
 })
 
 async function main() {
-    const result = await api.cluster.index()
+    const cluster = await api.cluster.index()
 
     const nodes = await api.nodes.list();
 
-    const node = await api.nodes.get('pve').index()
+    await api.nodes.get('pve').index();
 
-    console.log(nodes);
+    console.log({ cluster, nodes });
 }
 
 main().catch(console.error);
