@@ -1,8 +1,10 @@
 import EventEmitter from "node:events";
-import type {Client} from "../index";
+import type { ClusterAPI } from "../api/cluster/types.js";
+import type {Client} from "../index.js";
 import WS, {type RawData} from "ws";
 
 type VMType = "qemu" | "lxc";
+type ClusterResource = ClusterAPI["/cluster/resources"]["GET"]["return"][number];
 
 export type DisplayTicket = {
     cert: string;
@@ -33,6 +35,8 @@ export type DisplayOpenOptions = {
     pipeTo?: DisplayPipe;
 };
 
+// ws emits multiple binary-like payload shapes; normalize once so downstream
+// consumers can treat display frames as plain Buffer instances.
 function rawToBuffer(data: RawData): Buffer {
     if (typeof data === "string") return Buffer.from(data);
     if (Buffer.isBuffer(data)) return data;
@@ -53,6 +57,8 @@ export class DisplaySession extends EventEmitter<{
     }
 
     private bind() {
+        // Re-emit ws lifecycle as typed DisplaySession events to provide a stable
+        // contract independent from the ws library's event signatures.
         this.socket.on("open", () => {
             this.emit("ready");
         });
@@ -84,6 +90,8 @@ export class DisplaySession extends EventEmitter<{
     }
 
     pipe<T extends DisplayPipe>(target: T): T {
+        // Keep wiring bidirectional so callers can drop in browser/socket-like
+        // transports without reimplementing framing glue.
         this.on("data", (data) => target.send(data));
         target.on("message", (data) => {
             const payload = Buffer.isBuffer(data) ? data : Buffer.from(data);
@@ -110,19 +118,21 @@ export class Display {
 
     async createTicket(): Promise<DisplayTicket> {
         const vm = await this.getRunningVm();
+        // Proxmox issues short-lived display tickets. We cache the latest one to
+        // avoid redundant vncproxy round-trips for immediate reconnects.
         const ticket = await this.client.request(
             `/nodes/{node}/${vm.type}/{vmid}/vncproxy`,
             "POST",
             {
                 $path: {
                     node: vm.node,
-                    vmid: vm.vmid,
+                    vmid: typeof vm.vmid === "string" ? parseInt(vm.vmid, 10) : vm.vmid,
                 },
                 $body: {
                     // Proxmox form parsing for this endpoint expects numeric boolean values.
                     websocket: 1,
                 },
-            } as any
+            }
         );
         this.cachedTicket = ticket as DisplayTicket;
         return this.cachedTicket;
@@ -158,6 +168,8 @@ export class Display {
             Origin: origin,
         };
 
+        // Display websocket auth follows the same dual-path policy as terminal:
+        // cookie for login sessions, Authorization for API token sessions.
         const cookie = this.client.sessionCookie();
         if (cookie) headers.Cookie = cookie;
 
@@ -181,11 +193,13 @@ export class Display {
     }
 
     private async getRunningVm(): Promise<{ vmid: number; node: string; type: VMType }> {
+        // Resolve against cluster resources instead of trusting external node/type
+        // input so display tickets always target the authoritative running guest.
         const resources = await this.client.request("/cluster/resources", "GET", {
             $query: {type: "vm"},
-        });
+        }) as ClusterResource[];
 
-        const vm = resources.find((resource) => resource.vmid?.toString() === this.vmid.toString());
+        const vm = resources.find((resource: ClusterResource) => resource.vmid?.toString() === this.vmid.toString());
 
         if (!vm) throw new Error(`Unable to find virtual machine with id(${this.vmid}).`);
         if (vm.status !== "running") throw new Error(`Virtual machine ${this.vmid} is not running.`);
