@@ -1,6 +1,6 @@
-import type { Client } from "../../index";
-import type { ClusterAPI } from "./types";
-import type { ArgsTuple, PathContext } from "../index";
+import type { Client } from "../../index.js";
+import type { ClusterAPI } from "./types.js";
+import type { ArgsTuple, PathContext } from "../index.js";
 
 export default function replicationFactory(client: Client) {
     return {

@@ -1,22 +1,22 @@
-export { default as hardwareFactory } from "./hardware";
-export { default as aptFactory } from "./apt";
-export { default as cephFactory } from "./ceph";
-export { default as lxcFactory } from "./lxc";
-export { default as qemuFactory } from "./qemu";
-export { default as firewallFactory } from "./firewall";
-export { default as disksFactory } from "./disks";
+export { default as hardwareFactory } from "./hardware.js";
+export { default as aptFactory } from "./apt.js";
+export { default as cephFactory } from "./ceph.js";
+export { default as lxcFactory } from "./lxc.js";
+export { default as qemuFactory } from "./qemu.js";
+export { default as firewallFactory } from "./firewall.js";
+export { default as disksFactory } from "./disks.js";
 
 
-import aptFactory from "./apt";
-import cephFactory from "./ceph";
-import disksFactory from "./disks";
-import firewallFactory from "./firewall";
-import hardwareFactory from "./hardware";
-import lxcFactory from "./lxc";
-import qemuFactory from "./qemu";
-import type { Client } from "../../index";
-import type { NodesAPI } from "./types";
-import nodeStorageFactory from "./storage";
+import aptFactory from "./apt.js";
+import cephFactory from "./ceph.js";
+import disksFactory from "./disks.js";
+import firewallFactory from "./firewall.js";
+import hardwareFactory from "./hardware.js";
+import lxcFactory from "./lxc.js";
+import qemuFactory from "./qemu.js";
+import type { Client } from "../../index.js";
+import type { NodesAPI } from "./types.js";
+import nodeStorageFactory from "./storage.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type A = any;

@@ -1,7 +1,7 @@
 // Factory for /nodes/{node}/lxc endpoints
-import { Client } from "../../index";
-import type { NodesAPI } from "./types";
-import type { ArgsTuple, PathContext } from "../index";
+import { Client } from "../../index.js";
+import type { NodesAPI } from "./types.js";
+import type { ArgsTuple, PathContext } from "../index.js";
 
 type N = NodesAPI;
 type R<P extends keyof N, M extends keyof N[P]> =

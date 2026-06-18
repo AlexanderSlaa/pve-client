@@ -1,4 +1,4 @@
-import type { Client } from "../../index";
+import type { Client } from "../../index.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type A = any;

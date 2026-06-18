@@ -1,7 +1,7 @@
 // Factory for /nodes/{node}/qemu endpoints
-import { Client } from "../../index";
-import type { NodesAPI } from "./types";
-import type { ArgsTuple, PathContext } from "../index";
+import { Client } from "../../index.js";
+import type { NodesAPI } from "./types.js";
+import type { ArgsTuple, PathContext } from "../index.js";
 
 function sp<T extends { $path?: any }>(o: T | undefined): Omit<T, '$path'> | undefined {
     if (!o) return o;

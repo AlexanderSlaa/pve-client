@@ -130,7 +130,7 @@ export class Display {
                 },
                 $body: {
                     // Proxmox form parsing for this endpoint expects numeric boolean values.
-                    websocket: 1,
+                    websocket: true as any,
                 },
             }
         );

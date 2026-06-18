@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { Client } from "../../index";
+import { Client } from "../../index.js";
 
 function makeClient() {
     return new Client({ baseUrl: "https://pve.local", apiToken: "token", fetch: vi.fn() });

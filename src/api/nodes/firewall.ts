@@ -1,7 +1,7 @@
 // Factory for /nodes/{node}/firewall endpoints
-import { Client } from "../../index";
-import type { NodesAPI } from "./types";
-import type { ArgsTuple } from "../index";
+import { Client } from "../../index.js";
+import type { NodesAPI } from "./types.js";
+import type { ArgsTuple } from "../index.js";
 
 function stripPath<T extends { $path?: any }>(obj: T | undefined): Omit<T, "$path"> | undefined {
     if (!obj) return obj;

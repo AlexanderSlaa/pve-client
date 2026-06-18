@@ -3,23 +3,22 @@
  * - Generates TSDoc for every endpoint function (description + @endpoint + parameter list)
  */
 import {Agent} from "node:https";
-import native_fetch from "./fetch";
-import Access from "./api/access";
-import type {ClusterAPI} from "./api/cluster/types";
-import Cluster from "./api/cluster";
-import type {NodesAPI} from "./api/nodes/types";
-import type { NodeScopedAPI } from "./api/nodes";
-import Nodes from "./api/nodes";
-import Pools from "./api/pools";
-import Storage from "./api/storage";
-import type {AnyArgs, API, MethodKey, Params, Ret} from "./api";
-import Version from "./api/version";
-import {Display} from "./helpers/Display";
-import {NoVNCFacade} from "./helpers/NoVNC";
-import {Terminal, TerminalRenderer, TerminalSession, TerminalState, bridgeTerminalSessionToSocket, openTerminalBridge} from "./helpers/Terminal";
-import type {TerminalTicket, TerminalConnectionInfo, TerminalOpenOptions, TerminalRendererState, TerminalPipe, TerminalBridgeOptions, TerminalBrowserSocket, TerminalBrowserMessage} from "./helpers/Terminal";
-import type {NoVNCConnectionOptions, NoVNCViewportOptions, NoVNCQualityOptions, NoVNCEventMap, NoVNCEventName, NoVNCReconnectOptions, NoVNCReconnectAttempt} from "./helpers/NoVNC";
-import {TimerPulledEventEmitter} from "./helpers/TimerPulledEventEmitter";
+import native_fetch from "./fetch.js";
+import Access from "./api/access.js";
+import type {ClusterAPI} from "./api/cluster/types.js";
+import Cluster from "./api/cluster/index.js";
+import type {NodesAPI} from "./api/nodes/types.js";
+import Nodes from "./api/nodes/index.js";
+import Pools from "./api/pools.js";
+import Storage from "./api/storage.js";
+import type {AnyArgs, API, MethodKey, Params, Ret} from "./api/index.js";
+import Version from "./api/version.js";
+import {Display} from "./helpers/Display.js";
+import {NoVNCFacade} from "./helpers/NoVNC.js";
+import {Terminal, TerminalRenderer, TerminalSession, TerminalState, bridgeTerminalSessionToSocket, openTerminalBridge} from "./helpers/Terminal.js";
+import type {TerminalTicket, TerminalConnectionInfo, TerminalOpenOptions, TerminalRendererState, TerminalPipe, TerminalBridgeOptions, TerminalBrowserSocket, TerminalBrowserMessage} from "./helpers/Terminal.js";
+import type {NoVNCConnectionOptions, NoVNCViewportOptions, NoVNCQualityOptions, NoVNCEventMap, NoVNCEventName, NoVNCReconnectOptions, NoVNCReconnectAttempt} from "./helpers/NoVNC.js";
+import {TimerPulledEventEmitter} from "./helpers/TimerPulledEventEmitter.js";
 
 
 export type FetchLike<Input extends string | URL | Request = string | URL, Init extends RequestInit = RequestInit, Out extends Response = Response> = (input: Input, init?: Init) => Promise<Out>;
@@ -488,8 +487,6 @@ export function createAPI(client: Client): APIClient {
         }
     ) as const;
 }
-
-export type { NodeScopedAPI } from "./api/nodes";
 
 // Re-export Terminal helpers for convenience
 export {
