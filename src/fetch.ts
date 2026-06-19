@@ -141,6 +141,7 @@ const native_fetch: typeof fetch = async (
         method,
         headers: Object.fromEntries(headers.entries()),
         agent: init?.agent,
+        timeout: 120_000, // 120s default — Proxmox can take a while under lock contention
     };
 
     const signal = init?.signal ?? request?.signal;
