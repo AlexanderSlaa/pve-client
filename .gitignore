@@ -1,5 +1,4 @@
-# Ignore generated docs and lint reports
-docs/
+# Ignore lint reports
 eslint-report.json
 # Logs
 logs

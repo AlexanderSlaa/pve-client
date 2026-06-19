@@ -40,7 +40,12 @@ export type ClientOptions = (
     /** Defaults to "/api2/json" */
     apiPath?: string;
     fetch?: FetchLike;
-    agent?: Agent
+    agent?: Agent;
+    /**
+     * Socket timeout in ms per request. Defaults to 120s if not set.
+     * Set to 0 for no timeout.
+     */
+    socketTimeout?: number;
 }
 
 type AuthState = { ticket?: string; csrf?: string };
@@ -429,14 +434,15 @@ export class Client {
         const headers = this.authHeaders(a.$headers);
 
 
-        const init: RequestInit & { agent?: Agent | undefined } = {
+        const init: RequestInit & { agent?: Agent | undefined; socketTimeout?: number | undefined } = {
             ...requestInit,
             method: method as string,
             headers: {
                 ...requestInit?.headers,
                 ...headers,
             },
-            agent: this.opts.agent
+            agent: this.opts.agent,
+            socketTimeout: this.opts.socketTimeout,
         };
 
         if (a.$body !== undefined) {

@@ -6,7 +6,13 @@ import {Agent as HttpsAgent} from "node:https";
 
 type AnyAgent = HttpAgent | HttpsAgent;
 
-type NativeFetchInit = RequestInit & { agent?: AnyAgent };
+type NativeFetchInit = RequestInit & {
+    agent?: AnyAgent;
+    /** Socket timeout in ms for this request (defaults to 120s). */
+    socketTimeout?: number;
+};
+
+const DEFAULT_SOCKET_TIMEOUT_MS = 120_000;
 
 function isHttps(url: URL) {
     return url.protocol === "https:";
@@ -141,7 +147,7 @@ const native_fetch: typeof fetch = async (
         method,
         headers: Object.fromEntries(headers.entries()),
         agent: init?.agent,
-        timeout: 120_000, // 120s default — Proxmox can take a while under lock contention
+        timeout: init?.socketTimeout ?? DEFAULT_SOCKET_TIMEOUT_MS,
     };
 
     const signal = init?.signal ?? request?.signal;
