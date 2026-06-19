@@ -82,6 +82,12 @@ export default function lxcFactory(client: Client) {
         remote_migrate: (node: string, vmid: number, ...a: ArgsTuple<PathContext<R<"/nodes/{node}/lxc/{vmid}/remote_migrate", "POST">>>) =>
             client.request("/nodes/{node}/lxc/{vmid}/remote_migrate", "POST", { ...((a[0]) as any), $path: { node, vmid } }),
 
+        exec: (node: string, vmid: number, ...a: ArgsTuple<PathContext<R<"/nodes/{node}/lxc/{vmid}/exec", "POST">>>) =>
+            client.request("/nodes/{node}/lxc/{vmid}/exec", "POST", { ...((a[0]) as any), $path: { node, vmid } }),
+
+        exec_status: (node: string, vmid: number, ...a: ArgsTuple<PathContext<R<"/nodes/{node}/lxc/{vmid}/exec-status", "GET">>>) =>
+            client.request("/nodes/{node}/lxc/{vmid}/exec-status", "GET", { ...((a[0]) as any), $path: { node, vmid } }),
+
         firewall: {
             get:  (node: string, vmid: number) => client.request("/nodes/{node}/lxc/{vmid}/firewall", "GET", { $path: { node, vmid } } as any),
             log:  (node: string, vmid: number, ...a: ArgsTuple<PathContext<R<"/nodes/{node}/lxc/{vmid}/firewall/log",  "GET">>>) =>

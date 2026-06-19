@@ -1524,6 +1524,30 @@ export type NodesAPI = {
             return: unknown
         }
     },
+    "/nodes/{node}/lxc/{vmid}/exec": {
+        "POST": {
+            parameters: {
+                $path: { "node": string; "vmid": number },
+                $body: {
+                    "cmd": string[]; "timeout"?: number
+                },
+            }
+            return: { "pid": number }
+        }
+    },
+    "/nodes/{node}/lxc/{vmid}/exec-status": {
+        "GET": {
+            parameters: {
+                $path: { "node": string; "vmid": number },
+                $query?: { "pid": number },
+            }
+            return: {
+                "exitcode"?: number;
+                "out-data"?: string;
+                "err-data"?: string
+            }
+        }
+    },
     "/nodes/{node}/lxc/{vmid}/feature": {
         "GET": {
             parameters: {

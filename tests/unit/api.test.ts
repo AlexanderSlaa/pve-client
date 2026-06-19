@@ -311,9 +311,9 @@ describe('API Endpoints', () => {
 		expect(result).toBe(mockPci);
 	});
 
-	// Usage: svelte-playground creates LXC containers with nodeApi.lxc.create(node, {$path, $body})
-	// Currently lxc.create is not pre-bound, so callers must pass node as first arg
-	it('calls POST /nodes/{node}/lxc via nodeApi.lxc.create(node, args)', async () => {
+	// Usage: svelte-playground creates LXC containers with nodeApi.lxc.create({$body})
+	// node-scoped API already pre-binds node from nodes.get(node)
+	it('calls POST /nodes/{node}/lxc via nodeApi.lxc.create(args)', async () => {
 		const client = new Client({
 			baseUrl: 'https://pve.local',
 			apiToken: 'token',
@@ -322,7 +322,7 @@ describe('API Endpoints', () => {
 		const requestSpy = vi.spyOn(client, 'request').mockResolvedValue('UPID:pve:001:create' as never);
 
 		const nodeApi = client.api.nodes.get('pve');
-		const upid = await (nodeApi.lxc as Record<string, unknown>).create('pve', {
+		const upid = await (nodeApi.lxc as Record<string, unknown>).create({
 			$body: {
 				vmid: 100,
 				ostemplate: 'local:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst',
@@ -341,9 +341,9 @@ describe('API Endpoints', () => {
 		expect(upid).toBe('UPID:pve:001:create');
 	});
 
-	// Usage: svelte-playground creates VMs with nodeApi.qemu.create(node, {$path, $body})
-	// Currently qemu.create is not pre-bound, so callers must pass node as first arg
-	it('calls POST /nodes/{node}/qemu via nodeApi.qemu.create(node, args)', async () => {
+	// Usage: svelte-playground creates VMs with nodeApi.qemu.create({$body})
+	// node-scoped API already pre-binds node from nodes.get(node)
+	it('calls POST /nodes/{node}/qemu via nodeApi.qemu.create(args)', async () => {
 		const client = new Client({
 			baseUrl: 'https://pve.local',
 			apiToken: 'token',
@@ -352,7 +352,7 @@ describe('API Endpoints', () => {
 		const requestSpy = vi.spyOn(client, 'request').mockResolvedValue('UPID:pve:002:create' as never);
 
 		const nodeApi = client.api.nodes.get('pve');
-		const upid = await (nodeApi.qemu as Record<string, unknown>).create('pve', {
+		const upid = await (nodeApi.qemu as Record<string, unknown>).create({
 			$body: {
 				vmid: 200,
 				name: 'test-vm',
