@@ -455,6 +455,34 @@ export class Client {
         }
 
         const res = await this.fetchImpl(url, init);
+
+        // Proxmox may return 3xx redirects for action endpoints (e.g., /status/stop)
+        // pointing to alternative ports (8443, 443). Rather than following those
+        // (which often fail behind firewalls), treat the request as successfully
+        // queued — Proxmox returns the task UPID in the response or Location header.
+        if (res.status >= 300 && res.status < 400) {
+            const location = res.headers.get("location");
+            // If location contains a task UPID, extract and return it
+            if (location) {
+                const upidMatch = location.match(/UPID:[^?]+/);
+                if (upidMatch) {
+                    return upidMatch[0] as Ret<P, M>;
+                }
+                // Otherwise throw with the redirect info for debugging
+                throw new Error(
+                    `Proxmox returned ${res.status} redirect to ${location}. ` +
+                    `This typically means the request was processed but redirected to an alternative port.`
+                );
+            }
+            // Body may contain task data even on redirect
+            const text = await res.text().catch(() => "");
+            if (text.includes("UPID:")) {
+                const upidMatch = text.match(/UPID:[^<>\s"']+$/);
+                if (upidMatch) return upidMatch[0] as Ret<P, M>;
+            }
+            throw new Error(`Proxmox returned ${res.status} redirect without actionable response: ${text}`);
+        }
+
         if (!res.ok) {
             const text = await res.text().catch(() => "");
             throw new Error(`HTTP ${res.status} ${res.statusText}: ${text}`);
