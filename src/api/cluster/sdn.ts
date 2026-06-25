@@ -1,6 +1,6 @@
 import type { Client } from "../../index.js";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 type A = any;
 
 export default function sdnFactory(client: Client) {

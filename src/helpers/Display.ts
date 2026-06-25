@@ -130,8 +130,8 @@ export class Display {
                 },
                 $body: {
                     // Proxmox form parsing for this endpoint expects numeric boolean values.
-                    websocket: true as any,
-                },
+                    websocket: true,
+                } as Record<string, unknown>,
             }
         );
         this.cachedTicket = ticket as DisplayTicket;
