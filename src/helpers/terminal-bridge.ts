@@ -51,11 +51,11 @@ export function bridgeTerminalSessionToSocket(
   const promptNudgeInput = options.promptNudgeInput ?? "\r";
   const promptNudgeMaxOutputBytes = options.promptNudgeMaxOutputBytes ?? 8;
   const closeCodeOnSessionClose = options.closeCodeOnSessionClose ?? 1001;
-  const coalesceNavigationRepeats = options.coalesceNavigationRepeats ?? false;
+  const coalesceNavigationRepeats = options.coalesceNavigationRepeats ?? true;
   const navigationRepeatCoalesceMs = options.navigationRepeatCoalesceMs ?? 8;
   const allowTextInputFrames = options.allowTextInputFrames ?? true;
-  const enableInputRepairCompatibility = options.enableInputRepairCompatibility ?? false;
-  const normalizeSs3CursorKeysEnabled = options.normalizeSs3CursorKeys ?? false;
+  const enableInputRepairCompatibility = options.enableInputRepairCompatibility ?? true;
+  const normalizeSs3CursorKeysEnabled = options.normalizeSs3CursorKeys ?? true;
   const normalizeSs3CursorKeysMode = options.normalizeSs3CursorKeysMode ?? "all";
   const simplifyModifiedCursorKeysEnabled = options.simplifyModifiedCursorKeys ?? false;
   const traceEnabled = options.trace ?? false;
@@ -111,9 +111,6 @@ export function bridgeTerminalSessionToSocket(
     payload: Buffer,
     meta: { binary: boolean; normalized: boolean; simplified: boolean; repaired: boolean }
   ) => {
-    if (hasNavigationSequence(payload)) {
-      lastNavigationInputAt = Date.now();
-    }
     trace(
       "stdin-write",
       `bytes=${payload.byteLength} binary=${meta.binary} repaired=${meta.repaired} normalized=${meta.normalized} simplified=${meta.simplified} compat=${enableInputRepairCompatibility} head=${hexPreview(payload)}`
@@ -242,6 +239,9 @@ export function bridgeTerminalSessionToSocket(
         : simplifiedPayload;
       const payload = repairedPayload;
       const repaired = payload.compare(simplifiedPayload) !== 0;
+      if (hasNavigationSequence(payload)) {
+        lastNavigationInputAt = Date.now();
+      }
       sawUserStdin = true;
       enqueueOrWritePayload(payload, {
         binary: true,
@@ -322,6 +322,9 @@ export function bridgeTerminalSessionToSocket(
       : simplifiedTextPayload;
     const normalizedTextPayload = repairedTextPayload;
     const repaired = normalizedTextPayload.compare(simplifiedTextPayload) !== 0;
+    if (hasNavigationSequence(normalizedTextPayload)) {
+      lastNavigationInputAt = Date.now();
+    }
     enqueueOrWritePayload(normalizedTextPayload, {
       binary: false,
       repaired,

@@ -71,7 +71,8 @@ describe('Terminal compatibility repair', () => {
     bridgeTerminalSessionToSocket(session, browserSocket, {
       promptNudgeMs: 60_000,
       normalizeSs3CursorKeys: true,
-      enableInputRepairCompatibility: true
+      enableInputRepairCompatibility: true,
+      coalesceNavigationRepeats: false
     });
 
     await session.start();

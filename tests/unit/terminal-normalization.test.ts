@@ -25,7 +25,12 @@ describe('Terminal input normalization & coalescing', () => {
     );
 
     const browserSocket = new mockedWs.MockWebSocket('ws://browser') as never;
-    bridgeTerminalSessionToSocket(session, browserSocket, { promptNudgeMs: 60_000 });
+    bridgeTerminalSessionToSocket(session, browserSocket, {
+      promptNudgeMs: 60_000,
+      coalesceNavigationRepeats: false,
+      normalizeSs3CursorKeys: false,
+      enableInputRepairCompatibility: false
+    });
 
     await session.start();
     socket.readyState = mockedWs.MockWebSocket.OPEN;
@@ -66,7 +71,12 @@ describe('Terminal input normalization & coalescing', () => {
     );
 
     const browserSocket = new mockedWs.MockWebSocket('ws://browser') as never;
-    bridgeTerminalSessionToSocket(session, browserSocket, { promptNudgeMs: 60_000 });
+    bridgeTerminalSessionToSocket(session, browserSocket, {
+      promptNudgeMs: 60_000,
+      coalesceNavigationRepeats: false,
+      normalizeSs3CursorKeys: false,
+      enableInputRepairCompatibility: false
+    });
 
     await session.start();
     socket.readyState = mockedWs.MockWebSocket.OPEN;
@@ -215,6 +225,8 @@ describe('Terminal input normalization & coalescing', () => {
   });
 
   it('coalesces split ANSI key sequences across input frames', async () => {
+    vi.useFakeTimers();
+
     const socket = new mockedWs.MockWebSocket('wss://pve.local/ws');
     const session = new TerminalSession(
       async () => ({
@@ -252,15 +264,21 @@ describe('Terminal input normalization & coalescing', () => {
     browserSocket.emit('message', Buffer.from('\u001b[3', 'utf8'), true);
     browserSocket.emit('message', Buffer.from('~', 'utf8'), true);
 
+    await vi.advanceTimersByTimeAsync(10);
+
     const writtenFrames = socket.sent
       .map((frame) => Buffer.isBuffer(frame) ? frame : Buffer.from(frame, 'utf8'))
       .filter((frame) => frame.toString('utf8').startsWith('0:'));
 
     expect(writtenFrames.find((frame) => frame.equals(Buffer.from('0:3:\u001b[D', 'utf8')))).toBeDefined();
     expect(writtenFrames.find((frame) => frame.equals(Buffer.from('0:4:\u001b[3~', 'utf8')))).toBeDefined();
+
+    vi.useRealTimers();
   });
 
   it('coalesces split home key prefixes across input frames', async () => {
+    vi.useFakeTimers();
+
     const socket = new mockedWs.MockWebSocket('wss://pve.local/ws');
     const session = new TerminalSession(
       async () => ({
@@ -295,14 +313,20 @@ describe('Terminal input normalization & coalescing', () => {
     browserSocket.emit('message', Buffer.from('\u001b[', 'utf8'), true);
     browserSocket.emit('message', Buffer.from('H', 'utf8'), true);
 
+    await vi.advanceTimersByTimeAsync(10);
+
     const writtenFrames = socket.sent
       .map((frame) => Buffer.isBuffer(frame) ? frame : Buffer.from(frame, 'utf8'))
       .filter((frame) => frame.toString('utf8').startsWith('0:'));
 
     expect(writtenFrames.find((frame) => frame.equals(Buffer.from('0:3:\u001b[H', 'utf8')))).toBeDefined();
+
+    vi.useRealTimers();
   });
 
   it('coalesces split csi arrow keys across input frames', async () => {
+    vi.useFakeTimers();
+
     const socket = new mockedWs.MockWebSocket('wss://pve.local/ws');
     const session = new TerminalSession(
       async () => ({
@@ -337,11 +361,15 @@ describe('Terminal input normalization & coalescing', () => {
     browserSocket.emit('message', Buffer.from('\u001b[', 'utf8'), true);
     browserSocket.emit('message', Buffer.from('D', 'utf8'), true);
 
+    await vi.advanceTimersByTimeAsync(10);
+
     const writtenFrames = socket.sent
       .map((frame) => Buffer.isBuffer(frame) ? frame : Buffer.from(frame, 'utf8'))
       .filter((frame) => frame.toString('utf8').startsWith('0:'));
 
     expect(writtenFrames.find((frame) => frame.equals(Buffer.from('0:3:\u001b[D', 'utf8')))).toBeDefined();
+
+    vi.useRealTimers();
   });
 
   it('does not buffer non-key CSI fragments ahead of later input', async () => {
