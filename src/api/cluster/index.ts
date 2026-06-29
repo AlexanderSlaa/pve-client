@@ -1,23 +1,23 @@
 
 
 // Default export: Cluster function
-import acmeFactory from "./acme";
-import backupFactory from "./backup";
-import cephFactory from "./ceph";
-import firewallFactory from "./firewall";
-import haFactory from "./ha";
-import configFactory from "./config";
-import jobsFactory from "./jobs";
-import mappingFactory from "./mapping";
-import metricsFactory from "./metrics";
-import notificationsFactory from "./notifications";
-import optionsFactory from "./options";
-import replicationFactory from "./replication";
-import resourcesFactory from "./resources";
-import sdnFactory from "./sdn";
-import tasksFactory from "./tasks";
-import type { Client } from "../../index";
-import type { ClusterAPI } from "./types";
+import acmeFactory from "./acme.js";
+import backupFactory from "./backup.js";
+import cephFactory from "./ceph.js";
+import firewallFactory from "./firewall.js";
+import haFactory from "./ha.js";
+import configFactory from "./config.js";
+import jobsFactory from "./jobs.js";
+import mappingFactory from "./mapping.js";
+import metricsFactory from "./metrics.js";
+import notificationsFactory from "./notifications.js";
+import optionsFactory from "./options.js";
+import replicationFactory from "./replication.js";
+import resourcesFactory from "./resources.js";
+import sdnFactory from "./sdn.js";
+import tasksFactory from "./tasks.js";
+import type { Client } from "../../index.js";
+import type { ClusterAPI } from "./types.js";
 
 function Cluster(client: Client) {
 	return {

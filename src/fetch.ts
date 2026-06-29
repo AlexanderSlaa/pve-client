@@ -6,7 +6,13 @@ import {Agent as HttpsAgent} from "node:https";
 
 type AnyAgent = HttpAgent | HttpsAgent;
 
-type NativeFetchInit = RequestInit & { agent?: AnyAgent };
+type NativeFetchInit = RequestInit & {
+    agent?: AnyAgent;
+    /** Socket timeout in ms for this request (defaults to 120s). */
+    socketTimeout?: number;
+};
+
+const DEFAULT_SOCKET_TIMEOUT_MS = 120_000;
 
 function isHttps(url: URL) {
     return url.protocol === "https:";
@@ -21,7 +27,7 @@ function mergeHeaders(base?: HeadersInit, extra?: HeadersInit): Headers {
     return h;
 }
 
-async function bodyToBuffer(body: unknown): Promise<Buffer | undefined> {
+export async function bodyToBuffer(body: unknown): Promise<Buffer | undefined> {
     if (body == null) return undefined;
 
     // String
@@ -53,9 +59,14 @@ async function bodyToBuffer(body: unknown): Promise<Buffer | undefined> {
     }
 
     // Node Readable -> buffer (basic support)
-    if (body && typeof (body as any).pipe === "function") {
+    if (
+        typeof body === 'object' &&
+        body !== null &&
+        'pipe' in body &&
+        typeof (body as { pipe: unknown }).pipe === 'function'
+    ) {
         const chunks: Buffer[] = [];
-        for await (const chunk of body as any as AsyncIterable<Buffer | string>) {
+        for await (const chunk of body as unknown as AsyncIterable<Buffer | string>) {
             chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
         }
         return Buffer.concat(chunks);
@@ -136,6 +147,7 @@ const native_fetch: typeof fetch = async (
         method,
         headers: Object.fromEntries(headers.entries()),
         agent: init?.agent,
+        timeout: init?.socketTimeout ?? DEFAULT_SOCKET_TIMEOUT_MS,
     };
 
     const signal = init?.signal ?? request?.signal;
@@ -160,12 +172,12 @@ const native_fetch: typeof fetch = async (
             const statusText = res.statusMessage ?? "";
 
             // Convert Node Readable -> Web ReadableStream for Response
-            const webBody = (Readable as any).toWeb
-                ? (Readable as any).toWeb(res)
-                : undefined;
+            const webBody = typeof (Readable as unknown as { toWeb?: (r: unknown) => unknown }).toWeb === "function"
+                ? ((Readable as unknown as { toWeb(r: unknown): unknown }).toWeb(res) as ReadableStream<Uint8Array>)
+                : null;
 
             // Note: Response() accepts null body; for HEAD responses body is empty anyway.
-            const response = new Response(webBody ?? null, {
+            const response = new Response(webBody, {
                 status,
                 statusText,
                 headers: resHeaders,

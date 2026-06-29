@@ -144,7 +144,7 @@ await client.login(); // exchanges credentials for a ticket + CSRF token
 
 ### Using `.env`
 
-```env
+```bash
 PVE_BASE_URL=https://pve.example.com:8006
 PVE_API_TOKEN=PVEAPIToken=root@pam!mytoken=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ```
@@ -364,7 +364,11 @@ npm run example/terminal
 
 Requires username/password auth. Press `Ctrl-]` to disconnect.
 
+Terminal resize is forwarded automatically.
+
 ### Live task feed
+
+There is also a terminal example that continuously displays cluster tasks:
 
 ```bash
 npm run example/tasks
@@ -372,7 +376,7 @@ npm run example/tasks
 
 **`.env` reference:**
 
-```env
+```bash
 # required
 PVE_BASE_URL=https://pve.example.com:8006
 
@@ -428,6 +432,22 @@ Contributions are welcome! Here is how you can help:
 The type definitions are generated from the official Proxmox spec in `res/apidoc.js`. If you find a missing or incorrect endpoint, open an issue referencing the Proxmox API path and the expected parameters/return shape.
 
 ---
+
+## Changelog
+
+### [1.2.0] - 2026-05-07
+
+#### Fixed
+- Corrected README example for path-based endpoints — replaced invalid `.status.get()` call with valid `nodes.get(node).qemu.list()` usage
+
+### [1.1.0] - 2026-04-09
+
+#### Added
+- LXC and QEMU methods on node (`nodes.get(node).qemu`, `nodes.get(node).lxc`)
+
+### [1.0.0] - 2026-02-25
+
+- Initial release
 
 ## License
 

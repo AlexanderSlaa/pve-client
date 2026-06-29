@@ -1,5 +1,5 @@
-import {Client} from "../index";
-import type {ArgsTuple} from "./index";
+import {Client} from "../index.js";
+import type {ArgsTuple} from "./index.js";
 
 export type VersionAPI = {
     "/version": {

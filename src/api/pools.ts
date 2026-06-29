@@ -1,6 +1,6 @@
-import {Client} from "../index";
-import type {ArgsTuple} from "./index";
-import {PathContext} from "./index";
+import {Client} from "../index.js";
+import type {ArgsTuple} from "./index.js";
+import {PathContext} from "./index.js";
 
 export type PoolsAPI = {
     "/pools": {

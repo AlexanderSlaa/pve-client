@@ -1,17 +1,14 @@
 ## [1.2.1](https://github.com/AlexanderSlaa/pve-client/compare/v1.2.0...v1.2.1) (2026-06-01)
 
-
 ### Bug Fixes
 
 * remove unnecessary `as any` casts and improve type consistency ([3e23405](https://github.com/AlexanderSlaa/pve-client/commit/3e234050b81f322adda5a12dd7fdd30a32a988b4))
 
 # [1.2.0](https://github.com/AlexanderSlaa/pve-client/compare/v1.1.0...v1.2.0) (2026-05-29)
 
-
 ### Bug Fixes
 
 * update README.md documentation with new features and complete feature gap. ([b9bcb4f](https://github.com/AlexanderSlaa/pve-client/commit/b9bcb4f7b43df20179b34b7b5b5799cf59712276))
-
 
 ### Features
 

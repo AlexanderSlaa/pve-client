@@ -1,7 +1,7 @@
 // Factory for /nodes/{node}/hardware endpoints
-import { Client } from "../../index";
-import type { NodesAPI } from "./types";
-import type { ArgsTuple } from "../index";
+import { Client } from "../../index.js";
+import type { NodesAPI } from "./types.js";
+import type { ArgsTuple } from "../index.js";
 
 export default function hardwareFactory(client: Client) {
     return {

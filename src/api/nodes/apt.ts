@@ -1,8 +1,8 @@
 // Factory for /nodes/{node}/apt endpoints
-import { Client } from "../../index";
+import { Client } from "../../index.js";
 
-import type { NodesAPI } from "./types";
-import type { ArgsTuple } from "../index";
+import type { NodesAPI } from "./types.js";
+import type { ArgsTuple } from "../index.js";
 
 export default function aptFactory(client: Client) {
     function stripPath<T extends { $path?: any }>(obj: T | undefined): Omit<T, "$path"> | undefined {

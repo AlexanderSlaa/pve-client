@@ -1,6 +1,6 @@
-import type { Client } from "../../index";
-import type { ClusterAPI } from "./types";
-import type { ArgsTuple } from "../index";
+import type { Client } from "../../index.js";
+import type { ClusterAPI } from "./types.js";
+import type { ArgsTuple } from "../index.js";
 
 export default function statusFactory(client: Client) {
     return {

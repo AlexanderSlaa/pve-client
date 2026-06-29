@@ -1,24 +1,24 @@
-export { default as hardwareFactory } from "./hardware";
-export { default as aptFactory } from "./apt";
-export { default as cephFactory } from "./ceph";
-export { default as lxcFactory } from "./lxc";
-export { default as qemuFactory } from "./qemu";
-export { default as firewallFactory } from "./firewall";
-export { default as disksFactory } from "./disks";
+export { default as hardwareFactory } from "./hardware.js";
+export { default as aptFactory } from "./apt.js";
+export { default as cephFactory } from "./ceph.js";
+export { default as lxcFactory } from "./lxc.js";
+export { default as qemuFactory } from "./qemu.js";
+export { default as firewallFactory } from "./firewall.js";
+export { default as disksFactory } from "./disks.js";
 
 
-import aptFactory from "./apt";
-import cephFactory from "./ceph";
-import disksFactory from "./disks";
-import firewallFactory from "./firewall";
-import hardwareFactory from "./hardware";
-import lxcFactory from "./lxc";
-import qemuFactory from "./qemu";
-import type { Client } from "../../index";
-import type { NodesAPI } from "./types";
-import nodeStorageFactory from "./storage";
+import aptFactory from "./apt.js";
+import cephFactory from "./ceph.js";
+import disksFactory from "./disks.js";
+import firewallFactory from "./firewall.js";
+import hardwareFactory from "./hardware.js";
+import lxcFactory from "./lxc.js";
+import qemuFactory from "./qemu.js";
+import type { Client } from "../../index.js";
+import type { NodesAPI } from "./types.js";
+import nodeStorageFactory from "./storage.js";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 type A = any;
 
 function Nodes(client: Client) {
@@ -253,8 +253,9 @@ function Nodes(client: Client) {
 						mtunnel:         (args?: A) => lxcApi.mtunnel(node, vmid, args),
 						mtunnelwebsocket:(args?: A) => lxcApi.mtunnelwebsocket(node, vmid, args),
 						remote_migrate:  (args?: A) => lxcApi.remote_migrate(node, vmid, args),
-						destroy:    (args?: A) => lxcApi.delete(node, vmid, args),
-						diridx:     (args?: A) => lxcApi.get(node, vmid, args),
+						exec:          (args: A)  => lxcApi.exec(node, vmid, args),
+						exec_status:   (args?: A) => lxcApi.exec_status(node, vmid, args),
+						destroy:    (args?: A) => lxcApi.delete(node, vmid, args),				delete:     (args?: A) => lxcApi.delete(node, vmid, args),						diridx:     (args?: A) => lxcApi.get(node, vmid, args),
 						clone:      (args: A)  => lxcApi.clone(node, vmid, args),
 						interfaces: ()         => lxcApi.interfaces(node, vmid),
 						migrate:    (args: A)  => lxcApi.migrate(node, vmid, args),
@@ -369,6 +370,7 @@ function Nodes(client: Client) {
 						mtunnelwebsocket: (args?: A) => qemuApi.mtunnelwebsocket(node, vmid, args),
 						remote_migrate:   (args?: A) => qemuApi.remote_migrate(node, vmid, args),
 						destroy:     (args?: A) => qemuApi.delete(node, vmid, args),
+						delete:      (args?: A) => qemuApi.delete(node, vmid, args),
 						diridx:      (args?: A) => qemuApi.get(node, vmid, args),
 						clone:       (args: A)  => qemuApi.clone(node, vmid, args),
 						migrate:     (args: A)  => qemuApi.migrate(node, vmid, args),

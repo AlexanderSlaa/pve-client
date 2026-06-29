@@ -1,8 +1,8 @@
 // Factory for /nodes/{node}/storage endpoints
-import type { Client } from "../../index";
-import type { NodesAPI } from "./types";
+import type { Client } from "../../index.js";
+import type { NodesAPI } from "./types.js";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 type A = any;
 
 export default function nodeStorageFactory(client: Client, node: string) {

@@ -2,13 +2,13 @@
  * Tests for node sub-factories: apt, ceph, disks, firewall, hardware, storage
  */
 import { describe, expect, it, vi } from "vitest";
-import aptFactory from "./apt";
-import cephFactory from "./ceph";
-import disksFactory from "./disks";
-import firewallFactory from "./firewall";
-import hardwareFactory from "./hardware";
-import nodeStorageFactory from "./storage";
-import { Client } from "../../index";
+import aptFactory from "./apt.js";
+import cephFactory from "./ceph.js";
+import disksFactory from "./disks.js";
+import firewallFactory from "./firewall.js";
+import hardwareFactory from "./hardware.js";
+import nodeStorageFactory from "./storage.js";
+import { Client } from "../../index.js";
 
 function makeClient() {
     return new Client({ baseUrl: "https://pve.local", apiToken: "token", fetch: vi.fn() });

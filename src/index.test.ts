@@ -1,5 +1,5 @@
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
-import {Client} from "./index";
+import {Client} from "./index.js";
 
 describe("Client", () => {
     beforeEach(() => {

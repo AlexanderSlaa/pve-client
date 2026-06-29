@@ -1,3 +1,5 @@
+# Ignore lint reports
+eslint-report.json
 # Logs
 logs
 *.log

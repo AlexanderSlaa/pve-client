@@ -1,0 +1,20 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["src/index.ts"],
+  "entryPointStrategy": "resolve",
+  "out": "docs",
+  "exclude": ["**/*.spec.ts", "**/*.test.ts"],
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeInternal": true,
+  "skipErrorChecking": true,
+  "gitRevision": "main",
+  "validation": {
+    "notExported": false
+  },
+  "includeVersion": true,
+  "categorizeByGroup": true,
+  "searchInComments": true,
+  "maxTypeConversionDepth": 10,
+  "sort": ["source-order"]
+}
