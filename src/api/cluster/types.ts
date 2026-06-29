@@ -3242,12 +3242,17 @@ export type ClusterAPI = {
             parameters: {
                 $path: {
                     "id": string;
+                    "url_seq": string;
                 };
             }
             return: Record<string, unknown>
         },
         "PUT": {
             parameters: {
+                $path: {
+                    "id": string;
+                    "url_seq": string;
+                };
                 $body?: {
                     "action"?: "permit" | "deny";
                     "delete"?: "le" | "ge" | "seq"[];
@@ -3265,6 +3270,7 @@ export type ClusterAPI = {
             parameters: {
                 $path: {
                     "id": string;
+                    "url_seq": string;
                 };
                 $query?: {
                     "lock-token"?: string;

@@ -1,11 +1,32 @@
 import { describe, expect, it, vi } from "vitest";
 import { Client } from "../../index";
+import type { NodesAPI } from "./types";
 
 function makeClient() {
     return new Client({ baseUrl: "https://pve.local", apiToken: "token", fetch: vi.fn() });
 }
 
 describe("Nodes factory", () => {
+    it("keeps selected node helpers typed", () => {
+        const client = makeClient();
+
+        if (false) {
+            const status: Promise<NodesAPI["/nodes/{node}/status"]["GET"]["return"]> =
+                client.api.nodes.get("pve1").status.get();
+            void status;
+            void client.request("/nodes/{node}/qemu", "POST", {
+                $path: { node: "pve1" },
+                $body: { vmid: 200, start: 1, protection: 0 },
+            });
+
+            // @ts-expect-error direct generated request boolean fields accept boolean, 0, or 1, but not arbitrary numbers.
+            void client.request("/nodes/{node}/qemu", "POST", {
+                $path: { node: "pve1" },
+                $body: { vmid: 200, start: 2 },
+            });
+        }
+    });
+
     it("list → GET /nodes", async () => {
         const client = makeClient();
         const spy = vi.spyOn(client, "request").mockResolvedValue([] as never);

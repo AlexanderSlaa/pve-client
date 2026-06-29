@@ -34,6 +34,9 @@ export default function qemuFactory(client: Client) {
         migrate: (node: string, vmid: number, ...a: ArgsTuple<PathContext<R<"/nodes/{node}/qemu/{vmid}/migrate", "POST">>>) =>
             client.request("/nodes/{node}/qemu/{vmid}/migrate", "POST", { ...((a[0]) as any), $path: { node, vmid } }),
 
+        migrate_info: (node: string, vmid: number, ...a: ArgsTuple<PathContext<R<"/nodes/{node}/qemu/{vmid}/migrate", "GET">>>) =>
+            client.request("/nodes/{node}/qemu/{vmid}/migrate", "GET", { ...((a[0]) as any), $path: { node, vmid } }),
+
         feature: (node: string, vmid: number, ...a: ArgsTuple<PathContext<R<"/nodes/{node}/qemu/{vmid}/feature", "GET">>>) =>
             client.request("/nodes/{node}/qemu/{vmid}/feature", "GET", { ...((a[0]) as any), $path: { node, vmid } }),
 
@@ -79,6 +82,9 @@ export default function qemuFactory(client: Client) {
         // Agent sub-commands
         agent: (node: string, vmid: number, ...a: ArgsTuple<PathContext<R<"/nodes/{node}/qemu/{vmid}/agent", "GET">>>) =>
             client.request("/nodes/{node}/qemu/{vmid}/agent", "GET", { ...((a[0]) as any), $path: { node, vmid } }),
+
+        agent_command: (node: string, vmid: number, ...a: ArgsTuple<PathContext<R<"/nodes/{node}/qemu/{vmid}/agent", "POST">>>) =>
+            client.request("/nodes/{node}/qemu/{vmid}/agent", "POST", { ...((a[0]) as any), $path: { node, vmid } }),
 
         agent_exec: (node: string, vmid: number, ...a: ArgsTuple<PathContext<R<"/nodes/{node}/qemu/{vmid}/agent/exec", "POST">>>) =>
             client.request("/nodes/{node}/qemu/{vmid}/agent/exec", "POST", { ...((a[0]) as any), $path: { node, vmid } }),

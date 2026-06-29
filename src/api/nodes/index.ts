@@ -15,16 +15,29 @@ import hardwareFactory from "./hardware";
 import lxcFactory from "./lxc";
 import qemuFactory from "./qemu";
 import type { Client } from "../../index";
+import type { HttpMethod, RequestInput } from "../index";
 import type { NodesAPI } from "./types";
 import nodeStorageFactory from "./storage";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type A = any;
+type NodePath = keyof NodesAPI;
+type NodeMethod<P extends NodePath> = Extract<keyof NodesAPI[P], HttpMethod>;
+type NodeParams<P extends NodePath, M extends NodeMethod<P>> =
+	NodesAPI[P][M] extends { parameters: infer T } ? RequestInput<T> : never;
+type NodeReturn<P extends NodePath, M extends NodeMethod<P>> =
+	NodesAPI[P][M] extends { return: infer T } ? T : never;
+type A = {
+	$query?: Record<string, unknown>;
+	$body?: Record<string, unknown>;
+	$headers?: Record<string, string | undefined>;
+};
 
 function Nodes(client: Client) {
-	// Shortcut for untyped calls
-	const r = (path: string, method: string, args?: A) =>
-		(client.request as A)(path, method, args ?? {});
+	const r = <P extends NodePath, M extends NodeMethod<P>>(
+		path: P,
+		method: M,
+		args?: NodeParams<P, M> | (A & { $path?: Record<string, string | number> })
+	): Promise<NodeReturn<P, M>> =>
+		client.request(path, method as never, (args ?? {}) as never) as Promise<NodeReturn<P, M>>;
 
 	const qemuApi = qemuFactory(client);
 	const lxcApi = lxcFactory(client);
@@ -43,8 +56,8 @@ function Nodes(client: Client) {
 
 				// ── APT ─────────────────────────────────────────────────────
 				apt: {
-					index:        (args?: A) => aptApi.index(node, args),
-					changelog:    (args?: A) => aptApi.changelog(node, args),
+					index:        (args?: A) => aptApi.index(node, args as never),
+					changelog:    (args?: A) => aptApi.changelog(node, args as never),
 					repositories: (args?: A) => r("/nodes/{node}/apt/repositories", "GET", { ...args, $path: { node } }),
 					update:       (args?: A) => r("/nodes/{node}/apt/update",       "POST", { ...args, $path: { node } }),
 					versions:     (args?: A) => r("/nodes/{node}/apt/versions",     "GET",  { ...args, $path: { node } }),
@@ -64,8 +77,8 @@ function Nodes(client: Client) {
 
 				// ── Ceph ────────────────────────────────────────────────────
 				ceph: {
-					index:  (args?: A) => cephApi.index(node, args),
-					cfg:    (args?: A) => cephApi.cfg(node, args),
+					index:  (args?: A) => cephApi.index(node, args as never),
+					cfg:    (args?: A) => cephApi.cfg(node, args as never),
 					cfg_db:    () => r("/nodes/{node}/ceph/cfg/db",    "GET",  { $path: { node } }),
 					cfg_raw:   () => r("/nodes/{node}/ceph/cfg/raw",   "GET",  { $path: { node } }),
 					cfg_value: (args?: A) => r("/nodes/{node}/ceph/cfg/value", "GET", { ...args, $path: { node } }),
@@ -157,9 +170,9 @@ function Nodes(client: Client) {
 
 				// ── Disks ───────────────────────────────────────────────────
 				disks: {
-					index:    () => disksApi.list(node, undefined as any),
-					list:     (args?: A) => disksApi.list(node, args),
-					list_disks: (args?: A) => disksApi.list_disks(node, args),
+					index:    () => disksApi.list(node, {} as never),
+					list:     (args?: A) => disksApi.list(node, args as never),
+					list_disks: (args?: A) => disksApi.list_disks(node, args as never),
 					directory: {
 						index:  () => r("/nodes/{node}/disks/directory", "GET", { $path: { node } }),
 						create: (args?: A) => r("/nodes/{node}/disks/directory", "POST", { ...args, $path: { node } }),
@@ -205,7 +218,7 @@ function Nodes(client: Client) {
 
 				// ── Firewall ────────────────────────────────────────────────
 				firewall: {
-					get:     (args?: A) => firewallApi.get(node, args),
+					get:     (args?: A) => firewallApi.get(node, args as never),
 					log:     (args?: A) => r("/nodes/{node}/firewall/log",     "GET", { ...args, $path: { node } }),
 					options: {
 						get: () => r("/nodes/{node}/firewall/options", "GET", { $path: { node } }),
@@ -224,15 +237,15 @@ function Nodes(client: Client) {
 
 				// ── Hardware ────────────────────────────────────────────────
 				hardware: {
-					get: (args?: A) => hardwareApi.get(node, args),
+					get: (args?: A) => hardwareApi.get(node, args as never),
 					pci: {
-						get: (args?: A) => hardwareApi.pci.get(node, args),
+						get: (args?: A) => hardwareApi.pci.get(node, args as never),
 						pci_id: (pciId: string) => ({
 							get:  () => r("/nodes/{node}/hardware/pci/{pci-id-or-mapping}", "GET", { $path: { node, "pci-id-or-mapping": pciId } }),
 							mdev: () => r("/nodes/{node}/hardware/pci/{pci-id-or-mapping}/mdev", "GET", { $path: { node, "pci-id-or-mapping": pciId } }),
 						}),
 					},
-					usb: { get: (args?: A) => hardwareApi.usb.get(node, args) },
+					usb: { get: (args?: A) => hardwareApi.usb.get(node, args as never) },
 				},
 
 				// ── Hosts ───────────────────────────────────────────────────
@@ -246,76 +259,78 @@ function Nodes(client: Client) {
 
 				// ── LXC ─────────────────────────────────────────────────────
 				lxc: {
-					list:   (args?: A) => lxcApi.list(node, args),
-					create: (args?: A) => lxcApi.create(node, args),
+					list:   (args?: A) => lxcApi.list(node, args as never),
+					create: (args?: A) => lxcApi.create(node, args as never),
 					id: (vmid: number) => ({
 						status_index:    () => lxcApi.status_index(node, vmid),
-						mtunnel:         (args?: A) => lxcApi.mtunnel(node, vmid, args),
-						mtunnelwebsocket:(args?: A) => lxcApi.mtunnelwebsocket(node, vmid, args),
-						remote_migrate:  (args?: A) => lxcApi.remote_migrate(node, vmid, args),
-						destroy:    (args?: A) => lxcApi.delete(node, vmid, args),
-						diridx:     (args?: A) => lxcApi.get(node, vmid, args),
-						clone:      (args: A)  => lxcApi.clone(node, vmid, args),
+						mtunnel:         (args?: A) => lxcApi.mtunnel(node, vmid, args as never),
+						mtunnelwebsocket:(args?: A) => lxcApi.mtunnelwebsocket(node, vmid, args as never),
+						remote_migrate:  (args?: A) => lxcApi.remote_migrate(node, vmid, args as never),
+						destroy:    (args?: A) => lxcApi.delete(node, vmid, args as never),
+						diridx:     (args?: A) => lxcApi.get(node, vmid, args as never),
+						clone:      (args: A)  => lxcApi.clone(node, vmid, args as never),
 						interfaces: ()         => lxcApi.interfaces(node, vmid),
-						migrate:    (args: A)  => lxcApi.migrate(node, vmid, args),
-						move_volume:(args: A)  => lxcApi.move_volume(node, vmid, args),
-						resize:     (args: A)  => lxcApi.resize(node, vmid, args),
+						migrate:    (args: A)  => lxcApi.migrate(node, vmid, args as never),
+						migrate_info: (args?: A) => lxcApi.migrate_info(node, vmid, args as never),
+						move_volume:(args: A)  => lxcApi.move_volume(node, vmid, args as never),
+						resize:     (args: A)  => lxcApi.resize(node, vmid, args as never),
 						template:   ()         => lxcApi.template(node, vmid),
-						feature:    (args?: A) => lxcApi.feature(node, vmid, args),
+						feature:    (args?: A) => lxcApi.feature(node, vmid, args as never),
 						pending:    ()         => lxcApi.pending(node, vmid),
-						rrd:        (args?: A) => lxcApi.rrd(node, vmid, args),
-						rrddata:    (args?: A) => lxcApi.rrddata(node, vmid, args),
-						spiceproxy: (args?: A) => lxcApi.spiceproxy(node, vmid, args),
-						termproxy:  (args?: A) => lxcApi.termproxy(node, vmid, args),
-						vncproxy:   (args?: A) => lxcApi.vncproxy(node, vmid, args),
-						vncwebsocket:(args?: A) => lxcApi.vncwebsocket(node, vmid, args),
+						rrd:        (args?: A) => lxcApi.rrd(node, vmid, args as never),
+						rrddata:    (args?: A) => lxcApi.rrddata(node, vmid, args as never),
+						spiceproxy: (args?: A) => lxcApi.spiceproxy(node, vmid, args as never),
+						termproxy:  (args?: A) => lxcApi.termproxy(node, vmid, args as never),
+						vncproxy:   (args?: A) => lxcApi.vncproxy(node, vmid, args as never),
+						vncwebsocket:(args?: A) => lxcApi.vncwebsocket(node, vmid, args as never),
 						config: {
-							get:    (args?: A) => lxcApi.config.get(node, vmid, args),
-							update: (args?: A) => lxcApi.config.put(node, vmid, args),
+							get:    (args?: A) => lxcApi.config.get(node, vmid, args as never),
+							update: (args?: A) => lxcApi.config.put(node, vmid, args as never),
 						},
 						firewall: {
 							get:     () => lxcApi.firewall.get(node, vmid),
-							log:     (args?: A) => lxcApi.firewall.log(node, vmid, args),
-							refs:    (args?: A) => lxcApi.firewall.refs(node, vmid, args),
+							log:     (args?: A) => lxcApi.firewall.log(node, vmid, args as never),
+							refs:    (args?: A) => lxcApi.firewall.refs(node, vmid, args as never),
 							options: {
 								get: () => lxcApi.firewall.options.get(node, vmid),
-								set: (args?: A) => lxcApi.firewall.options.set(node, vmid, args),
+								set: (args?: A) => lxcApi.firewall.options.set(node, vmid, args as never),
 							},
 							aliases: {
 								list:   () => lxcApi.firewall.aliases.list(node, vmid),
-								create: (args: A) => lxcApi.firewall.aliases.create(node, vmid, args),
+								create: (args: A) => lxcApi.firewall.aliases.create(node, vmid, args as never),
 								name:   (name: string) => lxcApi.firewall.aliases.name(node, vmid, name),
 							},
 							ipset: {
 								list:   () => lxcApi.firewall.ipset.list(node, vmid),
-								create: (args: A) => lxcApi.firewall.ipset.create(node, vmid, args),
+								create: (args: A) => lxcApi.firewall.ipset.create(node, vmid, args as never),
 								name:   (name: string) => lxcApi.firewall.ipset.name(node, vmid, name),
 							},
 							rules: {
 								list:   () => lxcApi.firewall.rules.list(node, vmid),
-								create: (args: A) => lxcApi.firewall.rules.create(node, vmid, args),
+								create: (args: A) => lxcApi.firewall.rules.create(node, vmid, args as never),
 								pos:    (pos: number) => lxcApi.firewall.rules.pos(node, vmid, pos),
 							},
 						},
 						snapshot: {
 							list:     () => lxcApi.snapshot.list(node, vmid),
-							create:   (args: A) => lxcApi.snapshot.create(node, vmid, args),
+							create:   (args: A) => lxcApi.snapshot.create(node, vmid, args as never),
 							snapname: (snapname: string) => lxcApi.snapshot.snapname(node, vmid, snapname),
 						},
 						status: {
 							current:  () => lxcApi.status.current(node, vmid),
-							start:    (args?: A) => lxcApi.status.start(node, vmid, args),
-							stop:     (args?: A) => lxcApi.status.stop(node, vmid, args),
-							reboot:   (args?: A) => lxcApi.status.reboot(node, vmid, args),
-							resume:   (args?: A) => lxcApi.status.resume(node, vmid, args),
-							shutdown: (args?: A) => lxcApi.status.shutdown(node, vmid, args),
-							suspend:  (args?: A) => lxcApi.status.suspend(node, vmid, args),
+							start:    (args?: A) => lxcApi.status.start(node, vmid, args as never),
+							stop:     (args?: A) => lxcApi.status.stop(node, vmid, args as never),
+							reboot:   (args?: A) => lxcApi.status.reboot(node, vmid, args as never),
+							resume:   (args?: A) => lxcApi.status.resume(node, vmid, args as never),
+							shutdown: (args?: A) => lxcApi.status.shutdown(node, vmid, args as never),
+							suspend:  (args?: A) => lxcApi.status.suspend(node, vmid, args as never),
 						},
 					}),
 				},
 
 				// ── Misc node ops ───────────────────────────────────────────
 				aplinfo:     (args?: A) => r("/nodes/{node}/aplinfo",     "GET",  { ...args, $path: { node } }),
+				download_template: (args?: A) => r("/nodes/{node}/aplinfo", "POST", { ...args, $path: { node } }),
 				migrateall:  (args?: A) => r("/nodes/{node}/migrateall",  "POST", { ...args, $path: { node } }),
 				netstat:     ()         => r("/nodes/{node}/netstat",     "GET",  { $path: { node } }),
 				report:      ()         => r("/nodes/{node}/report",      "GET",  { $path: { node } }),
@@ -350,6 +365,7 @@ function Nodes(client: Client) {
 				network: {
 					index:  (args?: A) => r("/nodes/{node}/network", "GET",    { ...args, $path: { node } }),
 					create: (args?: A) => r("/nodes/{node}/network", "POST",   { ...args, $path: { node } }),
+					reload: (args?: A) => r("/nodes/{node}/network", "PUT",    { ...args, $path: { node } }),
 					revert: ()         => r("/nodes/{node}/network", "DELETE", { $path: { node } }),
 					iface: (iface: string) => ({
 						get:    () => r("/nodes/{node}/network/{iface}", "GET",    { $path: { node, iface } }),
@@ -360,38 +376,40 @@ function Nodes(client: Client) {
 
 				// ── QEMU ────────────────────────────────────────────────────
 				qemu: {
-					list:   (args?: A) => qemuApi.list(node, args),
-					create: (args?: A) => qemuApi.create(node, args),
+					list:   (args?: A) => qemuApi.list(node, args as never),
+					create: (args?: A) => qemuApi.create(node, args as never),
 					vmid: (vmid: number) => ({
 						status_index: () => qemuApi.status_index(node, vmid),
 						dbus_vmstate: qemuApi.dbus_vmstate,
-						mtunnel:      (args?: A) => qemuApi.mtunnel(node, vmid, args),
-						mtunnelwebsocket: (args?: A) => qemuApi.mtunnelwebsocket(node, vmid, args),
-						remote_migrate:   (args?: A) => qemuApi.remote_migrate(node, vmid, args),
-						destroy:     (args?: A) => qemuApi.delete(node, vmid, args),
-						diridx:      (args?: A) => qemuApi.get(node, vmid, args),
-						clone:       (args: A)  => qemuApi.clone(node, vmid, args),
-						migrate:     (args: A)  => qemuApi.migrate(node, vmid, args),
-						feature:     (args?: A) => qemuApi.feature(node, vmid, args),
+						mtunnel:      (args?: A) => qemuApi.mtunnel(node, vmid, args as never),
+						mtunnelwebsocket: (args?: A) => qemuApi.mtunnelwebsocket(node, vmid, args as never),
+						remote_migrate:   (args?: A) => qemuApi.remote_migrate(node, vmid, args as never),
+						destroy:     (args?: A) => qemuApi.delete(node, vmid, args as never),
+						diridx:      (args?: A) => qemuApi.get(node, vmid, args as never),
+						clone:       (args: A)  => qemuApi.clone(node, vmid, args as never),
+						migrate:     (args: A)  => qemuApi.migrate(node, vmid, args as never),
+						migrate_info: (args?: A) => qemuApi.migrate_info(node, vmid, args as never),
+						feature:     (args?: A) => qemuApi.feature(node, vmid, args as never),
 						pending:     ()          => qemuApi.pending(node, vmid),
-						template:    (args?: A) => qemuApi.template(node, vmid, args),
-						resize:      (args: A)  => qemuApi.resize(node, vmid, args),
-						move_disk:   (args: A)  => qemuApi.move_disk(node, vmid, args),
-						unlink:      (args: A)  => qemuApi.unlink(node, vmid, args),
-						sendkey:     (args: A)  => qemuApi.sendkey(node, vmid, args),
-						monitor:     (args: A)  => qemuApi.monitor(node, vmid, args),
-						rrd:         (args?: A) => qemuApi.rrd(node, vmid, args),
-						rrddata:     (args?: A) => qemuApi.rrddata(node, vmid, args),
-						spiceproxy:  (args?: A) => qemuApi.spiceproxy(node, vmid, args),
-						termproxy:   (args?: A) => qemuApi.termproxy(node, vmid, args),
-						vncproxy:    (args?: A) => qemuApi.vncproxy(node, vmid, args),
-						vncwebsocket:(args?: A) => qemuApi.vncwebsocket(node, vmid, args),
+						template:    (args?: A) => qemuApi.template(node, vmid, args as never),
+						resize:      (args: A)  => qemuApi.resize(node, vmid, args as never),
+						move_disk:   (args: A)  => qemuApi.move_disk(node, vmid, args as never),
+						unlink:      (args: A)  => qemuApi.unlink(node, vmid, args as never),
+						sendkey:     (args: A)  => qemuApi.sendkey(node, vmid, args as never),
+						monitor:     (args: A)  => qemuApi.monitor(node, vmid, args as never),
+						rrd:         (args?: A) => qemuApi.rrd(node, vmid, args as never),
+						rrddata:     (args?: A) => qemuApi.rrddata(node, vmid, args as never),
+						spiceproxy:  (args?: A) => qemuApi.spiceproxy(node, vmid, args as never),
+						termproxy:   (args?: A) => qemuApi.termproxy(node, vmid, args as never),
+						vncproxy:    (args?: A) => qemuApi.vncproxy(node, vmid, args as never),
+						vncwebsocket:(args?: A) => qemuApi.vncwebsocket(node, vmid, args as never),
 						agent: {
-							index:                   (args?: A) => qemuApi.agent(node, vmid, args),
-							exec:                    (args: A)  => qemuApi.agent_exec(node, vmid, args),
-							exec_status:             (args?: A) => qemuApi.agent_exec_status(node, vmid, args),
-							file_read:               (args?: A) => qemuApi.agent_file_read(node, vmid, args),
-							file_write:              (args: A)  => qemuApi.agent_file_write(node, vmid, args),
+							index:                   (args?: A) => qemuApi.agent(node, vmid, args as never),
+							command:                 (args: A)  => qemuApi.agent_command(node, vmid, args as never),
+							exec:                    (args: A)  => qemuApi.agent_exec(node, vmid, args as never),
+							exec_status:             (args?: A) => qemuApi.agent_exec_status(node, vmid, args as never),
+							file_read:               (args?: A) => qemuApi.agent_file_read(node, vmid, args as never),
+							file_write:              (args: A)  => qemuApi.agent_file_write(node, vmid, args as never),
 							get_fsinfo:              ()          => qemuApi.agent_get_fsinfo(node, vmid),
 							get_host_name:           ()          => qemuApi.agent_get_host_name(node, vmid),
 							get_memory_block_info:   ()          => qemuApi.agent_get_memory_block_info(node, vmid),
@@ -412,56 +430,56 @@ function Nodes(client: Client) {
 							suspend_disk:            ()          => qemuApi.agent_suspend_disk(node, vmid),
 							suspend_hybrid:          ()          => qemuApi.agent_suspend_hybrid(node, vmid),
 							suspend_ram:             ()          => qemuApi.agent_suspend_ram(node, vmid),
-							set_user_password:       (args: A)  => qemuApi.agent_set_user_password(node, vmid, args),
+							set_user_password:       (args: A)  => qemuApi.agent_set_user_password(node, vmid, args as never),
 						},
 						cloudinit: {
 							get:    () => qemuApi.cloudinit.get(node, vmid),
-							update: (args?: A) => qemuApi.cloudinit.update(node, vmid, args),
-							dump:   (args?: A) => qemuApi.cloudinit.dump(node, vmid, args),
+							update: (args?: A) => qemuApi.cloudinit.update(node, vmid, args as never),
+							dump:   (args?: A) => qemuApi.cloudinit.dump(node, vmid, args as never),
 						},
 						config: {
-							get:          (args?: A) => qemuApi.config.get(node, vmid, args),
-							update_async: (args?: A) => qemuApi.config.post(node, vmid, args),
-							update:       (args?: A) => qemuApi.config.put(node, vmid, args),
+							get:          (args?: A) => qemuApi.config.get(node, vmid, args as never),
+							update_async: (args?: A) => qemuApi.config.post(node, vmid, args as never),
+							update:       (args?: A) => qemuApi.config.put(node, vmid, args as never),
 						},
 						firewall: {
 							get:     () => qemuApi.firewall.get(node, vmid),
-							log:     (args?: A) => qemuApi.firewall.log(node, vmid, args),
-							refs:    (args?: A) => qemuApi.firewall.refs(node, vmid, args),
+							log:     (args?: A) => qemuApi.firewall.log(node, vmid, args as never),
+							refs:    (args?: A) => qemuApi.firewall.refs(node, vmid, args as never),
 							options: {
 								get: () => qemuApi.firewall.options.get(node, vmid),
-								set: (args?: A) => qemuApi.firewall.options.set(node, vmid, args),
+								set: (args?: A) => qemuApi.firewall.options.set(node, vmid, args as never),
 							},
 							aliases: {
 								list:   () => qemuApi.firewall.aliases.list(node, vmid),
-								create: (args: A) => qemuApi.firewall.aliases.create(node, vmid, args),
+								create: (args: A) => qemuApi.firewall.aliases.create(node, vmid, args as never),
 								name:   (name: string) => qemuApi.firewall.aliases.name(node, vmid, name),
 							},
 							ipset: {
 								list:   () => qemuApi.firewall.ipset.list(node, vmid),
-								create: (args: A) => qemuApi.firewall.ipset.create(node, vmid, args),
+								create: (args: A) => qemuApi.firewall.ipset.create(node, vmid, args as never),
 								name:   (name: string) => qemuApi.firewall.ipset.name(node, vmid, name),
 							},
 							rules: {
 								list:   () => qemuApi.firewall.rules.list(node, vmid),
-								create: (args: A) => qemuApi.firewall.rules.create(node, vmid, args),
+								create: (args: A) => qemuApi.firewall.rules.create(node, vmid, args as never),
 								pos:    (pos: number) => qemuApi.firewall.rules.pos(node, vmid, pos),
 							},
 						},
 						snapshot: {
 							list:     () => qemuApi.snapshot.list(node, vmid),
-							create:   (args: A) => qemuApi.snapshot.create(node, vmid, args),
+							create:   (args: A) => qemuApi.snapshot.create(node, vmid, args as never),
 							snapname: (snapname: string) => qemuApi.snapshot.snapname(node, vmid, snapname),
 						},
 						status: {
 							current:  () => qemuApi.status.current(node, vmid),
-							start:    (args?: A) => qemuApi.status.start(node, vmid, args),
-							stop:     (args?: A) => qemuApi.status.stop(node, vmid, args),
-							reboot:   (args?: A) => qemuApi.status.reboot(node, vmid, args),
-							reset:    (args?: A) => qemuApi.status.reset(node, vmid, args),
-							resume:   (args?: A) => qemuApi.status.resume(node, vmid, args),
-							shutdown: (args?: A) => qemuApi.status.shutdown(node, vmid, args),
-							suspend:  (args?: A) => qemuApi.status.suspend(node, vmid, args),
+							start:    (args?: A) => qemuApi.status.start(node, vmid, args as never),
+							stop:     (args?: A) => qemuApi.status.stop(node, vmid, args as never),
+							reboot:   (args?: A) => qemuApi.status.reboot(node, vmid, args as never),
+							reset:    (args?: A) => qemuApi.status.reset(node, vmid, args as never),
+							resume:   (args?: A) => qemuApi.status.resume(node, vmid, args as never),
+							shutdown: (args?: A) => qemuApi.status.shutdown(node, vmid, args as never),
+							suspend:  (args?: A) => qemuApi.status.suspend(node, vmid, args as never),
 						},
 					}),
 				},
@@ -590,3 +608,4 @@ export default Nodes;
 
 // Node-scoped API returned by client.api.nodes.get(nodeName)
 export type NodeScopedAPI = ReturnType<ReturnType<typeof Nodes>['get']>
+

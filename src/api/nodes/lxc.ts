@@ -30,6 +30,9 @@ export default function lxcFactory(client: Client) {
         migrate: (node: string, vmid: number, ...a: ArgsTuple<PathContext<R<"/nodes/{node}/lxc/{vmid}/migrate", "POST">>>) =>
             client.request("/nodes/{node}/lxc/{vmid}/migrate", "POST", { ...((a[0]) as any), $path: { node, vmid } }),
 
+        migrate_info: (node: string, vmid: number, ...a: ArgsTuple<PathContext<R<"/nodes/{node}/lxc/{vmid}/migrate", "GET">>>) =>
+            client.request("/nodes/{node}/lxc/{vmid}/migrate", "GET", { ...((a[0]) as any), $path: { node, vmid } }),
+
         move_volume: (node: string, vmid: number, ...a: ArgsTuple<PathContext<R<"/nodes/{node}/lxc/{vmid}/move_volume", "POST">>>) =>
             client.request("/nodes/{node}/lxc/{vmid}/move_volume", "POST", { ...((a[0]) as any), $path: { node, vmid } }),
 

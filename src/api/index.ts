@@ -8,15 +8,23 @@ import {VersionAPI} from "./version";
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
-export type PathContext<T extends { $path: any }> = Omit<T, '$path'>;
+export type Booleanish = boolean | 0 | 1;
 
-export type ArgsTuple<T> = keyof T extends never ? [args?: T] : [args: T];
+export type RequestInput<T> =
+    T extends boolean ? Booleanish :
+        T extends readonly (infer U)[] ? RequestInput<U>[] :
+            T extends object ? { [K in keyof T]: RequestInput<T[K]> } :
+                T;
+
+export type PathContext<T extends { $path: unknown }> = Omit<RequestInput<T>, '$path'>;
+
+export type ArgsTuple<T> = keyof T extends never ? [args?: RequestInput<T>] : [args: RequestInput<T>];
 
 
 export type MethodKey<P extends keyof API> = Extract<keyof API[P], HttpMethod>;
 
 export type Params<P extends keyof API, M extends MethodKey<P>> =
-    API[P][M] extends { parameters: infer X } ? X : never;
+    API[P][M] extends { parameters: infer X } ? RequestInput<X> : never;
 
 export type Ret<P extends keyof API, M extends MethodKey<P>> =
     API[P][M] extends { return: infer R } ? R : never;
@@ -30,7 +38,7 @@ export type BodyOf<P extends keyof API, M extends MethodKey<P>> =
 
 export type AnyArgs = {
     $path?: Record<string, string | number>;
-    $query?: Record<string, any>;
+    $query?: Record<string, unknown>;
     $headers?: Record<string, string | undefined>;
     $body?: unknown;
 };

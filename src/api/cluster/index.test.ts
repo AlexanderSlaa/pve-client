@@ -6,6 +6,26 @@ function makeClient() {
 }
 
 describe("Cluster factory", () => {
+    it("keeps selected cluster helpers strongly typed", () => {
+        const client = makeClient();
+
+        if (false) {
+            void client.api.cluster.sdn.dry_run.get({ $query: { node: "pve1" } });
+            void client.api.cluster.sdn.route_maps.entries.route_map("rm1").entry(10).get();
+            void client.api.cluster.backup.create_job({ $body: { compress: "zstd", mode: "snapshot" } });
+            void client.api.cluster.backup.create_job({ $body: { all: 1, enabled: 0 } });
+
+            // @ts-expect-error dry-run requires the node query.
+            void client.api.cluster.sdn.dry_run.get();
+            // @ts-expect-error route-map entry order is numeric in the generated API map.
+            void client.api.cluster.sdn.route_maps.entries.route_map("rm1").entry("10");
+            // @ts-expect-error backup compression is a constrained Proxmox enum.
+            void client.api.cluster.backup.create_job({ $body: { compress: "zip" } });
+            // @ts-expect-error Proxmox boolean fields accept boolean, 0, or 1, but not arbitrary numbers.
+            void client.api.cluster.backup.create_job({ $body: { all: 2 } });
+        }
+    });
+
     it("nextid → GET /cluster/nextid", async () => {
         const client = makeClient();
         const spy = vi.spyOn(client, "request").mockResolvedValue(101 as never);

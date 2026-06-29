@@ -5,6 +5,7 @@ import { Client } from "../../index";
 export default function configFactory(client: Client) {
   return {
     index: (...args: ArgsTuple<ClusterAPI["/cluster/config"]["GET"]['parameters']>) => client.request("/cluster/config", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/config"]["GET"]['parameters']),
+    create: (...args: ArgsTuple<ClusterAPI["/cluster/config"]["POST"]['parameters']>) => client.request("/cluster/config", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/config"]["POST"]['parameters']),
     apiversion: (...args: ArgsTuple<ClusterAPI["/cluster/config/apiversion"]["GET"]['parameters']>) => client.request("/cluster/config/apiversion", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/config/apiversion"]["GET"]['parameters']),
     nodes: {
       index: (...args: ArgsTuple<ClusterAPI["/cluster/config/nodes"]["GET"]['parameters']>) => client.request("/cluster/config/nodes", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/config/nodes"]["GET"]['parameters']),
@@ -17,9 +18,25 @@ export default function configFactory(client: Client) {
             "GET",
             { ...((args[0] ?? {}) as PathContext<ClusterAPI["/cluster/config/nodes/{node}"]["GET"]['parameters']>), $path: { node } }
           ),
-        // Add more node endpoints as needed
+        create: (
+          ...args: ArgsTuple<PathContext<ClusterAPI["/cluster/config/nodes/{node}"]["POST"]['parameters']>>
+        ) =>
+          client.request(
+            "/cluster/config/nodes/{node}",
+            "POST",
+            { ...((args[0] ?? {}) as PathContext<ClusterAPI["/cluster/config/nodes/{node}"]["POST"]['parameters']>), $path: { node } }
+          ),
+        delete: (
+          ...args: ArgsTuple<PathContext<ClusterAPI["/cluster/config/nodes/{node}"]["DELETE"]['parameters']>>
+        ) =>
+          client.request(
+            "/cluster/config/nodes/{node}",
+            "DELETE",
+            { ...((args[0] ?? {}) as PathContext<ClusterAPI["/cluster/config/nodes/{node}"]["DELETE"]['parameters']>), $path: { node } }
+          ),
       })
     },
+    join_info: (...args: ArgsTuple<ClusterAPI["/cluster/config/join"]["GET"]['parameters']>) => client.request("/cluster/config/join", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/config/join"]["GET"]['parameters']),
     join: (...args: ArgsTuple<ClusterAPI["/cluster/config/join"]["POST"]['parameters']>) => client.request("/cluster/config/join", "POST", (args[0] ?? {}) as ClusterAPI["/cluster/config/join"]["POST"]['parameters']),
     totem: (...args: ArgsTuple<ClusterAPI["/cluster/config/totem"]["GET"]['parameters']>) => client.request("/cluster/config/totem", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/config/totem"]["GET"]['parameters']),
     qdevice: (...args: ArgsTuple<ClusterAPI["/cluster/config/qdevice"]["GET"]['parameters']>) => client.request("/cluster/config/qdevice", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/config/qdevice"]["GET"]['parameters'])

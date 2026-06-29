@@ -8,7 +8,6 @@ import Access from "./api/access";
 import type {ClusterAPI} from "./api/cluster/types";
 import Cluster from "./api/cluster";
 import type {NodesAPI} from "./api/nodes/types";
-import type { NodeScopedAPI } from "./api/nodes";
 import Nodes from "./api/nodes";
 import Pools from "./api/pools";
 import Storage from "./api/storage";
@@ -290,6 +289,7 @@ export class Client {
             throw new Error("login() is only available for username/password auth.");
         }
         const realm = this.opts.realm ?? "pam";
+        this.auth = {};
 
         // Proxmox: POST /access/ticket with form fields username, password, realm
         const data: any = await this.request("/access/ticket", 'POST', {
@@ -370,6 +370,7 @@ export class Client {
         method: M,
         args: Params<P, M>,
         requestInit?: RequestInit,
+        _retried = false,
     ): Promise<Ret<P, M>> => {
         const a = args as unknown as AnyArgs;
         let urlPath = String(path);
@@ -410,6 +411,10 @@ export class Client {
 
         const res = await this.fetchImpl(url, init);
         if (!res.ok) {
+            if (res.status === 401 && !_retried && "username" in this.opts && path !== "/access/ticket") {
+                await this.login();
+                return this.request(path, method, args, requestInit, true);
+            }
             const text = await res.text().catch(() => "");
             throw new Error(`HTTP ${res.status} ${res.statusText}: ${text}`);
         }
