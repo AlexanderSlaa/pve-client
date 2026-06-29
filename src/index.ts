@@ -382,7 +382,7 @@ export class Client {
         const sp = new URLSearchParams();
         for (const [k, v] of Object.entries(body ?? {})) {
             if (v === undefined || v === null) continue;
-            if (Array.isArray(v)) for (const item of v) sp.append(k, this.serializeScalar(item));
+            if (Array.isArray(v)) sp.set(k, JSON.stringify(v));
             else if (typeof v === "object") sp.set(k, JSON.stringify(v));
             else sp.set(k, this.serializeScalar(v));
         }
@@ -445,12 +445,29 @@ export class Client {
             socketTimeout: this.opts.socketTimeout,
         };
 
+        // Determine body to send:
+        // - If caller explicitly set $body, use it
+        // - For POST/PUT/PATCH with no $body, auto-wrap remaining params (excluding $path/$query/$headers)
+        //   Generated factory methods pass body params directly, not wrapped in $body
+        let bodyToEncode: Record<string, unknown> | undefined;
         if (a.$body !== undefined) {
-            if (typeof a.$body === "string" || a.$body instanceof Blob) {
-                init.body = a.$body as BodyInit;
+            bodyToEncode = a.$body as Record<string, unknown>;
+        } else if (method === 'POST' || method === 'PUT' || method === 'PATCH') {
+            // Collect params that aren't internal ($path, $query, $headers)
+            bodyToEncode = {};
+            for (const [k, v] of Object.entries(a)) {
+                if (k.startsWith('$')) continue;
+                if (v === undefined || v === null) continue;
+                bodyToEncode[k] = v;
+            }
+        }
+
+        if (bodyToEncode !== undefined) {
+            if (typeof bodyToEncode === "string" || bodyToEncode instanceof Blob) {
+                init.body = bodyToEncode as BodyInit;
             } else {
                 (init.headers as Record<string, string>)["Content-Type"] = "application/x-www-form-urlencoded";
-                init.body = this.encodeForm(a.$body as Record<string, unknown>);
+                init.body = this.encodeForm(bodyToEncode);
             }
         }
 

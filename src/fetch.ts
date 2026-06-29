@@ -139,6 +139,14 @@ const native_fetch: typeof fetch = async (
                 ? 443
                 : 80;
 
+    // Proxmox API often returns 3xx redirects on action endpoints.
+    // Reusing pooled HTTPS sockets after redirects causes ECONNRESET / 596 broken pipe.
+    // ALWAYS create a fresh HTTPS agent per request with keepAlive disabled.
+    // This ensures no stale socket reuse regardless of whether init?.agent was provided.
+    const agentForRequest = isHttps(url)
+        ? new https.Agent({ keepAlive: false, rejectUnauthorized: false })
+        : init?.agent ?? undefined;
+
     const options: http.RequestOptions = {
         protocol: url.protocol,
         hostname: url.hostname,
@@ -146,7 +154,7 @@ const native_fetch: typeof fetch = async (
         path: url.pathname + url.search,
         method,
         headers: Object.fromEntries(headers.entries()),
-        agent: init?.agent,
+        agent: agentForRequest,
         timeout: init?.socketTimeout ?? DEFAULT_SOCKET_TIMEOUT_MS,
     };
 
