@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/AlexanderSlaa/pve-client/compare/v1.2.1...v1.3.0) (2026-06-29)
+
+
+### Features
+
+* expose missing API route wrappers ([7878f47](https://github.com/AlexanderSlaa/pve-client/commit/7878f472b9dab875d042acb0642ee0290a7681bb))
+
 ## [1.2.1](https://github.com/AlexanderSlaa/pve-client/compare/v1.2.0...v1.2.1) (2026-06-01)
 
 
