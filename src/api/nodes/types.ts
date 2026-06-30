@@ -2536,7 +2536,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $body: { "content": string; "encode"?: boolean; "file": string },
+                $body: { "content": string; "encode"?: boolean | number; "file": string },
             }
             return: unknown
         }
