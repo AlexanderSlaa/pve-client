@@ -2527,7 +2527,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $query?: { "file": string },
+                $query?: { "file": string; "decode"?: boolean | number; "count"?: number; "offset"?: number },
             }
             return: { "content": string; "truncated"?: boolean }
         }
