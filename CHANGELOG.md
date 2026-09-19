@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/AlexanderSlaa/pve-client/compare/v1.3.0...v1.3.1) (2026-09-19)
+
+
+### Bug Fixes
+
+* normalize cluster option aliases ([cd1e4c6](https://github.com/AlexanderSlaa/pve-client/commit/cd1e4c6bbe01b00659c8a9d8a7d4ca9da08746b1))
+
 # [1.3.0](https://github.com/AlexanderSlaa/pve-client/compare/v1.2.1...v1.3.0) (2026-06-29)
 
 
