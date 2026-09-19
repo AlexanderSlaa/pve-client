@@ -47,7 +47,14 @@ describe("Cluster factory", () => {
         expect(spy).toHaveBeenCalledWith("/cluster/status", "GET", expect.anything());
     });
 
-    it("resources.resources → GET /cluster/resources with query", async () => {
+    it("resources.index → GET /cluster/resources with query", async () => {
+        const client = makeClient();
+        const spy = vi.spyOn(client, "request").mockResolvedValue([] as never);
+        await client.api.cluster.resources.index({ $query: { type: "vm" } } as never);
+        expect(spy).toHaveBeenCalledWith("/cluster/resources", "GET", expect.objectContaining({ $query: { type: "vm" } }));
+    });
+
+    it("resources.resources remains a backwards-compatible alias", async () => {
         const client = makeClient();
         const spy = vi.spyOn(client, "request").mockResolvedValue([] as never);
         await client.api.cluster.resources.resources({ $query: { type: "vm" } } as never);
@@ -197,18 +204,31 @@ describe("Cluster factory", () => {
         expect(spy).toHaveBeenCalledWith("/cluster/sdn", "GET", expect.anything());
     });
 
-    it("options.get_options → GET /cluster/options", async () => {
+    it("options.index → GET /cluster/options", async () => {
         const client = makeClient();
         const spy = vi.spyOn(client, "request").mockResolvedValue({} as never);
-        await client.api.cluster.options.get_options();
+        await client.api.cluster.options.index();
         expect(spy).toHaveBeenCalledWith("/cluster/options", "GET", expect.anything());
     });
 
-    it("options.set_options → PUT /cluster/options", async () => {
+    it("options.update → PUT /cluster/options", async () => {
         const client = makeClient();
         const spy = vi.spyOn(client, "request").mockResolvedValue(null as never);
-        await client.api.cluster.options.set_options({ $body: { keyboard: "en-us" } } as never);
+        await client.api.cluster.options.update({ $body: { keyboard: "en-us" } } as never);
         expect(spy).toHaveBeenCalledWith("/cluster/options", "PUT", expect.anything());
+    });
+
+    it("options aliases remain backwards-compatible", async () => {
+        const client = makeClient();
+        const spy = vi.spyOn(client, "request").mockResolvedValue(null as never);
+        await client.api.cluster.options.get();
+        await client.api.cluster.options.set({ $body: { keyboard: "en-us" } } as never);
+        await client.api.cluster.options.get_options();
+        await client.api.cluster.options.set_options({ $body: { keyboard: "en-us" } } as never);
+        expect(spy).toHaveBeenNthCalledWith(1, "/cluster/options", "GET", expect.anything());
+        expect(spy).toHaveBeenNthCalledWith(2, "/cluster/options", "PUT", expect.anything());
+        expect(spy).toHaveBeenNthCalledWith(3, "/cluster/options", "GET", expect.anything());
+        expect(spy).toHaveBeenNthCalledWith(4, "/cluster/options", "PUT", expect.anything());
     });
 
     it("mapping.index → GET /cluster/mapping", async () => {

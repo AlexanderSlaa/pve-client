@@ -254,7 +254,7 @@ const templates = await storage.get("local").content.list({
 
 ```ts
 // all VMs across the cluster
-const vms = await client.api.cluster.resources({
+const vms = await client.api.cluster.resources.index({
   $query: { type: "vm" },
 });
 ```
