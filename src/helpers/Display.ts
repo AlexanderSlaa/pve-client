@@ -1,8 +1,9 @@
 import EventEmitter from "node:events";
 import type {Client} from "../index";
 import WS, {type RawData} from "ws";
+import {type GuestType, resolveRunningVm} from "./resolveRunningVm";
 
-type VMType = "qemu" | "lxc";
+type VMType = GuestType;
 
 export type DisplayTicket = {
     cert: string;
@@ -180,22 +181,7 @@ export class Display {
         return session;
     }
 
-    private async getRunningVm(): Promise<{ vmid: number; node: string; type: VMType }> {
-        const resources = await this.client.request("/cluster/resources", "GET", {
-            $query: {type: "vm"},
-        });
-
-        const vm = resources.find((resource) => resource.vmid?.toString() === this.vmid.toString());
-
-        if (!vm) throw new Error(`Unable to find virtual machine with id(${this.vmid}).`);
-        if (vm.status !== "running") throw new Error(`Virtual machine ${this.vmid} is not running.`);
-        if (!vm.node || !vm.vmid) throw new Error(`Virtual machine ${this.vmid} does not include node/vmid data.`);
-        if (vm.type !== "qemu" && vm.type !== "lxc") throw new Error(`Unsupported VM type '${vm.type}' for display helper.`);
-
-        return {
-            vmid: vm.vmid,
-            node: vm.node,
-            type: vm.type,
-        };
+    private getRunningVm() {
+        return resolveRunningVm(this.client, this.vmid, "display");
     }
 }
