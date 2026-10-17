@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/AlexanderSlaa/pve-client/compare/v1.3.1...v1.4.0) (2026-10-17)
+
+
+### Features
+
+* sync API types with Proxmox VE 9.2 ([bcf6ebc](https://github.com/AlexanderSlaa/pve-client/commit/bcf6ebcf3e740f2dd2cf5353ab16b32a580b7dcf))
+
 ## [1.3.1](https://github.com/AlexanderSlaa/pve-client/compare/v1.3.0...v1.3.1) (2026-09-19)
 
 
