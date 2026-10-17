@@ -7,6 +7,22 @@ function makeClient() {
 }
 
 describe("Nodes factory", () => {
+    it("routes new Ceph operations with the bound node", async () => {
+        const client = makeClient();
+        const spy = vi.spyOn(client, "request").mockResolvedValue("UPID:test" as never);
+
+        await client.api.nodes.get("pve1").ceph.releases();
+        await client.api.nodes.get("pve1").ceph.restart_bulk({
+            $body: {"service-type": "osd", "dry-run": true},
+        });
+
+        expect(spy).toHaveBeenNthCalledWith(1, "/nodes/{node}/ceph/releases", "GET", {$path: {node: "pve1"}});
+        expect(spy).toHaveBeenNthCalledWith(2, "/nodes/{node}/ceph/restart-bulk", "POST", {
+            $path: {node: "pve1"},
+            $body: {"service-type": "osd", "dry-run": true},
+        });
+    });
+
     it("keeps selected node helpers typed", () => {
         const client = makeClient();
 

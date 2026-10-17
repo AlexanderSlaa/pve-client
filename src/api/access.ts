@@ -85,6 +85,8 @@ export type AccessAPI = {
                     "user_classes"?: string;
                     "username-claim"?: string;
                     "verify"?: boolean
+                ;
+                    "audiences"?: string;
                 },
             }
             return: unknown
@@ -148,6 +150,8 @@ export type AccessAPI = {
                     "user_attr"?: string;
                     "user_classes"?: string;
                     "verify"?: boolean
+                ;
+                    "audiences"?: string;
                 },
             }
             return: unknown
@@ -549,9 +553,14 @@ export type AccessAPI = {
         "PUT": {
             parameters: {
                 $path: { "userid": string; "tokenid": string },
-                $body: { "comment"?: string; "delete"?: string; "expire"?: number; "privsep"?: boolean },
+                $body: { "comment"?: string; "delete"?: string; "expire"?: number; "privsep"?: boolean ;
+                    "regenerate"?: boolean;
+                },
             }
-            return: { "comment"?: string; "expire"?: number; "privsep"?: boolean }
+            return: { "comment"?: string; "expire"?: number; "privsep"?: boolean ;
+                "full-tokenid"?: string;
+                "value"?: string;
+            }
         }
     },
     "/access/users/{userid}/unlock-tfa": {
@@ -565,7 +574,9 @@ export type AccessAPI = {
     "/access/vncticket": {
         "POST": {
             parameters: {
-                $body: { "authid": string; "path": string; "privs": string; "vncticket": string },
+                $body: { "authid": string; "path": string; "privs": string; "vncticket": string ;
+                    "port"?: number;
+                },
             }
             return: unknown
         }

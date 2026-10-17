@@ -229,6 +229,18 @@ await node.qemu.vmid(100).status.stop();
 await node.qemu.vmid(100).clone({ $body: { newid: 200, name: "clone-vm" } });
 ```
 
+> **Note:** Proxmox expects the cloud-init `sshkeys` value to be URL-encoded *in addition to* the form encoding this client applies to `$body`. Passing raw OpenSSH keys is rejected. Encode the keys yourself before sending:
+>
+> ```ts
+> const keys = ["ssh-ed25519 AAAA... user@host", "ssh-rsa AAAA... other@host"];
+>
+> await node.qemu.vmid(100).config.update({
+>   $body: { sshkeys: encodeURIComponent(keys.join("\n")) },
+> });
+> ```
+>
+> The client does not do this automatically, so values that are already encoded are not encoded twice.
+
 ### Work with LXC containers
 
 ```ts

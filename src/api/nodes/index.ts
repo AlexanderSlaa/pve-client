@@ -15,7 +15,7 @@ import hardwareFactory from "./hardware";
 import lxcFactory from "./lxc";
 import qemuFactory from "./qemu";
 import type { Client } from "../../index";
-import type { HttpMethod, RequestInput } from "../index";
+import type { ArgsTuple, HttpMethod, PathContext, RequestInput } from "../index";
 import type { NodesAPI } from "./types";
 import nodeStorageFactory from "./storage";
 
@@ -25,6 +25,7 @@ type NodeParams<P extends NodePath, M extends NodeMethod<P>> =
 	NodesAPI[P][M] extends { parameters: infer T } ? RequestInput<T> : never;
 type NodeReturn<P extends NodePath, M extends NodeMethod<P>> =
 	NodesAPI[P][M] extends { return: infer T } ? T : never;
+type BoundArgs<P extends NodePath, M extends NodeMethod<P>> = ArgsTuple<PathContext<NodeParams<P, M>>>;
 type A = {
 	$query?: Record<string, unknown>;
 	$body?: Record<string, unknown>;
@@ -58,9 +59,9 @@ function Nodes(client: Client) {
 				apt: {
 					index:        (args?: A) => aptApi.index(node, args as never),
 					changelog:    (args?: A) => aptApi.changelog(node, args as never),
-					repositories: (args?: A) => r("/nodes/{node}/apt/repositories", "GET", { ...args, $path: { node } }),
-					update:       (args?: A) => r("/nodes/{node}/apt/update",       "POST", { ...args, $path: { node } }),
-					versions:     (args?: A) => r("/nodes/{node}/apt/versions",     "GET",  { ...args, $path: { node } }),
+					repositories: (...args: BoundArgs<"/nodes/{node}/apt/repositories", "GET">) => r("/nodes/{node}/apt/repositories", "GET", { ...args[0], $path: { node } }),
+					update:       (...args: BoundArgs<"/nodes/{node}/apt/update", "POST">) => r("/nodes/{node}/apt/update", "POST", { ...args[0], $path: { node } }),
+					versions:     (...args: BoundArgs<"/nodes/{node}/apt/versions", "GET">) => r("/nodes/{node}/apt/versions", "GET",  { ...args[0], $path: { node } }),
 				},
 
 				// ── Capabilities ────────────────────────────────────────────
@@ -81,65 +82,68 @@ function Nodes(client: Client) {
 					cfg:    (args?: A) => cephApi.cfg(node, args as never),
 					cfg_db:    () => r("/nodes/{node}/ceph/cfg/db",    "GET",  { $path: { node } }),
 					cfg_raw:   () => r("/nodes/{node}/ceph/cfg/raw",   "GET",  { $path: { node } }),
-					cfg_value: (args?: A) => r("/nodes/{node}/ceph/cfg/value", "GET", { ...args, $path: { node } }),
-					cmd_safety:(args?: A) => r("/nodes/{node}/ceph/cmd-safety", "GET", { ...args, $path: { node } }),
+					cfg_value: (...args: BoundArgs<"/nodes/{node}/ceph/cfg/value", "GET">) => r("/nodes/{node}/ceph/cfg/value", "GET", { ...args[0], $path: { node } }),
+					cmd_safety:(...args: BoundArgs<"/nodes/{node}/ceph/cmd-safety", "GET">) => r("/nodes/{node}/ceph/cmd-safety", "GET", { ...args[0], $path: { node } }),
 					crush:     () => r("/nodes/{node}/ceph/crush",  "GET",  { $path: { node } }),
-					init:      (args?: A) => r("/nodes/{node}/ceph/init",   "POST", { ...args, $path: { node } }),
-					log:       (args?: A) => r("/nodes/{node}/ceph/log",    "GET",  { ...args, $path: { node } }),
-					restart:   (args?: A) => r("/nodes/{node}/ceph/restart","POST", { ...args, $path: { node } }),
+					init:      (...args: BoundArgs<"/nodes/{node}/ceph/init", "POST">) => r("/nodes/{node}/ceph/init", "POST", { ...args[0], $path: { node } }),
+					log:       (...args: BoundArgs<"/nodes/{node}/ceph/log", "GET">) => r("/nodes/{node}/ceph/log", "GET",  { ...args[0], $path: { node } }),
+					restart:   (...args: BoundArgs<"/nodes/{node}/ceph/restart", "POST">) => r("/nodes/{node}/ceph/restart", "POST", { ...args[0], $path: { node } }),
+					releases:  () => client.request("/nodes/{node}/ceph/releases", "GET", { $path: { node } }),
+					restart_bulk: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/ceph/restart-bulk"]["POST"]["parameters"]>>) =>
+						client.request("/nodes/{node}/ceph/restart-bulk", "POST", { ...args[0], $path: { node } }),
 					rules:     () => r("/nodes/{node}/ceph/rules",   "GET",  { $path: { node } }),
-					start:     (args?: A) => r("/nodes/{node}/ceph/start",  "POST", { ...args, $path: { node } }),
+					start:     (...args: BoundArgs<"/nodes/{node}/ceph/start", "POST">) => r("/nodes/{node}/ceph/start", "POST", { ...args[0], $path: { node } }),
 					status:    () => r("/nodes/{node}/ceph/status",  "GET",  { $path: { node } }),
-					stop:      (args?: A) => r("/nodes/{node}/ceph/stop",   "POST", { ...args, $path: { node } }),
+					stop:      (...args: BoundArgs<"/nodes/{node}/ceph/stop", "POST">) => r("/nodes/{node}/ceph/stop", "POST", { ...args[0], $path: { node } }),
 					fs: {
 						index:  () => r("/nodes/{node}/ceph/fs", "GET", { $path: { node } }),
 						name: (name: string) => ({
-							create: (args?: A) => r("/nodes/{node}/ceph/fs/{name}", "POST", { ...args, $path: { node, name } }),
-							delete: (args?: A) => r("/nodes/{node}/ceph/fs/{name}", "DELETE", { ...args, $path: { node, name } }),
+							create: (...args: BoundArgs<"/nodes/{node}/ceph/fs/{name}", "POST">) => r("/nodes/{node}/ceph/fs/{name}", "POST", { ...args[0], $path: { node, name } }),
+							delete: (...args: BoundArgs<"/nodes/{node}/ceph/fs/{name}", "DELETE">) => r("/nodes/{node}/ceph/fs/{name}", "DELETE", { ...args[0], $path: { node, name } }),
 						}),
 					},
 					mds: {
 						index: () => r("/nodes/{node}/ceph/mds", "GET", { $path: { node } }),
 						name: (name: string) => ({
-							create: (args?: A) => r("/nodes/{node}/ceph/mds/{name}", "POST",   { ...args, $path: { node, name } }),
-							delete: (args?: A) => r("/nodes/{node}/ceph/mds/{name}", "DELETE", { ...args, $path: { node, name } }),
+							create: (...args: BoundArgs<"/nodes/{node}/ceph/mds/{name}", "POST">) => r("/nodes/{node}/ceph/mds/{name}", "POST",   { ...args[0], $path: { node, name } }),
+							delete: (...args: BoundArgs<"/nodes/{node}/ceph/mds/{name}", "DELETE">) => r("/nodes/{node}/ceph/mds/{name}", "DELETE", { ...args[0], $path: { node, name } }),
 						}),
 					},
 					mgr: {
 						index: () => r("/nodes/{node}/ceph/mgr", "GET", { $path: { node } }),
 						id: (id: string) => ({
-							create: (args?: A) => r("/nodes/{node}/ceph/mgr/{id}", "POST",   { ...args, $path: { node, id } }),
-							delete: (args?: A) => r("/nodes/{node}/ceph/mgr/{id}", "DELETE", { ...args, $path: { node, id } }),
+							create: (...args: BoundArgs<"/nodes/{node}/ceph/mgr/{id}", "POST">) => r("/nodes/{node}/ceph/mgr/{id}", "POST",   { ...args[0], $path: { node, id } }),
+							delete: (...args: BoundArgs<"/nodes/{node}/ceph/mgr/{id}", "DELETE">) => r("/nodes/{node}/ceph/mgr/{id}", "DELETE", { ...args[0], $path: { node, id } }),
 						}),
 					},
 					mon: {
 						index: () => r("/nodes/{node}/ceph/mon", "GET", { $path: { node } }),
 						monid: (monid: string) => ({
-							create: (args?: A) => r("/nodes/{node}/ceph/mon/{monid}", "POST",   { ...args, $path: { node, monid } }),
-							delete: (args?: A) => r("/nodes/{node}/ceph/mon/{monid}", "DELETE", { ...args, $path: { node, monid } }),
+							create: (...args: BoundArgs<"/nodes/{node}/ceph/mon/{monid}", "POST">) => r("/nodes/{node}/ceph/mon/{monid}", "POST",   { ...args[0], $path: { node, monid } }),
+							delete: (...args: BoundArgs<"/nodes/{node}/ceph/mon/{monid}", "DELETE">) => r("/nodes/{node}/ceph/mon/{monid}", "DELETE", { ...args[0], $path: { node, monid } }),
 						}),
 					},
 					osd: {
 						index:  () => r("/nodes/{node}/ceph/osd", "GET",  { $path: { node } }),
-						create: (args?: A) => r("/nodes/{node}/ceph/osd", "POST", { ...args, $path: { node } }),
+						create: (...args: BoundArgs<"/nodes/{node}/ceph/osd", "POST">) => r("/nodes/{node}/ceph/osd", "POST", { ...args[0], $path: { node } }),
 						osdid: (osdid: string | number) => ({
 							get:       () => r("/nodes/{node}/ceph/osd/{osdid}",          "GET",    { $path: { node, osdid } }),
-							delete:    (args?: A) => r("/nodes/{node}/ceph/osd/{osdid}",  "DELETE", { ...args, $path: { node, osdid } }),
-							in:        (args?: A) => r("/nodes/{node}/ceph/osd/{osdid}/in",        "POST", { ...args, $path: { node, osdid } }),
-							out:       (args?: A) => r("/nodes/{node}/ceph/osd/{osdid}/out",       "POST", { ...args, $path: { node, osdid } }),
-							scrub:     (args?: A) => r("/nodes/{node}/ceph/osd/{osdid}/scrub",     "POST", { ...args, $path: { node, osdid } }),
-							lv_info:   (args?: A) => r("/nodes/{node}/ceph/osd/{osdid}/lv-info",   "GET",  { ...args, $path: { node, osdid } }),
+							delete:    (...args: BoundArgs<"/nodes/{node}/ceph/osd/{osdid}", "DELETE">) => r("/nodes/{node}/ceph/osd/{osdid}", "DELETE", { ...args[0], $path: { node, osdid } }),
+							in:        (...args: BoundArgs<"/nodes/{node}/ceph/osd/{osdid}/in", "POST">) => r("/nodes/{node}/ceph/osd/{osdid}/in", "POST", { ...args[0], $path: { node, osdid } }),
+							out:       (...args: BoundArgs<"/nodes/{node}/ceph/osd/{osdid}/out", "POST">) => r("/nodes/{node}/ceph/osd/{osdid}/out", "POST", { ...args[0], $path: { node, osdid } }),
+							scrub:     (...args: BoundArgs<"/nodes/{node}/ceph/osd/{osdid}/scrub", "POST">) => r("/nodes/{node}/ceph/osd/{osdid}/scrub", "POST", { ...args[0], $path: { node, osdid } }),
+							lv_info:   (...args: BoundArgs<"/nodes/{node}/ceph/osd/{osdid}/lv-info", "GET">) => r("/nodes/{node}/ceph/osd/{osdid}/lv-info", "GET",  { ...args[0], $path: { node, osdid } }),
 							metadata:  () => r("/nodes/{node}/ceph/osd/{osdid}/metadata",  "GET",  { $path: { node, osdid } }),
 						}),
 					},
 					pool: {
 						index:  () => r("/nodes/{node}/ceph/pool", "GET",  { $path: { node } }),
-						create: (args?: A) => r("/nodes/{node}/ceph/pool", "POST", { ...args, $path: { node } }),
+						create: (...args: BoundArgs<"/nodes/{node}/ceph/pool", "POST">) => r("/nodes/{node}/ceph/pool", "POST", { ...args[0], $path: { node } }),
 						name: (name: string) => ({
 							get:    () => r("/nodes/{node}/ceph/pool/{name}",        "GET",    { $path: { node, name } }),
-							update: (args?: A) => r("/nodes/{node}/ceph/pool/{name}", "PUT",    { ...args, $path: { node, name } }),
-							delete: (args?: A) => r("/nodes/{node}/ceph/pool/{name}", "DELETE", { ...args, $path: { node, name } }),
-							status: (args?: A) => r("/nodes/{node}/ceph/pool/{name}/status", "GET", { ...args, $path: { node, name } }),
+							update: (...args: BoundArgs<"/nodes/{node}/ceph/pool/{name}", "PUT">) => r("/nodes/{node}/ceph/pool/{name}", "PUT",    { ...args[0], $path: { node, name } }),
+							delete: (...args: BoundArgs<"/nodes/{node}/ceph/pool/{name}", "DELETE">) => r("/nodes/{node}/ceph/pool/{name}", "DELETE", { ...args[0], $path: { node, name } }),
+							status: (...args: BoundArgs<"/nodes/{node}/ceph/pool/{name}/status", "GET">) => r("/nodes/{node}/ceph/pool/{name}/status", "GET", { ...args[0], $path: { node, name } }),
 						}),
 					},
 				},
@@ -150,13 +154,13 @@ function Nodes(client: Client) {
 					acme: {
 						index:       () => r("/nodes/{node}/certificates/acme",             "GET",    { $path: { node } }),
 						certificate: {
-							create: (args?: A) => r("/nodes/{node}/certificates/acme/certificate", "POST",   { ...args, $path: { node } }),
-							renew:  (args?: A) => r("/nodes/{node}/certificates/acme/certificate", "PUT",    { ...args, $path: { node } }),
+							create: (...args: BoundArgs<"/nodes/{node}/certificates/acme/certificate", "POST">) => r("/nodes/{node}/certificates/acme/certificate", "POST",   { ...args[0], $path: { node } }),
+							renew:  (...args: BoundArgs<"/nodes/{node}/certificates/acme/certificate", "PUT">) => r("/nodes/{node}/certificates/acme/certificate", "PUT",    { ...args[0], $path: { node } }),
 							delete: ()         => r("/nodes/{node}/certificates/acme/certificate", "DELETE", { $path: { node } }),
 						},
 					},
 					custom: {
-						upload: (args?: A) => r("/nodes/{node}/certificates/custom", "POST",   { ...args, $path: { node } }),
+						upload: (...args: BoundArgs<"/nodes/{node}/certificates/custom", "POST">) => r("/nodes/{node}/certificates/custom", "POST",   { ...args[0], $path: { node } }),
 						delete: ()         => r("/nodes/{node}/certificates/custom", "DELETE", { $path: { node } }),
 					},
 					info: () => r("/nodes/{node}/certificates/info", "GET", { $path: { node } }),
@@ -165,7 +169,7 @@ function Nodes(client: Client) {
 				// ── Config ──────────────────────────────────────────────────
 				config: {
 					get:    () => r("/nodes/{node}/config", "GET", { $path: { node } }),
-					update: (args?: A) => r("/nodes/{node}/config", "PUT", { ...args, $path: { node } }),
+					update: (...args: BoundArgs<"/nodes/{node}/config", "PUT">) => r("/nodes/{node}/config", "PUT", { ...args[0], $path: { node } }),
 				},
 
 				// ── Disks ───────────────────────────────────────────────────
@@ -175,34 +179,34 @@ function Nodes(client: Client) {
 					list_disks: (args?: A) => disksApi.list_disks(node, args as never),
 					directory: {
 						index:  () => r("/nodes/{node}/disks/directory", "GET", { $path: { node } }),
-						create: (args?: A) => r("/nodes/{node}/disks/directory", "POST", { ...args, $path: { node } }),
+						create: (...args: BoundArgs<"/nodes/{node}/disks/directory", "POST">) => r("/nodes/{node}/disks/directory", "POST", { ...args[0], $path: { node } }),
 						name: (name: string) => ({
-							delete: (args?: A) => r("/nodes/{node}/disks/directory/{name}", "DELETE", { ...args, $path: { node, name } }),
+							delete: (...args: BoundArgs<"/nodes/{node}/disks/directory/{name}", "DELETE">) => r("/nodes/{node}/disks/directory/{name}", "DELETE", { ...args[0], $path: { node, name } }),
 						}),
 					},
-					initgpt: (args?: A) => r("/nodes/{node}/disks/initgpt", "POST", { ...args, $path: { node } }),
+					initgpt: (...args: BoundArgs<"/nodes/{node}/disks/initgpt", "POST">) => r("/nodes/{node}/disks/initgpt", "POST", { ...args[0], $path: { node } }),
 					lvm: {
 						index:  () => r("/nodes/{node}/disks/lvm", "GET", { $path: { node } }),
-						create: (args?: A) => r("/nodes/{node}/disks/lvm", "POST", { ...args, $path: { node } }),
+						create: (...args: BoundArgs<"/nodes/{node}/disks/lvm", "POST">) => r("/nodes/{node}/disks/lvm", "POST", { ...args[0], $path: { node } }),
 						name: (name: string) => ({
-							delete: (args?: A) => r("/nodes/{node}/disks/lvm/{name}", "DELETE", { ...args, $path: { node, name } }),
+							delete: (...args: BoundArgs<"/nodes/{node}/disks/lvm/{name}", "DELETE">) => r("/nodes/{node}/disks/lvm/{name}", "DELETE", { ...args[0], $path: { node, name } }),
 						}),
 					},
 					lvmthin: {
 						index:  () => r("/nodes/{node}/disks/lvmthin", "GET", { $path: { node } }),
-						create: (args?: A) => r("/nodes/{node}/disks/lvmthin", "POST", { ...args, $path: { node } }),
+						create: (...args: BoundArgs<"/nodes/{node}/disks/lvmthin", "POST">) => r("/nodes/{node}/disks/lvmthin", "POST", { ...args[0], $path: { node } }),
 						name: (name: string) => ({
-							delete: (args?: A) => r("/nodes/{node}/disks/lvmthin/{name}", "DELETE", { ...args, $path: { node, name } }),
+							delete: (...args: BoundArgs<"/nodes/{node}/disks/lvmthin/{name}", "DELETE">) => r("/nodes/{node}/disks/lvmthin/{name}", "DELETE", { ...args[0], $path: { node, name } }),
 						}),
 					},
-					smart:    (args?: A) => r("/nodes/{node}/disks/smart",    "GET",  { ...args, $path: { node } }),
-					wipedisk: (args?: A) => r("/nodes/{node}/disks/wipedisk", "PUT",  { ...args, $path: { node } }),
+					smart:    (...args: BoundArgs<"/nodes/{node}/disks/smart", "GET">) => r("/nodes/{node}/disks/smart", "GET",  { ...args[0], $path: { node } }),
+					wipedisk: (...args: BoundArgs<"/nodes/{node}/disks/wipedisk", "PUT">) => r("/nodes/{node}/disks/wipedisk", "PUT",  { ...args[0], $path: { node } }),
 					zfs: {
 						index:  () => r("/nodes/{node}/disks/zfs", "GET", { $path: { node } }),
-						create: (args?: A) => r("/nodes/{node}/disks/zfs", "POST", { ...args, $path: { node } }),
+						create: (...args: BoundArgs<"/nodes/{node}/disks/zfs", "POST">) => r("/nodes/{node}/disks/zfs", "POST", { ...args[0], $path: { node } }),
 						name: (name: string) => ({
 							get:    () => r("/nodes/{node}/disks/zfs/{name}", "GET",    { $path: { node, name } }),
-							delete: (args?: A) => r("/nodes/{node}/disks/zfs/{name}", "DELETE", { ...args, $path: { node, name } }),
+							delete: (...args: BoundArgs<"/nodes/{node}/disks/zfs/{name}", "DELETE">) => r("/nodes/{node}/disks/zfs/{name}", "DELETE", { ...args[0], $path: { node, name } }),
 						}),
 					},
 				},
@@ -210,27 +214,27 @@ function Nodes(client: Client) {
 				// ── DNS ─────────────────────────────────────────────────────
 				dns: {
 					get:    () => r("/nodes/{node}/dns", "GET", { $path: { node } }),
-					update: (args?: A) => r("/nodes/{node}/dns", "PUT", { ...args, $path: { node } }),
+					update: (...args: BoundArgs<"/nodes/{node}/dns", "PUT">) => r("/nodes/{node}/dns", "PUT", { ...args[0], $path: { node } }),
 				},
 
 				// ── Execute ─────────────────────────────────────────────────
-				execute: (args?: A) => r("/nodes/{node}/execute", "POST", { ...args, $path: { node } }),
+				execute: (...args: BoundArgs<"/nodes/{node}/execute", "POST">) => r("/nodes/{node}/execute", "POST", { ...args[0], $path: { node } }),
 
 				// ── Firewall ────────────────────────────────────────────────
 				firewall: {
 					get:     (args?: A) => firewallApi.get(node, args as never),
-					log:     (args?: A) => r("/nodes/{node}/firewall/log",     "GET", { ...args, $path: { node } }),
+					log:     (...args: BoundArgs<"/nodes/{node}/firewall/log", "GET">) => r("/nodes/{node}/firewall/log", "GET", { ...args[0], $path: { node } }),
 					options: {
 						get: () => r("/nodes/{node}/firewall/options", "GET", { $path: { node } }),
-						set: (args?: A) => r("/nodes/{node}/firewall/options", "PUT", { ...args, $path: { node } }),
+						set: (...args: BoundArgs<"/nodes/{node}/firewall/options", "PUT">) => r("/nodes/{node}/firewall/options", "PUT", { ...args[0], $path: { node } }),
 					},
 					rules: {
 						index:  () => r("/nodes/{node}/firewall/rules", "GET",  { $path: { node } }),
-						create: (args?: A) => r("/nodes/{node}/firewall/rules", "POST", { ...args, $path: { node } }),
+						create: (...args: BoundArgs<"/nodes/{node}/firewall/rules", "POST">) => r("/nodes/{node}/firewall/rules", "POST", { ...args[0], $path: { node } }),
 						pos: (pos: number | string) => ({
 							get:    () => r("/nodes/{node}/firewall/rules/{pos}", "GET",    { $path: { node, pos } }),
-							update: (args?: A) => r("/nodes/{node}/firewall/rules/{pos}", "PUT",    { ...args, $path: { node, pos } }),
-							delete: (args?: A) => r("/nodes/{node}/firewall/rules/{pos}", "DELETE", { ...args, $path: { node, pos } }),
+							update: (...args: BoundArgs<"/nodes/{node}/firewall/rules/{pos}", "PUT">) => r("/nodes/{node}/firewall/rules/{pos}", "PUT",    { ...args[0], $path: { node, pos } }),
+							delete: (...args: BoundArgs<"/nodes/{node}/firewall/rules/{pos}", "DELETE">) => r("/nodes/{node}/firewall/rules/{pos}", "DELETE", { ...args[0], $path: { node, pos } }),
 						}),
 					},
 				},
@@ -251,11 +255,12 @@ function Nodes(client: Client) {
 				// ── Hosts ───────────────────────────────────────────────────
 				hosts: {
 					get:    () => r("/nodes/{node}/hosts", "GET", { $path: { node } }),
-					update: (args?: A) => r("/nodes/{node}/hosts", "POST", { ...args, $path: { node } }),
+					update: (...args: BoundArgs<"/nodes/{node}/hosts", "POST">) => r("/nodes/{node}/hosts", "POST", { ...args[0], $path: { node } }),
 				},
 
 				// ── Journal ─────────────────────────────────────────────────
-				journal: (args?: A) => r("/nodes/{node}/journal", "GET", { ...args, $path: { node } }),
+				journal: (...args: ArgsTuple<PathContext<NodesAPI["/nodes/{node}/journal"]["GET"]["parameters"]>>) =>
+					client.request("/nodes/{node}/journal", "GET", { ...args[0], $path: { node } }),
 
 				// ── LXC ─────────────────────────────────────────────────────
 				lxc: {
@@ -329,47 +334,47 @@ function Nodes(client: Client) {
 				},
 
 				// ── Misc node ops ───────────────────────────────────────────
-				aplinfo:     (args?: A) => r("/nodes/{node}/aplinfo",     "GET",  { ...args, $path: { node } }),
-				download_template: (args?: A) => r("/nodes/{node}/aplinfo", "POST", { ...args, $path: { node } }),
-				migrateall:  (args?: A) => r("/nodes/{node}/migrateall",  "POST", { ...args, $path: { node } }),
+				aplinfo:     (...args: BoundArgs<"/nodes/{node}/aplinfo", "GET">) => r("/nodes/{node}/aplinfo", "GET",  { ...args[0], $path: { node } }),
+				download_template: (...args: BoundArgs<"/nodes/{node}/aplinfo", "POST">) => r("/nodes/{node}/aplinfo", "POST", { ...args[0], $path: { node } }),
+				migrateall:  (...args: BoundArgs<"/nodes/{node}/migrateall", "POST">) => r("/nodes/{node}/migrateall", "POST", { ...args[0], $path: { node } }),
 				netstat:     ()         => r("/nodes/{node}/netstat",     "GET",  { $path: { node } }),
 				report:      ()         => r("/nodes/{node}/report",      "GET",  { $path: { node } }),
-				rrd:         (args?: A) => r("/nodes/{node}/rrd",         "GET",  { ...args, $path: { node } }),
-				rrddata:     (args?: A) => r("/nodes/{node}/rrddata",     "GET",  { ...args, $path: { node } }),
-				spiceshell:  (args?: A) => r("/nodes/{node}/spiceshell",  "POST", { ...args, $path: { node } }),
-				startall:    (args?: A) => r("/nodes/{node}/startall",    "POST", { ...args, $path: { node } }),
-				stopall:     (args?: A) => r("/nodes/{node}/stopall",     "POST", { ...args, $path: { node } }),
-				suspendall:  (args?: A) => r("/nodes/{node}/suspendall",  "POST", { ...args, $path: { node } }),
-				syslog:      (args?: A) => r("/nodes/{node}/syslog",      "GET",  { ...args, $path: { node } }),
-				termproxy:   (args?: A) => r("/nodes/{node}/termproxy",   "POST", { ...args, $path: { node } }),
+				rrd:         (...args: BoundArgs<"/nodes/{node}/rrd", "GET">) => r("/nodes/{node}/rrd", "GET",  { ...args[0], $path: { node } }),
+				rrddata:     (...args: BoundArgs<"/nodes/{node}/rrddata", "GET">) => r("/nodes/{node}/rrddata", "GET",  { ...args[0], $path: { node } }),
+				spiceshell:  (...args: BoundArgs<"/nodes/{node}/spiceshell", "POST">) => r("/nodes/{node}/spiceshell", "POST", { ...args[0], $path: { node } }),
+				startall:    (...args: BoundArgs<"/nodes/{node}/startall", "POST">) => r("/nodes/{node}/startall", "POST", { ...args[0], $path: { node } }),
+				stopall:     (...args: BoundArgs<"/nodes/{node}/stopall", "POST">) => r("/nodes/{node}/stopall", "POST", { ...args[0], $path: { node } }),
+				suspendall:  (...args: BoundArgs<"/nodes/{node}/suspendall", "POST">) => r("/nodes/{node}/suspendall", "POST", { ...args[0], $path: { node } }),
+				syslog:      (...args: BoundArgs<"/nodes/{node}/syslog", "GET">) => r("/nodes/{node}/syslog", "GET",  { ...args[0], $path: { node } }),
+				termproxy:   (...args: BoundArgs<"/nodes/{node}/termproxy", "POST">) => r("/nodes/{node}/termproxy", "POST", { ...args[0], $path: { node } }),
 				time:        {
 					get:    () => r("/nodes/{node}/time", "GET", { $path: { node } }),
-					update: (args?: A) => r("/nodes/{node}/time", "PUT", { ...args, $path: { node } }),
+					update: (...args: BoundArgs<"/nodes/{node}/time", "PUT">) => r("/nodes/{node}/time", "PUT", { ...args[0], $path: { node } }),
 				},
 				version:     () => r("/nodes/{node}/version",  "GET",  { $path: { node } }),
-				vncshell:    (args?: A) => r("/nodes/{node}/vncshell", "POST", { ...args, $path: { node } }),
-				vncwebsocket:(args?: A) => r("/nodes/{node}/vncwebsocket", "GET", { ...args, $path: { node } }),
+				vncshell:    (...args: BoundArgs<"/nodes/{node}/vncshell", "POST">) => r("/nodes/{node}/vncshell", "POST", { ...args[0], $path: { node } }),
+				vncwebsocket:(...args: BoundArgs<"/nodes/{node}/vncwebsocket", "GET">) => r("/nodes/{node}/vncwebsocket", "GET", { ...args[0], $path: { node } }),
 				wakeonlan:   () => r("/nodes/{node}/wakeonlan", "POST", { $path: { node } }),
 				status: {
 					get:  () => r("/nodes/{node}/status", "GET",  { $path: { node } }),
-					post: (args?: A) => r("/nodes/{node}/status", "POST", { ...args, $path: { node } }),
+					post: (...args: BoundArgs<"/nodes/{node}/status", "POST">) => r("/nodes/{node}/status", "POST", { ...args[0], $path: { node } }),
 				},
 				subscription: {
 					get:    () => r("/nodes/{node}/subscription", "GET",    { $path: { node } }),
-					update: (args?: A) => r("/nodes/{node}/subscription", "POST",   { ...args, $path: { node } }),
+					update: (...args: BoundArgs<"/nodes/{node}/subscription", "POST">) => r("/nodes/{node}/subscription", "POST",   { ...args[0], $path: { node } }),
 					delete: ()         => r("/nodes/{node}/subscription", "DELETE", { $path: { node } }),
-					set:    (args?: A) => r("/nodes/{node}/subscription", "PUT",    { ...args, $path: { node } }),
+					set:    (...args: BoundArgs<"/nodes/{node}/subscription", "PUT">) => r("/nodes/{node}/subscription", "PUT",    { ...args[0], $path: { node } }),
 				},
 
 				// ── Network ─────────────────────────────────────────────────
 				network: {
-					index:  (args?: A) => r("/nodes/{node}/network", "GET",    { ...args, $path: { node } }),
-					create: (args?: A) => r("/nodes/{node}/network", "POST",   { ...args, $path: { node } }),
-					reload: (args?: A) => r("/nodes/{node}/network", "PUT",    { ...args, $path: { node } }),
+					index:  (...args: BoundArgs<"/nodes/{node}/network", "GET">) => r("/nodes/{node}/network", "GET",    { ...args[0], $path: { node } }),
+					create: (...args: BoundArgs<"/nodes/{node}/network", "POST">) => r("/nodes/{node}/network", "POST",   { ...args[0], $path: { node } }),
+					reload: (...args: BoundArgs<"/nodes/{node}/network", "PUT">) => r("/nodes/{node}/network", "PUT",    { ...args[0], $path: { node } }),
 					revert: ()         => r("/nodes/{node}/network", "DELETE", { $path: { node } }),
 					iface: (iface: string) => ({
 						get:    () => r("/nodes/{node}/network/{iface}", "GET",    { $path: { node, iface } }),
-						update: (args?: A) => r("/nodes/{node}/network/{iface}", "PUT",    { ...args, $path: { node, iface } }),
+						update: (...args: BoundArgs<"/nodes/{node}/network/{iface}", "PUT">) => r("/nodes/{node}/network/{iface}", "PUT",    { ...args[0], $path: { node, iface } }),
 						delete: ()         => r("/nodes/{node}/network/{iface}", "DELETE", { $path: { node, iface } }),
 					}),
 				},
@@ -486,11 +491,11 @@ function Nodes(client: Client) {
 
 				// ── Replication ─────────────────────────────────────────────
 				replication: {
-					index: (args?: A) => r("/nodes/{node}/replication", "GET", { ...args, $path: { node } }),
+					index: (...args: BoundArgs<"/nodes/{node}/replication", "GET">) => r("/nodes/{node}/replication", "GET", { ...args[0], $path: { node } }),
 					id: (id: string) => ({
 						get:           () => r("/nodes/{node}/replication/{id}",              "GET",  { $path: { node, id } }),
-						log:           (args?: A) => r("/nodes/{node}/replication/{id}/log",          "GET",  { ...args, $path: { node, id } }),
-						schedule_now:  (args?: A) => r("/nodes/{node}/replication/{id}/schedule_now", "POST", { ...args, $path: { node, id } }),
+						log:           (...args: BoundArgs<"/nodes/{node}/replication/{id}/log", "GET">) => r("/nodes/{node}/replication/{id}/log", "GET",  { ...args[0], $path: { node, id } }),
+						schedule_now:  (...args: BoundArgs<"/nodes/{node}/replication/{id}/schedule_now", "POST">) => r("/nodes/{node}/replication/{id}/schedule_now", "POST", { ...args[0], $path: { node, id } }),
 						status:        () => r("/nodes/{node}/replication/{id}/status",       "GET",  { $path: { node, id } }),
 					}),
 				},
@@ -498,12 +503,12 @@ function Nodes(client: Client) {
 				// ── Scan ────────────────────────────────────────────────────
 				scan: {
 					index:   () => r("/nodes/{node}/scan",        "GET", { $path: { node } }),
-					cifs:    (args?: A) => r("/nodes/{node}/scan/cifs",    "GET", { ...args, $path: { node } }),
-					iscsi:   (args?: A) => r("/nodes/{node}/scan/iscsi",   "GET", { ...args, $path: { node } }),
+					cifs:    (...args: BoundArgs<"/nodes/{node}/scan/cifs", "GET">) => r("/nodes/{node}/scan/cifs", "GET", { ...args[0], $path: { node } }),
+					iscsi:   (...args: BoundArgs<"/nodes/{node}/scan/iscsi", "GET">) => r("/nodes/{node}/scan/iscsi", "GET", { ...args[0], $path: { node } }),
 					lvm:     () => r("/nodes/{node}/scan/lvm",     "GET", { $path: { node } }),
-					lvmthin: (args?: A) => r("/nodes/{node}/scan/lvmthin", "GET", { ...args, $path: { node } }),
-					nfs:     (args?: A) => r("/nodes/{node}/scan/nfs",     "GET", { ...args, $path: { node } }),
-					pbs:     (args?: A) => r("/nodes/{node}/scan/pbs",     "GET", { ...args, $path: { node } }),
+					lvmthin: (...args: BoundArgs<"/nodes/{node}/scan/lvmthin", "GET">) => r("/nodes/{node}/scan/lvmthin", "GET", { ...args[0], $path: { node } }),
+					nfs:     (...args: BoundArgs<"/nodes/{node}/scan/nfs", "GET">) => r("/nodes/{node}/scan/nfs", "GET", { ...args[0], $path: { node } }),
+					pbs:     (...args: BoundArgs<"/nodes/{node}/scan/pbs", "GET">) => r("/nodes/{node}/scan/pbs", "GET", { ...args[0], $path: { node } }),
 					zfs:     () => r("/nodes/{node}/scan/zfs",     "GET", { $path: { node } }),
 				},
 
@@ -561,21 +566,21 @@ function Nodes(client: Client) {
 					upid: (upid: string) => ({
 						get:    () => r("/nodes/{node}/tasks/{upid}",       "GET",    { $path: { node, upid } }),
 						delete: () => r("/nodes/{node}/tasks/{upid}",       "DELETE", { $path: { node, upid } }),
-						log:    (args?: A) => r("/nodes/{node}/tasks/{upid}/log",    "GET", { ...args, $path: { node, upid } }),
+						log:    (...args: BoundArgs<"/nodes/{node}/tasks/{upid}/log", "GET">) => r("/nodes/{node}/tasks/{upid}/log", "GET", { ...args[0], $path: { node, upid } }),
 						status: () => r("/nodes/{node}/tasks/{upid}/status", "GET", { $path: { node, upid } }),
 					}),
 				},
 
 				// ── VZDump ──────────────────────────────────────────────────
 				vzdump: {
-					create:        (args?: A) => r("/nodes/{node}/vzdump",                  "POST", { ...args, $path: { node } }),
-					defaults:      (args?: A) => r("/nodes/{node}/vzdump/defaults",         "GET",  { ...args, $path: { node } }),
-					extractconfig: (args?: A) => r("/nodes/{node}/vzdump/extractconfig",    "GET",  { ...args, $path: { node } }),
+					create:        (...args: BoundArgs<"/nodes/{node}/vzdump", "POST">) => r("/nodes/{node}/vzdump", "POST", { ...args[0], $path: { node } }),
+					defaults:      (...args: BoundArgs<"/nodes/{node}/vzdump/defaults", "GET">) => r("/nodes/{node}/vzdump/defaults", "GET",  { ...args[0], $path: { node } }),
+					extractconfig: (...args: BoundArgs<"/nodes/{node}/vzdump/extractconfig", "GET">) => r("/nodes/{node}/vzdump/extractconfig", "GET",  { ...args[0], $path: { node } }),
 				},
 
 				// ── Misc queries ────────────────────────────────────────────
-				query_oci_repo_tags:  (args?: A) => r("/nodes/{node}/query-oci-repo-tags",  "GET", { ...args, $path: { node } }),
-				query_url_metadata:   (args?: A) => r("/nodes/{node}/query-url-metadata",   "GET", { ...args, $path: { node } }),
+				query_oci_repo_tags:  (...args: BoundArgs<"/nodes/{node}/query-oci-repo-tags", "GET">) => r("/nodes/{node}/query-oci-repo-tags", "GET", { ...args[0], $path: { node } }),
+				query_url_metadata:   (...args: BoundArgs<"/nodes/{node}/query-url-metadata", "GET">) => r("/nodes/{node}/query-url-metadata", "GET", { ...args[0], $path: { node } }),
 			};
 	}
 

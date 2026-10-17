@@ -18,7 +18,7 @@ import {Terminal} from "./helpers/Terminal";
 import {TimerPulledEventEmitter} from "./helpers/TimerPulledEventEmitter";
 
 
-export type FetchLike<Input extends string | URL | Request = string | URL, Init extends RequestInit = RequestInit, Out extends Request = Request> = (input: Input, init?: Init) => Promise<Out>;
+export type FetchLike<Input extends string | URL | Request = string | URL | Request, Init extends RequestInit = RequestInit, Out extends Response = Response> = (input: Input, init?: Init) => Promise<Out>;
 
 export type ClientOptions = (
     {
@@ -47,6 +47,9 @@ type TaskStatusReturn = NodesAPI["/nodes/{node}/tasks/{upid}/status"]["GET"]["re
 type TaskLogLine = NodesAPI["/nodes/{node}/tasks/{upid}/log"]["GET"]["return"][number];
 
 export type TaskState = "running" | "stopped" | "failed";
+
+const isTaskSuccess = (exitstatus: string | undefined): boolean =>
+    exitstatus === "OK" || /^WARNINGS: \d+$/.test(exitstatus ?? "");
 export type TaskUpdate = {
     logs: string[];
     status: TaskState;
@@ -71,7 +74,7 @@ export type APIClient = {
 export class Client {
     private readonly baseUrl: string;
     private readonly apiPath: string;
-    private readonly fetchImpl: FetchLike<any, any, any>;
+    private readonly fetchImpl: FetchLike;
     private readonly opts: ClientOptions;
     private auth: AuthState = {};
     private readonly eventMonitors = new Map<string, TimerPulledEventEmitter<any>>();
@@ -136,8 +139,9 @@ export class Client {
                         logsChanged = true;
                     }
 
+                    // Proxmox treats "OK" and "WARNINGS: <n>" as successful exit statuses.
                     const statusState: TaskState =
-                        status.status === "stopped" && status.exitstatus !== "OK"
+                        status.status === "stopped" && !isTaskSuccess(status.exitstatus)
                             ? "failed"
                             : status.status;
                     const statusChanged = previousStatus !== statusState;
@@ -422,7 +426,7 @@ export class Client {
         const ct = res.headers.get("content-type") || "";
         if (ct.includes("application/json")) {
             const json = await res.json();
-            return (json?.data ?? json) as any;
+            return (json && Object.prototype.hasOwnProperty.call(json, "data") ? json.data : json) as Ret<P, M>;
         }
 
         return (await res.text()) as any;

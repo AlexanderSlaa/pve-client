@@ -195,22 +195,29 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string },
+                $query?: { "arch"?: "x86_64" | "aarch64" },
             }
-            return: { "custom": boolean; "name": string; "vendor": string }[]
+            return: { "custom": boolean; "name": string; "vendor": string ;
+                "abstract"?: boolean;
+            }[]
         }
     },
     "/nodes/{node}/capabilities/qemu/cpu-flags": {
         "GET": {
             parameters: {
                 $path: { "node": string },
+                $query?: { "accel"?: "kvm" | "tcg"; "arch"?: "x86_64" | "aarch64" },
             }
-            return: { "description": string; "name": string }[]
+            return: { "description": string; "name": string ;
+                "supported-on"?: (string)[];
+            }[]
         }
     },
     "/nodes/{node}/capabilities/qemu/machines": {
         "GET": {
             parameters: {
                 $path: { "node": string },
+                $query?: { "arch"?: "x86_64" | "aarch64" },
             }
             return: { "changes"?: string; "id": string; "type": "q35" | "i440fx"; "version": string }[]
         }
@@ -293,7 +300,11 @@ export type NodesAPI = {
             parameters: {
                 $path: { "node": string },
             }
-            return: { "data_pool": string; "metadata_pool": string; "name": string }[]
+            return: { "data_pool": string; "metadata_pool": string; "name": string ;
+                "data_pool_ids"?: (number)[];
+                "data_pools"?: (string)[];
+                "metadata_pool_id"?: number;
+            }[]
         }
     },
     "/nodes/{node}/ceph/fs/{name}": {
@@ -356,6 +367,12 @@ export type NodesAPI = {
                 "rank"?: number;
                 "standby_replay"?: boolean;
                 "state": string
+            ;
+                "ceph_version"?: string;
+                "ceph_version_short"?: string;
+                "direxists"?: boolean;
+                "fs_name"?: string;
+                "service"?: boolean;
             }[]
         }
     },
@@ -379,7 +396,12 @@ export type NodesAPI = {
             parameters: {
                 $path: { "node": string },
             }
-            return: { "addr"?: string; "host"?: string; "name": string; "state": string }[]
+            return: { "addr"?: string; "host"?: string; "name": string; "state": string ;
+                "ceph_version"?: string;
+                "ceph_version_short"?: string;
+                "direxists"?: boolean;
+                "service"?: boolean;
+            }[]
         }
     },
     "/nodes/{node}/ceph/mgr/{id}": {
@@ -661,6 +683,35 @@ export type NodesAPI = {
             return: string
         }
     },
+    "/nodes/{node}/ceph/releases": {
+        "GET": {
+            parameters: { $path: { "node": string } }
+            return: {
+                "available": boolean;
+                "is-default": boolean;
+                "release": string;
+                "unsupported": boolean;
+                "version": string
+            }[]
+        }
+    },
+    "/nodes/{node}/ceph/restart-bulk": {
+        "POST": {
+            parameters: {
+                $path: { "node": string },
+                $body: {
+                    "dry-run"?: boolean;
+                    "force"?: boolean;
+                    "only-outdated"?: boolean;
+                    "resume"?: boolean;
+                    "service-type": "osd";
+                    "set-noout"?: boolean;
+                    "timeout"?: number
+                },
+            }
+            return: string
+        }
+    },
     "/nodes/{node}/ceph/rules": {
         "GET": {
             parameters: {
@@ -784,7 +835,7 @@ export type NodesAPI = {
             parameters: {
                 $path: { "node": string },
                 $query?: {
-                    "property"?: "acme" | "acmedomain0" | "acmedomain1" | "acmedomain2" | "acmedomain3" | "acmedomain4" | "acmedomain5" | "ballooning-target" | "description" | "startall-onboot-delay" | "wakeonlan"
+                    "property"?: "acme" | "acmedomain0" | "acmedomain1" | "acmedomain2" | "acmedomain3" | "acmedomain4" | "acmedomain5" | "ballooning-target" | "description" | "location" | "startall-onboot-delay" | "wakeonlan"
                 },
             }
             return: {
@@ -793,6 +844,7 @@ export type NodesAPI = {
                 "ballooning-target"?: number;
                 "description"?: string;
                 "digest"?: string;
+                "location"?: string;
                 "startall-onboot-delay"?: number;
                 "wakeonlan"?: string
             }
@@ -807,6 +859,7 @@ export type NodesAPI = {
                     "delete"?: string;
                     "description"?: string;
                     "digest"?: string;
+                    "location"?: string;
                     "startall-onboot-delay"?: number;
                     "wakeonlan"?: string
                 },
@@ -1309,9 +1362,16 @@ export type NodesAPI = {
                 $path: { "node": string },
                 $query?: {
                     "endcursor"?: string;
+                    "identifiers"?: boolean;
+                    "kernel"?: boolean;
                     "lastentries"?: number;
+                    "priority"?: string;
+                    "service"?: string;
                     "since"?: number;
                     "startcursor"?: string;
+                    "structured"?: boolean;
+                    "unit"?: string;
+                    "units"?: boolean;
                     "until"?: number
                 },
             }
@@ -2115,7 +2175,9 @@ export type NodesAPI = {
                 $path: { "node": string; "vmid": number },
                 $body: { "height"?: number; "websocket"?: boolean; "width"?: number },
             }
-            return: { "cert": string; "port": number; "ticket": string; "upid": string; "user": string }
+            return: { "cert": string; "port": number; "ticket": string; "upid": string; "user": string ;
+                "password"?: string;
+            }
         }
     },
     "/nodes/{node}/lxc/{vmid}/vncwebsocket": {
@@ -2131,7 +2193,9 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string },
-                $body: { "maxworkers"?: number; "target": string; "vms"?: string; "with-local-disks"?: boolean },
+                $body: { "maxworkers"?: number; "target": string; "vms"?: string; "with-local-disks"?: boolean ;
+                    "max-workers"?: number;
+                },
             }
             return: string
         }
@@ -2503,7 +2567,11 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $query?: { "file": string },
+                $query?: { "file": string ;
+                    "count"?: number;
+                    "decode"?: boolean;
+                    "offset"?: number;
+                },
             }
             return: { "content": string; "truncated"?: boolean }
         }
@@ -4082,7 +4150,9 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string },
-                $body: { "force"?: boolean; "vms"?: string },
+                $body: { "force"?: boolean; "vms"?: string ;
+                    "max-workers"?: number;
+                },
             }
             return: string
         }
@@ -4115,7 +4185,9 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string },
-                $body: { "force-stop"?: boolean; "timeout"?: number; "vms"?: string },
+                $body: { "force-stop"?: boolean; "timeout"?: number; "vms"?: string ;
+                    "max-workers"?: number;
+                },
             }
             return: string
         }
@@ -4177,6 +4249,8 @@ export type NodesAPI = {
                 "verification"?: { "state": string; "upid": string };
                 "vmid"?: number;
                 "volid": string
+            ;
+                "approximate-size"?: number;
             }[]
         },
         "POST": {
@@ -4420,7 +4494,9 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string },
-                $body: { "vms"?: string },
+                $body: { "vms"?: string ;
+                    "max-workers"?: number;
+                },
             }
             return: string
         }
@@ -4551,7 +4627,9 @@ export type NodesAPI = {
                     "width"?: number
                 },
             }
-            return: { "cert": string; "port": number; "ticket": string; "upid": string; "user": string }
+            return: { "cert": string; "port": number; "ticket": string; "upid": string; "user": string ;
+                "password"?: string;
+            }
         }
     },
     "/nodes/{node}/vncwebsocket": {

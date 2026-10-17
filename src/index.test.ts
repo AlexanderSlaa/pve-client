@@ -109,6 +109,20 @@ describe("Client", () => {
         expect(text).toBe("plain-text");
     });
 
+    it("unwraps null and false data values", async () => {
+        const fetchMock = vi.fn()
+            .mockResolvedValueOnce(new Response(JSON.stringify({data: null}), {
+                headers: {"content-type": "application/json"},
+            }))
+            .mockResolvedValueOnce(new Response(JSON.stringify({data: false}), {
+                headers: {"content-type": "application/json"},
+            }));
+        const client = new Client({baseUrl: "https://pve.local", apiToken: "token", fetch: fetchMock});
+
+        expect(await client.request("/version", "GET", {})).toBeNull();
+        expect(await client.request("/version", "GET", {})).toBe(false);
+    });
+
     it("throws when path placeholders remain unresolved", async () => {
         const client = new Client({
             baseUrl: "https://pve.local",
@@ -144,6 +158,26 @@ describe("Client", () => {
         const resultPromise = client.task.wait("UPID:node01:anything", async () => undefined, 250);
         await vi.advanceTimersByTimeAsync(300);
         await expect(resultPromise).resolves.toEqual(["step1", "done"]);
+    });
+
+    it("resolves task.wait when task finished with warnings", async () => {
+        const client = new Client({
+            baseUrl: "https://pve.local",
+            apiToken: "token",
+            fetch: vi.fn(),
+        });
+
+        vi.spyOn(client, "request").mockImplementation(async (path) => {
+            if (String(path).endsWith("/status")) {
+                return {status: "stopped", exitstatus: "WARNINGS: 2"} as never;
+            }
+            return [{n: 0, t: "warning: something"}, {n: 1, t: "TASK WARNINGS: 2"}] as never;
+        });
+
+        await expect(client.task.wait("UPID:node01:anything")).resolves.toEqual([
+            "warning: something",
+            "TASK WARNINGS: 2",
+        ]);
     });
 
     it("fails task.wait when task exit status is not OK", async () => {
