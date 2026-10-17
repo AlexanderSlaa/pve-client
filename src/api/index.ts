@@ -16,9 +16,9 @@ export type RequestInput<T> =
             T extends object ? { [K in keyof T]: RequestInput<T[K]> } :
                 T;
 
-export type PathContext<T extends { $path: unknown }> = Omit<RequestInput<T>, '$path'>;
+export type PathContext<T> = Omit<RequestInput<T>, '$path'>;
 
-export type ArgsTuple<T> = keyof T extends never ? [args?: RequestInput<T>] : [args: RequestInput<T>];
+export type ArgsTuple<T> = {} extends T ? [args?: RequestInput<T>] : [args: RequestInput<T>];
 
 
 export type MethodKey<P extends keyof API> = Extract<keyof API[P], HttpMethod>;

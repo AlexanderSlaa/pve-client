@@ -10,14 +10,6 @@ export default function configFactory(client: Client) {
     nodes: {
       index: (...args: ArgsTuple<ClusterAPI["/cluster/config/nodes"]["GET"]['parameters']>) => client.request("/cluster/config/nodes", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/config/nodes"]["GET"]['parameters']),
       node: (node: string) => ({
-        get: (
-          ...args: ArgsTuple<PathContext<ClusterAPI["/cluster/config/nodes/{node}"]["GET"]['parameters']>>
-        ) =>
-          client.request(
-            "/cluster/config/nodes/{node}",
-            "GET",
-            { ...((args[0] ?? {}) as PathContext<ClusterAPI["/cluster/config/nodes/{node}"]["GET"]['parameters']>), $path: { node } }
-          ),
         create: (
           ...args: ArgsTuple<PathContext<ClusterAPI["/cluster/config/nodes/{node}"]["POST"]['parameters']>>
         ) =>

@@ -4,6 +4,8 @@
 // --- BEGIN ClusterAPI type definition ---
 // (Copy-paste from cluster.ts, lines 4-3187)
 
+type FabricProtocol = "openfabric" | "ospf" | "wireguard" | "bgp";
+
 export type ClusterAPI = {
     "/cluster": {
         "GET": {
@@ -162,7 +164,44 @@ export type ClusterAPI = {
     "/cluster/backup": {
         "GET": {
             parameters: {}
-            return: { "id": string }[]
+            return: { "id": string ;
+                "all"?: boolean;
+                "bwlimit"?: number;
+                "comment"?: string;
+                "compress"?: "0" | "1" | "gzip" | "lzo" | "zstd";
+                "dumpdir"?: string;
+                "enabled"?: boolean;
+                "exclude"?: string;
+                "exclude-path"?: (string)[];
+                "fleecing"?: { "enabled"?: boolean; "storage"?: string };
+                "ionice"?: number;
+                "lockwait"?: number;
+                "mailnotification"?: "always" | "failure";
+                "mailto"?: string;
+                "mode"?: "snapshot" | "suspend" | "stop";
+                "next-run"?: number;
+                "node"?: string;
+                "notes-template"?: string;
+                "notification-mode"?: "auto" | "legacy-sendmail" | "notification-system";
+                "pbs-change-detection-mode"?: "legacy" | "data" | "metadata";
+                "performance"?: { "max-workers"?: number; "pbs-entries-max"?: number };
+                "pigz"?: number;
+                "pool"?: string;
+                "protected"?: boolean;
+                "prune-backups"?: { "keep-all"?: boolean; "keep-daily"?: number; "keep-hourly"?: number; "keep-last"?: number; "keep-monthly"?: number; "keep-weekly"?: number; "keep-yearly"?: number };
+                "quiet"?: boolean;
+                "remove"?: boolean;
+                "repeat-missed"?: boolean;
+                "schedule"?: string;
+                "script"?: string;
+                "stdexcludes"?: boolean;
+                "stop"?: boolean;
+                "stopwait"?: number;
+                "storage"?: string;
+                "tmpdir"?: string;
+                "vmid"?: string;
+                "zstd"?: number;
+            }[]
         },
         "POST": {
             parameters: {
@@ -320,6 +359,8 @@ export type ClusterAPI = {
                     "target": string;
                     "vms"?: number[];
                     "with-local-disks"?: boolean
+                ;
+                    "max-workers"?: number;
                 },
             }
             return: string
@@ -328,7 +369,9 @@ export type ClusterAPI = {
     "/cluster/bulk-action/guest/shutdown": {
         "POST": {
             parameters: {
-                $body: { "force-stop"?: boolean; "maxworkers"?: number; "timeout"?: number; "vms"?: number[] },
+                $body: { "force-stop"?: boolean; "maxworkers"?: number; "timeout"?: number; "vms"?: number[] ;
+                    "max-workers"?: number;
+                },
             }
             return: string
         }
@@ -336,7 +379,9 @@ export type ClusterAPI = {
     "/cluster/bulk-action/guest/start": {
         "POST": {
             parameters: {
-                $body: { "maxworkers"?: number; "timeout"?: number; "vms"?: number[] },
+                $body: { "maxworkers"?: number; "timeout"?: number; "vms"?: number[] ;
+                    "max-workers"?: number;
+                },
             }
             return: string
         }
@@ -344,7 +389,9 @@ export type ClusterAPI = {
     "/cluster/bulk-action/guest/suspend": {
         "POST": {
             parameters: {
-                $body: { "maxworkers"?: number; "statestorage"?: string; "to-disk"?: boolean; "vms"?: number[] },
+                $body: { "maxworkers"?: number; "statestorage"?: string; "to-disk"?: boolean; "vms"?: number[] ;
+                    "max-workers"?: number;
+                },
             }
             return: string
         }
@@ -402,6 +449,26 @@ export type ClusterAPI = {
             return: unknown
         }
     },
+    "/cluster/ceph/health-mute": {
+        "GET": {
+            parameters: {}
+            return: {
+                "code": string;
+                "sticky": boolean;
+                "summary"?: string;
+                "ttl"?: string
+            }[]
+        }
+    },
+    "/cluster/ceph/health-mute/{code}": {
+        "PUT": {
+            parameters: {
+                $path: { "code": string },
+                $body: { "sticky"?: boolean; "ttl"?: string; "value": boolean },
+            }
+            return: null
+        }
+    },
     "/cluster/ceph/metadata": {
         "GET": {
             parameters: {
@@ -449,6 +516,20 @@ export type ClusterAPI = {
             }
         }
     },
+    "/cluster/ceph/restart-bulk": {
+        "POST": {
+            parameters: {
+                $body: {
+                    "dry-run"?: boolean;
+                    "force"?: boolean;
+                    "only-outdated"?: boolean;
+                    "service-type": "mon" | "mgr" | "mds" | "osd";
+                    "timeout"?: number
+                },
+            }
+            return: string
+        }
+    },
     "/cluster/ceph/status": {
         "GET": {
             parameters: {}
@@ -462,7 +543,9 @@ export type ClusterAPI = {
         },
         "POST": {
             parameters: {
-                $body: { "clustername": string; "link[n]"?: string; "nodeid"?: number; "votes"?: number },
+                $body: { "clustername": string; "link[n]"?: string; "nodeid"?: number; "votes"?: number ;
+                    "token-coefficient"?: number;
+                },
             }
             return: string
         }
@@ -514,12 +597,6 @@ export type ClusterAPI = {
         }
     },
     "/cluster/config/nodes/{node}": {
-        "GET": {
-            parameters: {
-                $path: { "node": string },
-            }
-            return: Record<string, unknown>
-        },
         "DELETE": {
             parameters: {
                 $path: { "node": string },
@@ -981,6 +1058,8 @@ export type ClusterAPI = {
                     "sid": string;
                     "state"?: "started" | "stopped" | "enabled" | "disabled" | "ignored";
                     "type"?: "ct" | "vm"
+                ;
+                    "auto-rebalance"?: boolean;
                 },
             }
             return: unknown
@@ -1008,6 +1087,8 @@ export type ClusterAPI = {
                 "sid": string;
                 "state"?: "started" | "stopped" | "enabled" | "disabled" | "ignored";
                 "type": string
+            ;
+                "auto-rebalance"?: boolean;
             }
         },
         "PUT": {
@@ -1022,6 +1103,8 @@ export type ClusterAPI = {
                     "max_relocate"?: number;
                     "max_restart"?: number;
                     "state"?: "started" | "stopped" | "enabled" | "disabled" | "ignored"
+                ;
+                    "auto-rebalance"?: boolean;
                 },
             }
             return: unknown
@@ -1064,16 +1147,10 @@ export type ClusterAPI = {
         },
         "POST": {
             parameters: {
-                $body: {
-                    "affinity"?: "positive" | "negative";
-                    "comment"?: string;
-                    "disable"?: boolean;
-                    "nodes"?: string;
-                    "resources": string;
-                    "rule": string;
-                    "strict"?: boolean;
-                    "type": "node-affinity" | "resource-affinity"
-                },
+                $body: { "rule": string; "resources": string; "comment"?: string; "disable"?: boolean } & (
+                    { "type": "node-affinity"; "nodes": string; "affinity"?: "positive" | "negative"; "strict"?: boolean } |
+                    { "type": "resource-affinity"; "affinity": "positive" | "negative"; "nodes"?: never; "strict"?: never }
+                ),
             }
             return: unknown
         }
@@ -1094,17 +1171,10 @@ export type ClusterAPI = {
         "PUT": {
             parameters: {
                 $path: { "rule": string },
-                $body: {
-                    "affinity"?: "positive" | "negative";
-                    "comment"?: string;
-                    "delete"?: string;
-                    "digest"?: string;
-                    "disable"?: boolean;
-                    "nodes"?: string;
-                    "resources"?: string;
-                    "strict"?: boolean;
-                    "type": "node-affinity" | "resource-affinity"
-                },
+                $body: { "delete"?: string; "digest"?: string; "comment"?: string; "disable"?: boolean; "resources"?: string } & (
+                    { "type": "node-affinity"; "affinity"?: "positive" | "negative"; "nodes"?: string; "strict"?: boolean } |
+                    { "type": "resource-affinity"; "affinity"?: "positive" | "negative"; "nodes"?: never; "strict"?: never }
+                ),
             }
             return: unknown
         }
@@ -1132,6 +1202,10 @@ export type ClusterAPI = {
                 "status": string;
                 "timestamp"?: number;
                 "type": "quorum" | "master" | "lrm" | "service"
+            ;
+                "armed-state"?: "armed" | "standby" | "disarming" | "disarmed";
+                "auto-rebalance"?: boolean;
+                "resource_mode"?: "freeze" | "ignore";
             }[]
         }
     },
@@ -1865,7 +1939,34 @@ export type ClusterAPI = {
     "/cluster/options": {
         "GET": {
             parameters: {}
-            return: Record<string, unknown>
+            return: {
+                "allowed-tags": string[];
+                "bwlimit"?: string;
+                "consent-text"?: string;
+                "console"?: "applet" | "vv" | "html5" | "xtermjs";
+                "crs"?: string;
+                "email_from"?: string;
+                "fencing"?: "watchdog" | "hardware" | "both";
+                "ha"?: string;
+                "http_proxy"?: string;
+                "keyboard"?: string;
+                "language"?: string;
+                "location"?: string;
+                "mac_prefix"?: string;
+                "max_workers"?: number;
+                "migration"?: string;
+                "migration_unsecure"?: boolean;
+                "next-id"?: string;
+                "notify"?: string;
+                "registered-tags"?: string;
+                "replication"?: string;
+                "tag-style"?: string;
+                "u2f"?: string;
+                "user-tag-access"?: string;
+                "webauthn"?: string
+            ;
+                "description"?: string;
+            }
         },
         "PUT": {
             parameters: {
@@ -1882,6 +1983,7 @@ export type ClusterAPI = {
                     "http_proxy"?: string;
                     "keyboard"?: "de" | "de-ch" | "da" | "en-gb" | "en-us" | "es" | "fi" | "fr" | "fr-be" | "fr-ca" | "fr-ch" | "hu" | "is" | "it" | "ja" | "lt" | "mk" | "nl" | "no" | "pl" | "pt" | "pt-br" | "sv" | "sl" | "tr";
                     "language"?: "ar" | "ca" | "da" | "de" | "en" | "es" | "eu" | "fa" | "fr" | "hr" | "he" | "it" | "ja" | "ka" | "kr" | "nb" | "nl" | "nn" | "pl" | "pt_BR" | "ru" | "sl" | "sv" | "tr" | "ukr" | "zh_CN" | "zh_TW";
+                    "location"?: string;
                     "mac_prefix"?: string;
                     "max_workers"?: number;
                     "migration"?: string;
@@ -2016,6 +2118,9 @@ export type ClusterAPI = {
                 "uptime"?: number;
                 "vmid"?: number;
                 "zone-type"?: string
+            ;
+                "host-arch"?: "x86_64" | "aarch64";
+                "shared"?: boolean;
             }[]
         }
     },
@@ -2063,6 +2168,10 @@ export type ClusterAPI = {
                 };
                 "state"?: "new" | "changed" | "deleted";
                 "type": "bgp" | "evpn" | "faucet" | "isis"
+            ;
+                "bgp-mode"?: "auto" | "external" | "internal";
+                "nodes"?: string;
+                "peer-group-name"?: string;
             }[]
         },
         "POST": {
@@ -2082,6 +2191,12 @@ export type ClusterAPI = {
                     "node"?: string;
                     "peers"?: string;
                     "type": "bgp" | "evpn" | "faucet" | "isis"
+                ;
+                    "bgp-mode"?: "auto" | "external" | "internal";
+                    "nodes"?: string;
+                    "peer-group-name"?: string;
+                    "route-map-in"?: string;
+                    "route-map-out"?: string;
                 },
             }
             return: unknown
@@ -2127,6 +2242,10 @@ export type ClusterAPI = {
                 };
                 "state"?: "new" | "changed" | "deleted";
                 "type": "bgp" | "evpn" | "faucet" | "isis"
+            ;
+                "bgp-mode"?: "auto" | "external" | "internal";
+                "nodes"?: string;
+                "peer-group-name"?: string;
             }
         },
         "PUT": {
@@ -2147,6 +2266,12 @@ export type ClusterAPI = {
                     "loopback"?: string;
                     "node"?: string;
                     "peers"?: string
+                ;
+                    "bgp-mode"?: "auto" | "external" | "internal";
+                    "nodes"?: string;
+                    "peer-group-name"?: string;
+                    "route-map-in"?: string;
+                    "route-map-out"?: string;
                 },
             }
             return: unknown
@@ -2228,17 +2353,23 @@ export type ClusterAPI = {
                     "ip6_prefix"?: string;
                     "ip_prefix"?: string;
                     "lock-token"?: string;
-                    "protocol": "openfabric" | "ospf"
+                    "persistent_keepalive"?: number;
+                    "redistribute"?: string[];
+                    "route_filter"?: string;
+                    "protocol": FabricProtocol
                 }[];
                 "nodes": {
                     "digest"?: string;
                     "fabric_id": string;
-                    "interfaces": unknown[];
+                    "interfaces": string[];
                     "ip"?: string;
                     "ip6"?: string;
                     "lock-token"?: string;
+                    "persistent_keepalive"?: number;
+                    "redistribute"?: string[];
+                    "route_filter"?: string;
                     "node_id": string;
-                    "protocol": "openfabric" | "ospf"
+                    "protocol": FabricProtocol
                 }[]
             }
         }
@@ -2257,7 +2388,10 @@ export type ClusterAPI = {
                 "ip6_prefix"?: string;
                 "ip_prefix"?: string;
                 "lock-token"?: string;
-                "protocol": "openfabric" | "ospf"
+                    "persistent_keepalive"?: number;
+                    "redistribute"?: string[];
+                    "route_filter"?: string;
+                "protocol": FabricProtocol
             }[]
         },
         "POST": {
@@ -2271,7 +2405,10 @@ export type ClusterAPI = {
                     "ip6_prefix"?: string;
                     "ip_prefix"?: string;
                     "lock-token"?: string;
-                    "protocol": "openfabric" | "ospf"
+                    "persistent_keepalive"?: number;
+                    "redistribute"?: string[];
+                    "route_filter"?: string;
+                    "protocol": FabricProtocol
                 },
             }
             return: unknown
@@ -2297,7 +2434,10 @@ export type ClusterAPI = {
                 "ip6_prefix"?: string;
                 "ip_prefix"?: string;
                 "lock-token"?: string;
-                "protocol": "openfabric" | "ospf"
+                    "persistent_keepalive"?: number;
+                    "redistribute"?: string[];
+                    "route_filter"?: string;
+                "protocol": FabricProtocol
             }
         },
         "PUT": {
@@ -2306,13 +2446,16 @@ export type ClusterAPI = {
                 $body: {
                     "area"?: string;
                     "csnp_interval"?: number;
-                    "delete": unknown[];
+                    "delete"?: ("area" | "csnp_interval" | "hello_interval" | "ip_prefix" | "ip6_prefix" | "persistent_keepalive" | "redistribute" | "route_filter" | "route_map_in" | "route_map_out")[];
                     "digest"?: string;
                     "hello_interval"?: number;
                     "ip6_prefix"?: string;
                     "ip_prefix"?: string;
                     "lock-token"?: string;
-                    "protocol": "openfabric" | "ospf"
+                    "persistent_keepalive"?: number;
+                    "redistribute"?: string[];
+                    "route_filter"?: string;
+                    "protocol": FabricProtocol
                 },
             }
             return: unknown
@@ -2326,12 +2469,17 @@ export type ClusterAPI = {
             return: {
                 "digest"?: string;
                 "fabric_id": string;
-                "interfaces": unknown[];
+                "allowed_ips"?: string[];
+                    "endpoint"?: string;
+                    "interfaces": string[];
+                    "peers"?: string[];
+                    "public_key"?: string;
+                    "role"?: "internal" | "external";
                 "ip"?: string;
                 "ip6"?: string;
                 "lock-token"?: string;
                 "node_id": string;
-                "protocol": "openfabric" | "ospf"
+                "protocol": FabricProtocol
             }[]
         }
     },
@@ -2344,12 +2492,17 @@ export type ClusterAPI = {
             return: {
                 "digest"?: string;
                 "fabric_id": string;
-                "interfaces": unknown[];
+                "allowed_ips"?: string[];
+                    "endpoint"?: string;
+                    "interfaces": string[];
+                    "peers"?: string[];
+                    "public_key"?: string;
+                    "role"?: "internal" | "external";
                 "ip"?: string;
                 "ip6"?: string;
                 "lock-token"?: string;
                 "node_id": string;
-                "protocol": "openfabric" | "ospf"
+                "protocol": FabricProtocol
             }[]
         },
         "POST": {
@@ -2357,12 +2510,17 @@ export type ClusterAPI = {
                 $path: { "fabric_id": string },
                 $body: {
                     "digest"?: string;
-                    "interfaces": unknown[];
+                    "allowed_ips"?: string[];
+                    "endpoint"?: string;
+                    "interfaces": string[];
+                    "peers"?: string[];
+                    "public_key"?: string;
+                    "role"?: "internal" | "external";
                     "ip"?: string;
                     "ip6"?: string;
                     "lock-token"?: string;
                     "node_id": string;
-                    "protocol": "openfabric" | "ospf"
+                    "protocol": FabricProtocol
                 },
             }
             return: unknown
@@ -2382,25 +2540,35 @@ export type ClusterAPI = {
             return: {
                 "digest"?: string;
                 "fabric_id": string;
-                "interfaces": unknown[];
+                "allowed_ips"?: string[];
+                    "endpoint"?: string;
+                    "interfaces": string[];
+                    "peers"?: string[];
+                    "public_key"?: string;
+                    "role"?: "internal" | "external";
                 "ip"?: string;
                 "ip6"?: string;
                 "lock-token"?: string;
                 "node_id": string;
-                "protocol": "openfabric" | "ospf"
+                "protocol": FabricProtocol
             }
         },
         "PUT": {
             parameters: {
                 $path: { "fabric_id": string; "node_id": string },
                 $body: {
-                    "delete"?: "interfaces" | "ip" | "ip6"[];
+                    "delete"?: ("interfaces" | "ip" | "ip6" | "allowed_ips" | "endpoint" | "peers" | "public_key" | "role")[];
                     "digest"?: string;
-                    "interfaces": unknown[];
+                    "allowed_ips"?: string[];
+                    "endpoint"?: string;
+                    "interfaces": string[];
+                    "peers"?: string[];
+                    "public_key"?: string;
+                    "role"?: "internal" | "external";
                     "ip"?: string;
                     "ip6"?: string;
                     "lock-token"?: string;
-                    "protocol": "openfabric" | "ospf"
+                    "protocol": FabricProtocol
                 },
             }
             return: unknown
@@ -2852,6 +3020,8 @@ export type ClusterAPI = {
                 "vrf-vxlan"?: number;
                 "vxlan-port"?: number;
                 "zone": string
+            ;
+                "secondary-controllers"?: (string)[];
             }[]
         },
         "POST": {
@@ -2884,6 +3054,8 @@ export type ClusterAPI = {
                     "vrf-vxlan"?: number;
                     "vxlan-port"?: number;
                     "zone": string
+                ;
+                    "secondary-controllers"?: (string)[];
                 },
             }
             return: unknown
@@ -2953,6 +3125,8 @@ export type ClusterAPI = {
                 "vrf-vxlan"?: number;
                 "vxlan-port"?: number;
                 "zone": string
+            ;
+                "secondary-controllers"?: (string)[];
             }
         },
         "PUT": {
@@ -2986,6 +3160,8 @@ export type ClusterAPI = {
                     "vlan-protocol"?: "802.1q" | "802.1ad";
                     "vrf-vxlan"?: number;
                     "vxlan-port"?: number
+                ;
+                    "secondary-controllers"?: (string)[];
                 },
             }
             return: unknown

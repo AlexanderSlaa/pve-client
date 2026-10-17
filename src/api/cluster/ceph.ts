@@ -13,7 +13,16 @@ export default function cephFactory(client: Client) {
                 update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/ceph/flags/{flag}"]["PUT"]['parameters']>>) => client.request("/cluster/ceph/flags/{flag}", "PUT", { ...((args[0]) as any), $path: { flag: value } })
             })
         },
+        health_mute: {
+            list: () => client.request("/cluster/ceph/health-mute", "GET", {}),
+            code: (code: string) => ({
+                update: (...args: ArgsTuple<PathContext<ClusterAPI["/cluster/ceph/health-mute/{code}"]["PUT"]['parameters']>>) =>
+                    client.request("/cluster/ceph/health-mute/{code}", "PUT", { ...args[0], $path: { code } }),
+            }),
+        },
         metadata: (...args: ArgsTuple<ClusterAPI["/cluster/ceph/metadata"]["GET"]['parameters']>) => client.request("/cluster/ceph/metadata", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/ceph/metadata"]["GET"]['parameters']),
+        restart_bulk: (...args: ArgsTuple<ClusterAPI["/cluster/ceph/restart-bulk"]["POST"]['parameters']>) =>
+            client.request("/cluster/ceph/restart-bulk", "POST", args[0]),
         status: (...args: ArgsTuple<ClusterAPI["/cluster/ceph/status"]["GET"]['parameters']>) => client.request("/cluster/ceph/status", "GET", (args[0] ?? {}) as ClusterAPI["/cluster/ceph/status"]["GET"]['parameters'])
     };
 }

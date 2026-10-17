@@ -6,6 +6,23 @@ function makeClient() {
 }
 
 describe("Cluster factory", () => {
+    it("routes new cluster Ceph operations", async () => {
+        const client = makeClient();
+        const spy = vi.spyOn(client, "request").mockResolvedValue(null as never);
+
+        await client.api.cluster.ceph.health_mute.list();
+        await client.api.cluster.ceph.health_mute.code("MON_DOWN").update({$body: {value: true}});
+        await client.api.cluster.ceph.restart_bulk({$body: {"service-type": "mon"}});
+
+        expect(spy).toHaveBeenNthCalledWith(1, "/cluster/ceph/health-mute", "GET", {});
+        expect(spy).toHaveBeenNthCalledWith(2, "/cluster/ceph/health-mute/{code}", "PUT", {
+            $path: {code: "MON_DOWN"}, $body: {value: true},
+        });
+        expect(spy).toHaveBeenNthCalledWith(3, "/cluster/ceph/restart-bulk", "POST", {
+            $body: {"service-type": "mon"},
+        });
+    });
+
     it("keeps selected cluster helpers strongly typed", () => {
         const client = makeClient();
 
