@@ -1,3 +1,15 @@
+# [1.5.0](https://github.com/AlexanderSlaa/pve-client/compare/v1.4.0...v1.5.0) (2026-10-17)
+
+
+### Bug Fixes
+
+* **helpers:** confirm running guests with their live status ([ff47642](https://github.com/AlexanderSlaa/pve-client/commit/ff4764225a0caac378e2096c4a2d13f037ed41f6))
+
+
+### Features
+
+* **display:** reuse an existing vncproxy ticket; export helper types ([fe160a1](https://github.com/AlexanderSlaa/pve-client/commit/fe160a164fb3e8fa0a8a3a70e3c18cb3d0ae7363))
+
 # [1.4.0](https://github.com/AlexanderSlaa/pve-client/compare/v1.3.1...v1.4.0) (2026-10-17)
 
 
