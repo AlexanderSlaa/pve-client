@@ -29,6 +29,15 @@ export type DisplayPipe = {
     once(event: "close", listener: () => void): unknown;
 } & EventEmitter;
 
+export type DisplayOptions = {
+    /**
+     * Reuse a vncproxy ticket created earlier, e.g. by another process. The browser's noVNC
+     * client authenticates with `ticket.ticket` as its password, so the websocket must be
+     * opened with the same vncproxy; creating a new one would not match.
+     */
+    ticket?: DisplayTicket;
+};
+
 export type DisplayOpenOptions = {
     rejectUnauthorized?: boolean;
     pipeTo?: DisplayPipe;
@@ -101,8 +110,10 @@ export class Display {
 
     constructor(
         private readonly vmid: string | number,
-        private readonly client: Client
+        private readonly client: Client,
+        options: DisplayOptions = {}
     ) {
+        this.cachedTicket = options.ticket;
     }
 
     get ticket(): DisplayTicket | undefined {

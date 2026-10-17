@@ -250,6 +250,37 @@ describe("Client", () => {
         );
     });
 
+    it("reuses a display ticket passed to the display helper", async () => {
+        const client = new Client({
+            baseUrl: "https://pve.local",
+            username: "root",
+            password: "pass",
+            fetch: vi.fn(),
+        });
+        const ticket = {cert: "cert", port: 5901, ticket: "PVEVNC:abc", upid: "UPID:pve1:vnc", user: "root@pam"};
+
+        vi.spyOn(client, "request").mockImplementation(async (path, method) => {
+            if (String(path) === "/cluster/resources") {
+                return [{vmid: 101, node: "pve1", type: "qemu", status: "running"}] as never;
+            }
+            throw new Error(`Unexpected request in test: ${String(method)} ${String(path)}`);
+        });
+
+        const display = client.helpers.display(101, {ticket});
+        const info = await display.getConnectionInfo();
+
+        expect(display.ticket).toBe(ticket);
+        expect(info.ticket).toBe(ticket);
+        expect(new URL(info.websocketUrl).searchParams.get("vncticket")).toBe("PVEVNC:abc");
+        expect(new URL(info.websocketUrl).searchParams.get("port")).toBe("5901");
+        // No new vncproxy: the browser's VNC password belongs to the passed ticket.
+        expect(client.request).not.toHaveBeenCalledWith(
+            "/nodes/{node}/qemu/{vmid}/vncproxy",
+            expect.anything(),
+            expect.anything()
+        );
+    });
+
     it("uses the live guest status when cluster resources still report it stopped", async () => {
         const client = new Client({
             baseUrl: "https://pve.local",
