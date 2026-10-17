@@ -13,7 +13,7 @@ import Pools from "./api/pools";
 import Storage from "./api/storage";
 import type {AnyArgs, API, MethodKey, Params, Ret} from "./api";
 import Version from "./api/version";
-import {Display} from "./helpers/Display";
+import {Display, type DisplayOptions} from "./helpers/Display";
 import {Terminal} from "./helpers/Terminal";
 import {TimerPulledEventEmitter} from "./helpers/TimerPulledEventEmitter";
 
@@ -217,7 +217,11 @@ export class Client {
             }
             return new Terminal(vmid, this);
         },
-        display: (vmid: string | number): Display => new Display(vmid, this),
+        /**
+         * noVNC display helper. Pass `{ticket}` to reuse a vncproxy ticket created earlier
+         * (e.g. by another process), so the browser's VNC password still matches.
+         */
+        display: (vmid: string | number, options?: DisplayOptions): Display => new Display(vmid, this, options),
     };
 
     public readonly events = {
@@ -458,3 +462,7 @@ export function createAPI(client: Client): APIClient {
 }
 
 export type { NodeScopedAPI } from "./api/nodes";
+export {Display, DisplaySession} from "./helpers/Display";
+export type {DisplayConnectionInfo, DisplayOpenOptions, DisplayOptions, DisplayPipe, DisplayTicket} from "./helpers/Display";
+export {Terminal, TerminalSession, TerminalState} from "./helpers/Terminal";
+export type {TerminalConnectionInfo, TerminalOpenOptions, TerminalPipe, TerminalTicket} from "./helpers/Terminal";

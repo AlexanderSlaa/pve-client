@@ -273,6 +273,22 @@ const vms = await client.api.cluster.resources.index({
 
 ---
 
+### noVNC display across processes
+
+`helpers.display(vmid).createTicket()` creates a vncproxy; its `ticket` is the password the browser's noVNC
+client authenticates with. When the websocket to Proxmox is opened by a different process (e.g. another
+replica behind a load balancer), pass that ticket along so the same vncproxy is used:
+
+```ts
+// Process A: create the vncproxy and hand the password to the browser
+const ticket = await pve.helpers.display(100).createTicket();
+// … store `ticket` (e.g. in Redis) and send `ticket.ticket` to the browser as the VNC password
+
+// Process B: open the websocket for that same vncproxy
+const session = await pve.helpers.display(100, {ticket}).open();
+session.pipe(browserSocket);
+```
+
 ## Task Monitoring
 
 Proxmox operations return a UPID (task ID). Use `client.task` to track completion:

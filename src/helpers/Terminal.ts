@@ -1,10 +1,9 @@
 import EventEmitter from "node:events";
-import type {ClusterAPI} from "../api/cluster/types";
 import type {Client} from "../index";
 import WS, {type RawData} from "ws";
+import {resolveRunningVm} from "./resolveRunningVm";
 
 type VMType = "qemu" | "lxc";
-type ClusterResource = ClusterAPI["/cluster/resources"]["GET"]["return"][number];
 
 type SocketBuildResult = {
     info: TerminalConnectionInfo;
@@ -329,32 +328,7 @@ export class Terminal {
         return session;
     }
 
-    private async getRunningVm(): Promise<{ vmid: number; node: string; type: VMType }> {
-        const resources = await this.client.request("/cluster/resources", "GET", {
-            $query: {type: "vm"},
-        } as any);
-
-        const vm = (resources as ClusterResource[]).find(
-            (resource) => resource.vmid?.toString() === this.vmid.toString()
-        );
-
-        if (!vm) {
-            throw new Error(`Unable to find virtual machine with id(${this.vmid}).`);
-        }
-        if (vm.status !== "running") {
-            throw new Error(`Virtual machine ${this.vmid} is not running.`);
-        }
-        if (!vm.node || !vm.vmid) {
-            throw new Error(`Virtual machine ${this.vmid} does not include node/vmid data.`);
-        }
-        if (vm.type !== "qemu" && vm.type !== "lxc") {
-            throw new Error(`Unsupported VM type '${vm.type}' for terminal helper.`);
-        }
-
-        return {
-            vmid: vm.vmid,
-            node: vm.node,
-            type: vm.type,
-        };
+    private getRunningVm() {
+        return resolveRunningVm(this.client, this.vmid, "terminal");
     }
 }
