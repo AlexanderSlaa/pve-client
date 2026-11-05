@@ -30,6 +30,20 @@ export type ClientOptions = (
         password: string;
         /** Defaults to "pam" */
         realm?: string;
+        /**
+         * Called when the account needs a second factor. Return the code the user entered: 6-8 digits is
+         * sent as TOTP, anything else as a recovery key; a `totp:`/`recovery:`/`yubico:`/`webauthn:` prefix
+         * is passed through. Without it, a 2FA account fails with a clear error.
+         */
+        tfa?: (challenge: TfaChallenge) => Promise<string | undefined> | string | undefined;
+    } |
+    {
+        /**
+         * An existing ticket session, e.g. restored from storage or obtained through OpenID login
+         * (`api.access.openid.login`). There is no password: when it nears expiry or Proxmox answers 401
+         * the ticket is renewed with itself. If renewal fails, the request fails.
+         */
+        session: PveSession;
     }
     ) & {
     /** Base URL like https://pve.example.com:8006 */
@@ -40,7 +54,23 @@ export type ClientOptions = (
     agent?: Agent
 }
 
-type AuthState = { ticket?: string; csrf?: string };
+type AuthState = { ticket?: string; csrf?: string; username?: string; issued?: number };
+
+/** A Proxmox ticket session. */
+export type PveSession = { ticket: string; csrf: string; /** `user@realm` */ username: string; /** Epoch ms of login or last renewal. Defaults to now. */ issued?: number };
+
+/** What Proxmox asked for in the second login step. */
+export type TfaChallenge = { username: string; ticket: string; /** Raw challenge JSON from the ticket, when parseable. */ info?: unknown };
+
+/** Proxmox tickets last two hours; renew after this long. */
+export const TICKET_RENEW_AFTER_MS = 60 * 60 * 1000;
+
+/** `123456` -> `totp:123456`, other text -> `recovery:text`, an explicit `kind:` prefix is kept. */
+export function tfaAnswer(code: string): string {
+    const value = code.trim().replace(/\s+/g, "");
+    if (/^(totp|recovery|yubico|webauthn):/.test(value)) return value;
+    return /^\d{6,8}$/.test(value) ? `totp:${value}` : `recovery:${value}`;
+}
 type ClusterResource = ClusterAPI["/cluster/resources"]["GET"]["return"][number];
 type ClusterTask = ClusterAPI["/cluster/tasks"]["GET"]["return"][number];
 type TaskStatusReturn = NodesAPI["/nodes/{node}/tasks/{upid}/status"]["GET"]["return"];
@@ -77,6 +107,8 @@ export class Client {
     private readonly fetchImpl: FetchLike;
     private readonly opts: ClientOptions;
     private auth: AuthState = {};
+    private renewing?: Promise<this>;
+    private readonly sessionListeners = new Set<(session: PveSession) => void>();
     private readonly eventMonitors = new Map<string, TimerPulledEventEmitter<any>>();
 
     /**
@@ -285,7 +317,46 @@ export class Client {
         } else {
             this.fetchImpl = native_fetch;
         }
+        if ("session" in options) {
+            this.auth = { ticket: options.session.ticket, csrf: options.session.csrf, username: options.session.username, issued: options.session.issued ?? Date.now() };
+        }
         this.api = createAPI(this);
+    }
+
+    /** The current ticket session (password and session auth), or undefined before login / for API tokens. */
+    get session(): PveSession | undefined {
+        const {ticket, csrf, username, issued} = this.auth;
+        return ticket && csrf && username ? {ticket, csrf, username, issued: issued ?? Date.now()} : undefined;
+    }
+
+    /** Subscribe to new sessions (login, renewal), e.g. to persist them. Returns an unsubscribe function. */
+    onSession(listener: (session: PveSession) => void): () => void {
+        this.sessionListeners.add(listener);
+        return () => this.sessionListeners.delete(listener);
+    }
+
+    private setSession(data: any, fallbackUser: string): void {
+        if (!data?.ticket || !data?.CSRFPreventionToken) {
+            throw new Error("Invalid login response: missing ticket or CSRFPreventionToken.");
+        }
+        this.auth = {ticket: data.ticket, csrf: data.CSRFPreventionToken, username: data.username ?? fallbackUser, issued: Date.now()};
+        const session = this.session!;
+        for (const listener of this.sessionListeners) listener(session);
+    }
+
+    /**
+     * Renews the ticket using the current one as the password (what the Proxmox web UI does).
+     * Concurrent calls share one request.
+     */
+    renew(): Promise<this> {
+        if (!this.auth.ticket || !this.auth.username) return Promise.reject(new Error("renew() needs an existing ticket session."));
+        const {ticket, username} = this.auth;
+        this.renewing ??= (async () => {
+            const data: any = await this.request("/access/ticket", "POST", {$body: {username, password: ticket} as any} as any);
+            this.setSession(data, username);
+            return this;
+        })().finally(() => { this.renewing = undefined; });
+        return this.renewing;
     }
 
     /**
@@ -297,19 +368,28 @@ export class Client {
             throw new Error("login() is only available for username/password auth.");
         }
         const realm = this.opts.realm ?? "pam";
+        const username = this.opts.username;
+        const realmField = username.includes("@") ? {} : {realm};
+        const fullName = username.includes("@") ? username : `${username}@${realm}`;
         this.auth = {};
 
-        // Proxmox: POST /access/ticket with form fields username, password, realm
-        const data: any = await this.request("/access/ticket", 'POST', {
-            $body: {username: this.opts.username, password: this.opts.password, realm} as any,
+        // Proxmox: POST /access/ticket with form fields username, password (realm is part of username)
+        const first: any = await this.request("/access/ticket", 'POST', {
+            $body: {username, password: this.opts.password, ...realmField, "new-format": 1} as any,
         } as any);
 
-        if (!data?.ticket || !data?.CSRFPreventionToken) {
-            throw new Error("Invalid login response: missing ticket or CSRFPreventionToken.");
+        const challenge: string = first?.ticket ?? "";
+        if (first?.NeedTFA || challenge.includes("!tfa!")) {
+            const code = await this.opts.tfa?.({username: fullName, ticket: challenge, info: parseChallenge(challenge)});
+            if (!code) throw new Error("Two-factor authentication is required for this account.");
+            const second: any = await this.request("/access/ticket", 'POST', {
+                $body: {username, password: tfaAnswer(code), ...realmField, "tfa-challenge": challenge, "new-format": 1} as any,
+            } as any);
+            this.setSession(second, fullName);
+            return this;
         }
 
-        this.auth.ticket = data?.ticket;
-        this.auth.csrf = data?.CSRFPreventionToken;
+        this.setSession(first, fullName);
         return this;
     }
 
@@ -417,11 +497,22 @@ export class Client {
             }
         }
 
+        if (!_retried && this.auth.ticket && path !== "/access/ticket" && "session" in this.opts
+            && Date.now() - (this.auth.issued ?? Date.now()) > TICKET_RENEW_AFTER_MS) {
+            await this.renew().catch(() => undefined);
+            Object.assign(init.headers as any, this.authHeaders(a.$headers));
+        }
         const res = await this.fetchImpl(url, init);
         if (!res.ok) {
-            if (res.status === 401 && !_retried && "username" in this.opts && path !== "/access/ticket") {
-                await this.login();
-                return this.request(path, method, args, requestInit, true);
+            if (res.status === 401 && !_retried && path !== "/access/ticket") {
+                if ("session" in this.opts) {
+                    await this.renew();
+                    return this.request(path, method, args, requestInit, true);
+                }
+                if ("username" in this.opts) {
+                    await this.login();
+                    return this.request(path, method, args, requestInit, true);
+                }
             }
             const text = await res.text().catch(() => "");
             throw new Error(`HTTP ${res.status} ${res.statusText}: ${text}`);
@@ -466,3 +557,13 @@ export {Display, DisplaySession} from "./helpers/Display";
 export type {DisplayConnectionInfo, DisplayOpenOptions, DisplayOptions, DisplayPipe, DisplayTicket} from "./helpers/Display";
 export {Terminal, TerminalSession, TerminalState} from "./helpers/Terminal";
 export type {TerminalConnectionInfo, TerminalOpenOptions, TerminalPipe, TerminalTicket} from "./helpers/Terminal";
+
+function parseChallenge(ticket: string): unknown {
+    const at = ticket.indexOf("!tfa!");
+    if (at < 0) return undefined;
+    // The challenge is JSON, possibly followed by a signature; take everything up to the last closing brace.
+    const rest = ticket.slice(at + 5);
+    const end = rest.lastIndexOf("}");
+    if (end < 0) return undefined;
+    try { return JSON.parse(rest.slice(0, end + 1)); } catch { return undefined; }
+}
