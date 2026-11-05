@@ -1,5 +1,5 @@
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
-import {Client} from "./index";
+import {Client, tfaAnswer} from "./index";
 
 describe("Client", () => {
     beforeEach(() => {
@@ -616,5 +616,79 @@ describe("Client", () => {
 
         expect(resourcesDestroy).toHaveBeenCalledOnce();
         expect(tasksDestroy).toHaveBeenCalledOnce();
+    });
+});
+
+describe("Client ticket sessions", () => {
+    const ok = (data: unknown) => new Response(JSON.stringify({data}), {status: 200, headers: {"content-type": "application/json"}});
+    const bodyOf = (init?: RequestInit) => Object.fromEntries(new URLSearchParams(String(init?.body)));
+
+    it("completes a TOTP login through the tfa callback", async () => {
+        const calls: RequestInit[] = [];
+        const fetchMock = vi.fn(async (_url: string, init?: RequestInit) => {
+            calls.push(init!);
+            return calls.length === 1
+                ? ok({ticket: 'PVE:root@pam:!tfa!{"totp":true}', username: "root@pam", NeedTFA: 1})
+                : ok({ticket: "REAL", CSRFPreventionToken: "csrf", username: "root@pam"});
+        }) as unknown as typeof globalThis.fetch;
+        const tfa = vi.fn(async () => "123456");
+        const client = new Client({baseUrl: "https://pve.local", username: "root", password: "pw", tfa, fetch: fetchMock});
+        const seen = vi.fn();
+        client.onSession(seen);
+        await client.login();
+        expect(tfa).toHaveBeenCalledWith(expect.objectContaining({username: "root@pam", info: {totp: true}}));
+        expect(bodyOf(calls[1])).toMatchObject({password: "totp:123456", "tfa-challenge": 'PVE:root@pam:!tfa!{"totp":true}'});
+        expect(client.session).toMatchObject({ticket: "REAL", csrf: "csrf", username: "root@pam"});
+        expect(seen).toHaveBeenCalledTimes(1);
+    });
+
+    it("fails clearly when 2FA is needed and no callback is given", async () => {
+        const fetchMock = vi.fn(async () => ok({ticket: "PVE:u:!tfa!{}", username: "u@pam", NeedTFA: 1})) as unknown as typeof globalThis.fetch;
+        const client = new Client({baseUrl: "https://pve.local", username: "u", password: "pw", fetch: fetchMock});
+        await expect(client.login()).rejects.toThrow("Two-factor authentication is required");
+    });
+
+    it("classifies second-factor answers", () => {
+        expect(tfaAnswer("123 456")).toBe("totp:123456");
+        expect(tfaAnswer("abcd-efgh")).toBe("recovery:abcd-efgh");
+        expect(tfaAnswer("yubico:x")).toBe("yubico:x");
+    });
+
+    it("starts from an existing session and sends its cookie", async () => {
+        const fetchMock = vi.fn(async () => ok([])) as unknown as typeof globalThis.fetch;
+        const client = new Client({baseUrl: "https://pve.local", session: {ticket: "T", csrf: "C", username: "u@pam"}, fetch: fetchMock});
+        expect(client.sessionCookie()).toBe("PVEAuthCookie=T");
+        await client.request("/nodes", "GET", {} as any);
+        const init = (fetchMock as any).mock.calls[0][1] as RequestInit;
+        expect((init.headers as Record<string, string>).Cookie).toBe("PVEAuthCookie=T");
+    });
+
+    it("renews with its own ticket on 401 and retries", async () => {
+        const cookies: string[] = [];
+        const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
+            if (String(url).endsWith("/access/ticket")) {
+                expect(bodyOf(init)).toMatchObject({username: "u@pam", password: "T"});
+                return ok({ticket: "T2", CSRFPreventionToken: "C2", username: "u@pam"});
+            }
+            const cookie = (init!.headers as Record<string, string>).Cookie;
+            cookies.push(cookie);
+            return cookie.endsWith("T2") ? ok([]) : new Response("no", {status: 401});
+        }) as unknown as typeof globalThis.fetch;
+        const client = new Client({baseUrl: "https://pve.local", session: {ticket: "T", csrf: "C", username: "u@pam"}, fetch: fetchMock});
+        await client.request("/nodes", "GET", {} as any);
+        expect(cookies).toEqual(["PVEAuthCookie=T", "PVEAuthCookie=T2"]);
+        expect(client.session?.ticket).toBe("T2");
+    });
+
+    it("renews before the ticket is old, sharing concurrent renewals", async () => {
+        let renewals = 0;
+        const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
+            if (String(url).endsWith("/access/ticket")) { renewals++; return ok({ticket: "T2", CSRFPreventionToken: "C2", username: "u@pam"}); }
+            expect((init!.headers as Record<string, string>).Cookie).toBe("PVEAuthCookie=T2");
+            return ok([]);
+        }) as unknown as typeof globalThis.fetch;
+        const client = new Client({baseUrl: "https://pve.local", session: {ticket: "T", csrf: "C", username: "u@pam", issued: Date.now() - 90 * 60 * 1000}, fetch: fetchMock});
+        await Promise.all([client.request("/nodes", "GET", {} as any), client.renew()]);
+        expect(renewals).toBe(1);
     });
 });
