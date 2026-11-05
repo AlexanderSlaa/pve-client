@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/AlexanderSlaa/pve-client/compare/v1.5.0...v1.6.0) (2026-11-05)
+
+
+### Features
+
+* **client:** ticket sessions, renewal and two-factor login ([2d0f65c](https://github.com/AlexanderSlaa/pve-client/commit/2d0f65c0ecbaac67399cc4c285842355c3250445))
+
 # [1.5.0](https://github.com/AlexanderSlaa/pve-client/compare/v1.4.0...v1.5.0) (2026-10-17)
 
 
