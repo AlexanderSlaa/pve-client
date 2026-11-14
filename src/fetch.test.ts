@@ -11,7 +11,7 @@ describe("native_fetch", () => {
 
     it("sends body buffers and sets content-length automatically", async () => {
         const requestSpy = vi.spyOn(http, "request").mockImplementation((options: any, callback: any) => {
-            const req = new PassThrough() as PassThrough & {
+            const req = new PassThrough() as unknown as Omit<PassThrough, "destroy" | "write" | "end"> & {
                 destroy: (error?: Error) => void;
                 write: (chunk: Buffer | string) => boolean;
                 end: () => void;
@@ -63,7 +63,7 @@ describe("native_fetch", () => {
 
     it("merges Request and init values while preferring init method/body", async () => {
         vi.spyOn(http, "request").mockImplementation((options: any, callback: any) => {
-            const req = new PassThrough() as PassThrough & {
+            const req = new PassThrough() as unknown as Omit<PassThrough, "destroy" | "write" | "end"> & {
                 destroy: (error?: Error) => void;
                 write: (chunk: Buffer | string) => boolean;
                 end: () => void;
@@ -122,7 +122,7 @@ describe("native_fetch", () => {
 
     it("supports abort signals", async () => {
         vi.spyOn(http, "request").mockImplementation(() => {
-            const req = new PassThrough() as PassThrough & {
+            const req = new PassThrough() as unknown as Omit<PassThrough, "destroy" | "write" | "end"> & {
                 destroy: (error?: Error) => void;
                 write: (chunk: Buffer | string) => boolean;
                 end: () => void;

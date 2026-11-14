@@ -80,7 +80,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string },
-                $query?: { "name": string; "version"?: string },
+                $query: { "name": string; "version"?: string },
             }
             return: string
         }
@@ -104,7 +104,7 @@ export type NodesAPI = {
                         "FileType": "list" | "sources";
                         "Options"?: { "Key": string; "Values": string[] }[];
                         "Suites": string[];
-                        "Types": "deb" | "deb-src"[];
+                        "Types": ("deb" | "deb-src")[];
                         "URIs": string[]
                     }[]
                 }[];
@@ -117,14 +117,14 @@ export type NodesAPI = {
                 $path: { "node": string },
                 $body: { "digest"?: string; "enabled"?: boolean; "index": number; "path": string },
             }
-            return: unknown
+            return: null
         },
         "PUT": {
             parameters: {
                 $path: { "node": string },
                 $body: { "digest"?: string; "handle": string },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/apt/update": {
@@ -133,7 +133,7 @@ export type NodesAPI = {
                 $path: { "node": string },
             }
             return: {
-                "Arch": "armhf" | "arm64" | "amd64" | "ppc64el" | "risc64" | "s390x" | "all";
+                "Arch": "armhf" | "arm64" | "amd64" | "ppc64el" | "riscv64" | "s390x" | "all";
                 "Description": string;
                 "NotifyStatus"?: string;
                 "OldVersion"?: string;
@@ -148,7 +148,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string },
-                $body: { "notify"?: boolean; "quiet"?: boolean },
+                $body?: { "notify"?: boolean; "quiet"?: boolean },
             }
             return: string
         }
@@ -159,7 +159,7 @@ export type NodesAPI = {
                 $path: { "node": string },
             }
             return: {
-                "Arch": "armhf" | "arm64" | "amd64" | "ppc64el" | "risc64" | "s390x" | "all";
+                "Arch": "armhf" | "arm64" | "amd64" | "ppc64el" | "riscv64" | "s390x" | "all";
                 "CurrentState": "Installed" | "NotInstalled" | "UnPacked" | "HalfConfigured" | "HalfInstalled" | "ConfigFiles";
                 "Description": string;
                 "ManagerVersion"?: string;
@@ -197,7 +197,10 @@ export type NodesAPI = {
                 $path: { "node": string },
                 $query?: { "arch"?: "x86_64" | "aarch64" },
             }
-            return: { "custom": boolean; "name": string; "vendor": string ;
+            return: {
+                "custom": boolean;
+                "name": string;
+                "vendor": string;
                 "abstract"?: boolean;
             }[]
         }
@@ -208,7 +211,9 @@ export type NodesAPI = {
                 $path: { "node": string },
                 $query?: { "accel"?: "kvm" | "tcg"; "arch"?: "x86_64" | "aarch64" },
             }
-            return: { "description": string; "name": string ;
+            return: {
+                "description"?: string;
+                "name": string;
                 "supported-on"?: (string)[];
             }[]
         }
@@ -253,7 +258,7 @@ export type NodesAPI = {
             }
             return: {
                 "can_update_at_runtime": boolean;
-                "level": string;
+                "level": "basic" | "advanced" | "dev";
                 "mask": string;
                 "name": string;
                 "section": string;
@@ -273,7 +278,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string },
-                $query?: { "config-keys": string },
+                $query: { "config-keys": string },
             }
             return: Record<string, unknown>
         }
@@ -282,7 +287,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string },
-                $query?: { "action": "stop" | "destroy"; "id": string; "service": "osd" | "mon" | "mds" },
+                $query: { "action": "stop" | "destroy"; "id": string; "service": "osd" | "mon" | "mds" },
             }
             return: { "safe": boolean; "status"?: string }
         }
@@ -300,7 +305,10 @@ export type NodesAPI = {
             parameters: {
                 $path: { "node": string },
             }
-            return: { "data_pool": string; "metadata_pool": string; "name": string ;
+            return: {
+                "data_pool": string;
+                "metadata_pool": string;
+                "name": string;
                 "data_pool_ids"?: (number)[];
                 "data_pools"?: (string)[];
                 "metadata_pool_id"?: number;
@@ -311,7 +319,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string; "name": string },
-                $body: { "add-storage"?: boolean; "pg_num"?: number },
+                $body?: { "add-storage"?: boolean; "pg_num"?: number },
             }
             return: string
         }
@@ -334,7 +342,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string },
-                $body: {
+                $body?: {
                     "cluster-network"?: string;
                     "disable_cephx"?: boolean;
                     "min_size"?: number;
@@ -343,7 +351,7 @@ export type NodesAPI = {
                     "size"?: number
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/ceph/log": {
@@ -366,8 +374,7 @@ export type NodesAPI = {
                 "name": string;
                 "rank"?: number;
                 "standby_replay"?: boolean;
-                "state": string
-            ;
+                "state": string;
                 "ceph_version"?: string;
                 "ceph_version_short"?: string;
                 "direxists"?: boolean;
@@ -386,7 +393,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string; "name": string },
-                $body: { "hotstandby"?: boolean },
+                $body?: { "hotstandby"?: boolean },
             }
             return: string
         }
@@ -396,7 +403,11 @@ export type NodesAPI = {
             parameters: {
                 $path: { "node": string },
             }
-            return: { "addr"?: string; "host"?: string; "name": string; "state": string ;
+            return: {
+                "addr"?: string;
+                "host"?: string;
+                "name": string;
+                "state": string;
                 "ceph_version"?: string;
                 "ceph_version_short"?: string;
                 "direxists"?: boolean;
@@ -427,12 +438,12 @@ export type NodesAPI = {
                 "addr"?: string;
                 "ceph_version"?: string;
                 "ceph_version_short"?: string;
-                "direxists"?: string;
-                "host"?: boolean;
+                "direxists"?: boolean;
+                "host"?: string;
                 "name": string;
                 "quorum"?: boolean;
                 "rank"?: number;
-                "service"?: number;
+                "service"?: boolean;
                 "state"?: string
             }[]
         }
@@ -447,7 +458,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string; "monid": string },
-                $body: { "mon-address"?: string },
+                $body?: { "mon-address"?: string },
             }
             return: string
         }
@@ -457,7 +468,7 @@ export type NodesAPI = {
             parameters: {
                 $path: { "node": string },
             }
-            return: Record<string, unknown>
+            return: { "flags"?: string; "root": Record<string, unknown> }
         },
         "POST": {
             parameters: {
@@ -496,7 +507,7 @@ export type NodesAPI = {
             parameters: {
                 $path: { "node": string; "osdid": number },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/ceph/osd/{osdid}/lv-info": {
@@ -524,10 +535,10 @@ export type NodesAPI = {
                 "devices": {
                     "dev_node": string;
                     "device": "block" | "db" | "wal";
-                    "devices": string;
                     "size": number;
                     "support_discard": boolean;
-                    "type": string
+                    "type": string;
+                    "physical_device": string
                 }[];
                 "osd": {
                     "back_addr": string;
@@ -539,8 +550,9 @@ export type NodesAPI = {
                     "mem_usage": number;
                     "osd_data": string;
                     "osd_objectstore": string;
-                    "pid": number;
-                    "version": string
+                    "pid"?: number;
+                    "version": string;
+                    "encrypted": boolean
                 }
             }
         }
@@ -550,16 +562,16 @@ export type NodesAPI = {
             parameters: {
                 $path: { "node": string; "osdid": number },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/ceph/osd/{osdid}/scrub": {
         "POST": {
             parameters: {
                 $path: { "node": string; "osdid": number },
-                $body: { "deep"?: boolean },
+                $body?: { "deep"?: boolean },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/ceph/pool": {
@@ -570,11 +582,11 @@ export type NodesAPI = {
             return: {
                 "application_metadata"?: Record<string, unknown>;
                 "autoscale_status"?: Record<string, unknown>;
-                "bytes_used": number;
+                "bytes_used"?: number;
                 "crush_rule": number;
-                "crush_rule_name": string;
+                "crush_rule_name"?: string;
                 "min_size": number;
-                "percent_used": number;
+                "percent_used"?: number;
                 "pg_autoscale_mode"?: string;
                 "pg_num": number;
                 "pg_num_final"?: number;
@@ -625,7 +637,7 @@ export type NodesAPI = {
         "PUT": {
             parameters: {
                 $path: { "node": string; "name": string },
-                $body: {
+                $body?: {
                     "application"?: "rbd" | "cephfs" | "rgw";
                     "crush_rule"?: string;
                     "min_size"?: number;
@@ -648,7 +660,7 @@ export type NodesAPI = {
             }
             return: {
                 "application"?: "rbd" | "cephfs" | "rgw";
-                "application_list"?: unknown[];
+                "application_list"?: string[];
                 "autoscale_status"?: Record<string, unknown>;
                 "crush_rule"?: string;
                 "fast_read": boolean;
@@ -678,7 +690,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string },
-                $body: { "service"?: string },
+                $body?: { "service"?: string },
             }
             return: string
         }
@@ -724,7 +736,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string },
-                $body: { "service"?: string },
+                $body?: { "service"?: string },
             }
             return: string
         }
@@ -741,7 +753,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string },
-                $body: { "service"?: string },
+                $body?: { "service"?: string },
             }
             return: string
         }
@@ -772,14 +784,14 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string },
-                $body: { "force"?: boolean },
+                $body?: { "force"?: boolean },
             }
             return: string
         },
         "PUT": {
             parameters: {
                 $path: { "node": string },
-                $body: { "force"?: boolean },
+                $body?: { "force"?: boolean },
             }
             return: string
         }
@@ -790,7 +802,7 @@ export type NodesAPI = {
                 $path: { "node": string },
                 $query?: { "restart"?: boolean },
             }
-            return: unknown
+            return: null
         },
         "POST": {
             parameters: {
@@ -852,7 +864,7 @@ export type NodesAPI = {
         "PUT": {
             parameters: {
                 $path: { "node": string },
-                $body: {
+                $body?: {
                     "acme"?: string;
                     "acmedomain[n]"?: string;
                     "ballooning-target"?: number;
@@ -864,7 +876,7 @@ export type NodesAPI = {
                     "wakeonlan"?: string
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/disks": {
@@ -990,7 +1002,7 @@ export type NodesAPI = {
         "DELETE": {
             parameters: {
                 $path: { "node": string; "name": string },
-                $query?: { "cleanup-config"?: boolean; "cleanup-disks"?: boolean; "volume-group": string },
+                $query: { "cleanup-config"?: boolean; "cleanup-disks"?: boolean; "volume-group": string },
             }
             return: string
         }
@@ -999,7 +1011,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string },
-                $query?: { "disk": string; "healthonly"?: boolean },
+                $query: { "disk": string; "healthonly"?: boolean },
             }
             return: { "attributes"?: unknown[]; "health": string; "text"?: string; "type"?: string }
         }
@@ -1086,7 +1098,7 @@ export type NodesAPI = {
                 $path: { "node": string },
                 $body: { "dns1"?: string; "dns2"?: string; "dns3"?: string; "search": string },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/execute": {
@@ -1145,7 +1157,7 @@ export type NodesAPI = {
         "PUT": {
             parameters: {
                 $path: { "node": string },
-                $body: {
+                $body?: {
                     "delete"?: string;
                     "digest"?: string;
                     "enable"?: boolean;
@@ -1169,7 +1181,7 @@ export type NodesAPI = {
                     "tcpflags"?: boolean
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/firewall/rules": {
@@ -1216,7 +1228,7 @@ export type NodesAPI = {
                     "type": "in" | "out" | "forward" | "group"
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/firewall/rules/{pos}": {
@@ -1225,7 +1237,7 @@ export type NodesAPI = {
                 $path: { "node": string; "pos": number },
                 $query?: { "digest"?: string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -1252,7 +1264,7 @@ export type NodesAPI = {
         "PUT": {
             parameters: {
                 $path: { "node": string; "pos": number },
-                $body: {
+                $body?: {
                     "action"?: string;
                     "comment"?: string;
                     "delete"?: string;
@@ -1271,7 +1283,7 @@ export type NodesAPI = {
                     "type"?: "in" | "out" | "forward" | "group"
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/hardware": {
@@ -1353,7 +1365,7 @@ export type NodesAPI = {
                 $path: { "node": string },
                 $body: { "data": string; "digest"?: string },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/journal": {
@@ -1543,7 +1555,7 @@ export type NodesAPI = {
         "PUT": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $body: {
+                $body?: {
                     "arch"?: "amd64" | "i386" | "arm64" | "armhf" | "riscv32" | "riscv64";
                     "cmode"?: "shell" | "console" | "tty";
                     "console"?: boolean;
@@ -1581,14 +1593,14 @@ export type NodesAPI = {
                     "unused[n]"?: string
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/lxc/{vmid}/feature": {
         "GET": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $query?: { "feature": "snapshot" | "clone" | "copy"; "snapname"?: string },
+                $query: { "feature": "snapshot" | "clone" | "copy"; "snapname"?: string },
             }
             return: { "hasFeature": boolean }
         }
@@ -1613,7 +1625,7 @@ export type NodesAPI = {
                 $path: { "node": string; "vmid": number },
                 $body: { "cidr": string; "comment"?: string; "name": string },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/lxc/{vmid}/firewall/aliases/{name}": {
@@ -1622,7 +1634,7 @@ export type NodesAPI = {
                 $path: { "node": string; "vmid": number; "name": string },
                 $query?: { "digest"?: string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -1633,9 +1645,9 @@ export type NodesAPI = {
         "PUT": {
             parameters: {
                 $path: { "node": string; "vmid": number; "name": string },
-                $body: { "cidr": string; "comment"?: string; "digest"?: string; "rename"?: string },
+                $body?: { "cidr"?: string; "comment"?: string; "digest"?: string; "rename"?: string },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/lxc/{vmid}/firewall/ipset": {
@@ -1650,7 +1662,7 @@ export type NodesAPI = {
                 $path: { "node": string; "vmid": number },
                 $body: { "comment"?: string; "digest"?: string; "name": string; "rename"?: string },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}": {
@@ -1659,7 +1671,7 @@ export type NodesAPI = {
                 $path: { "node": string; "vmid": number; "name": string },
                 $query?: { "force"?: boolean },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -1672,7 +1684,7 @@ export type NodesAPI = {
                 $path: { "node": string; "vmid": number; "name": string },
                 $body: { "cidr": string; "comment"?: string; "nomatch"?: boolean },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}/{cidr}": {
@@ -1681,7 +1693,7 @@ export type NodesAPI = {
                 $path: { "node": string; "vmid": number; "name": string; "cidr": string },
                 $query?: { "digest"?: string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -1692,9 +1704,9 @@ export type NodesAPI = {
         "PUT": {
             parameters: {
                 $path: { "node": string; "vmid": number; "name": string; "cidr": string },
-                $body: { "comment"?: string; "digest"?: string; "nomatch"?: boolean },
+                $body?: { "comment"?: string; "digest"?: string; "nomatch"?: boolean },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/lxc/{vmid}/firewall/log": {
@@ -1727,7 +1739,7 @@ export type NodesAPI = {
         "PUT": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $body: {
+                $body?: {
                     "delete"?: string;
                     "dhcp"?: boolean;
                     "digest"?: string;
@@ -1742,7 +1754,7 @@ export type NodesAPI = {
                     "radv"?: boolean
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/lxc/{vmid}/firewall/refs": {
@@ -1798,7 +1810,7 @@ export type NodesAPI = {
                     "type": "in" | "out" | "forward" | "group"
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/lxc/{vmid}/firewall/rules/{pos}": {
@@ -1807,7 +1819,7 @@ export type NodesAPI = {
                 $path: { "node": string; "vmid": number; "pos": number },
                 $query?: { "digest"?: string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -1834,7 +1846,7 @@ export type NodesAPI = {
         "PUT": {
             parameters: {
                 $path: { "node": string; "vmid": number; "pos": number },
-                $body: {
+                $body?: {
                     "action"?: string;
                     "comment"?: string;
                     "delete"?: string;
@@ -1853,7 +1865,7 @@ export type NodesAPI = {
                     "type"?: "in" | "out" | "forward" | "group"
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/lxc/{vmid}/interfaces": {
@@ -1880,7 +1892,7 @@ export type NodesAPI = {
             return: {
                 "allowed-nodes"?: string[];
                 "dependent-ha-resources"?: string[];
-                "not-allowed-nodes"?: { "blocking-ha-resources"?: { "cause": "resource-affinity"; "sid": string }[] };
+                "not-allowed-nodes"?: { "blocking-ha-resources"?: { "cause": "node-affinity" | "resource-affinity"; "sid": string }[] };
                 "running": boolean
             }
         },
@@ -1921,7 +1933,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $body: { "bridges"?: string; "storages"?: string },
+                $body?: { "bridges"?: string; "storages"?: string },
             }
             return: { "socket": string; "ticket": string; "upid": string }
         }
@@ -1930,7 +1942,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $query?: { "socket": string; "ticket": string },
+                $query: { "socket": string; "ticket": string },
             }
             return: { "port"?: string; "socket"?: string }
         }
@@ -1979,7 +1991,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $query?: {
+                $query: {
                     "cf"?: "AVERAGE" | "MAX";
                     "ds": string;
                     "timeframe": "hour" | "day" | "week" | "month" | "year"
@@ -1992,7 +2004,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $query?: { "cf"?: "AVERAGE" | "MAX"; "timeframe": "hour" | "day" | "week" | "month" | "year" },
+                $query: { "cf"?: "AVERAGE" | "MAX"; "timeframe": "hour" | "day" | "week" | "month" | "year" },
             }
             return: Record<string, unknown>[]
         }
@@ -2037,16 +2049,16 @@ export type NodesAPI = {
         "PUT": {
             parameters: {
                 $path: { "node": string; "vmid": number; "snapname": string },
-                $body: { "description"?: string },
+                $body?: { "description"?: string },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/lxc/{vmid}/snapshot/{snapname}/rollback": {
         "POST": {
             parameters: {
                 $path: { "node": string; "vmid": number; "snapname": string },
-                $body: { "start"?: boolean },
+                $body?: { "start"?: boolean },
             }
             return: string
         }
@@ -2055,7 +2067,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $body: { "proxy"?: string },
+                $body?: { "proxy"?: string },
             }
             return: { "host": string; "password": string; "proxy": string; "tls-port": number; "type": string }
         }
@@ -2105,7 +2117,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $body: { "timeout"?: number },
+                $body?: { "timeout"?: number },
             }
             return: string
         }
@@ -2122,7 +2134,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $body: { "forceStop"?: boolean; "timeout"?: number },
+                $body?: { "forceStop"?: boolean; "timeout"?: number },
             }
             return: string
         }
@@ -2131,7 +2143,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $body: { "debug"?: boolean; "skiplock"?: boolean },
+                $body?: { "debug"?: boolean; "skiplock"?: boolean },
             }
             return: string
         }
@@ -2140,7 +2152,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $body: { "overrule-shutdown"?: boolean; "skiplock"?: boolean },
+                $body?: { "overrule-shutdown"?: boolean; "skiplock"?: boolean },
             }
             return: string
         }
@@ -2158,7 +2170,7 @@ export type NodesAPI = {
             parameters: {
                 $path: { "node": string; "vmid": number },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/lxc/{vmid}/termproxy": {
@@ -2173,9 +2185,14 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $body: { "height"?: number; "websocket"?: boolean; "width"?: number },
+                $body?: { "height"?: number; "websocket"?: boolean; "width"?: number },
             }
-            return: { "cert": string; "port": number; "ticket": string; "upid": string; "user": string ;
+            return: {
+                "cert": string;
+                "port": number;
+                "ticket": string;
+                "upid": string;
+                "user": string;
                 "password"?: string;
             }
         }
@@ -2184,7 +2201,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $query?: { "port": number; "vncticket": string },
+                $query: { "port": number; "vncticket": string },
             }
             return: { "port": string }
         }
@@ -2193,7 +2210,11 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string },
-                $body: { "maxworkers"?: number; "target": string; "vms"?: string; "with-local-disks"?: boolean ;
+                $body: {
+                    "maxworkers"?: number;
+                    "target": string;
+                    "vms"?: string;
+                    "with-local-disks"?: boolean;
                     "max-workers"?: number;
                 },
             }
@@ -2213,7 +2234,7 @@ export type NodesAPI = {
             parameters: {
                 $path: { "node": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -2243,7 +2264,7 @@ export type NodesAPI = {
                 "comments"?: string;
                 "comments6"?: string;
                 "exists"?: boolean;
-                "families"?: "inet" | "inet6"[];
+                "families"?: ("inet" | "inet6")[];
                 "gateway"?: string;
                 "gateway6"?: string;
                 "iface": string;
@@ -2307,12 +2328,12 @@ export type NodesAPI = {
                     "vlan-raw-device"?: string
                 },
             }
-            return: unknown
+            return: null
         },
         "PUT": {
             parameters: {
                 $path: { "node": string },
-                $body: { "regenerate-frr"?: boolean },
+                $body?: { "regenerate-frr"?: boolean },
             }
             return: string
         }
@@ -2322,7 +2343,7 @@ export type NodesAPI = {
             parameters: {
                 $path: { "node": string; "iface": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -2364,7 +2385,7 @@ export type NodesAPI = {
                     "vlan-raw-device"?: string
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/qemu": {
@@ -2531,7 +2552,7 @@ export type NodesAPI = {
             parameters: {
                 $path: { "node": string; "vmid": number },
                 $body: {
-                    "command": "fsfreeze-freeze" | "fsfreeze-status" | "fsfreeze-thaw" | "fstrim" | "get-fsinfo" | "get-host-name" | "get-memory-block-info" | "get-memory-blocks" | "get-osinfo" | "get-time" | "get-timezone" | "get-users" | "get-vcpus" | "info" | "network-get-interfaces" | "ping" | "shutdown" | "suspend-disk" | "suspend-hybrid" | "suspend-ram"
+                    "command": "fsfreeze-freeze" | "fsfreeze-status" | "fsfreeze-thaw" | "fstrim" | "get-cpustats" | "get-disks" | "get-diskstats" | "get-fsinfo" | "get-host-name" | "get-load" | "get-memory-block-info" | "get-memory-blocks" | "get-osinfo" | "get-time" | "get-timezone" | "get-users" | "get-vcpus" | "info" | "network-get-interfaces" | "ping" | "shutdown" | "suspend-disk" | "suspend-hybrid" | "suspend-ram"
                 },
             }
             return: Record<string, unknown>
@@ -2550,7 +2571,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $query?: { "pid": number },
+                $query: { "pid": number },
             }
             return: {
                 "err-data"?: string;
@@ -2567,7 +2588,8 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $query?: { "file": string ;
+                $query: {
+                    "file": string;
                     "count"?: number;
                     "decode"?: boolean;
                     "offset"?: number;
@@ -2582,7 +2604,7 @@ export type NodesAPI = {
                 $path: { "node": string; "vmid": number },
                 $body: { "content": string; "encode"?: boolean; "file": string },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/qemu/{vmid}/agent/fsfreeze-freeze": {
@@ -2617,6 +2639,30 @@ export type NodesAPI = {
             return: Record<string, unknown>
         }
     },
+    "/nodes/{node}/qemu/{vmid}/agent/get-diskstats": {
+        "GET": {
+            parameters: {
+                $path: { "node": string; "vmid": number },
+            }
+            return: Record<string, unknown>
+        }
+    },
+    "/nodes/{node}/qemu/{vmid}/agent/get-disks": {
+        "GET": {
+            parameters: {
+                $path: { "node": string; "vmid": number },
+            }
+            return: Record<string, unknown>
+        }
+    },
+    "/nodes/{node}/qemu/{vmid}/agent/get-cpustats": {
+        "GET": {
+            parameters: {
+                $path: { "node": string; "vmid": number },
+            }
+            return: Record<string, unknown>
+        }
+    },
     "/nodes/{node}/qemu/{vmid}/agent/get-fsinfo": {
         "GET": {
             parameters: {
@@ -2626,6 +2672,14 @@ export type NodesAPI = {
         }
     },
     "/nodes/{node}/qemu/{vmid}/agent/get-host-name": {
+        "GET": {
+            parameters: {
+                $path: { "node": string; "vmid": number },
+            }
+            return: Record<string, unknown>
+        }
+    },
+    "/nodes/{node}/qemu/{vmid}/agent/get-load": {
         "GET": {
             parameters: {
                 $path: { "node": string; "vmid": number },
@@ -2785,14 +2839,14 @@ export type NodesAPI = {
             parameters: {
                 $path: { "node": string; "vmid": number },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/qemu/{vmid}/cloudinit/dump": {
         "GET": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $query?: { "type": "user" | "network" | "meta" },
+                $query: { "type": "user" | "network" | "meta" },
             }
             return: string
         }
@@ -2898,7 +2952,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $body: {
+                $body?: {
                     "acpi"?: boolean;
                     "affinity"?: string;
                     "agent"?: string;
@@ -2994,7 +3048,7 @@ export type NodesAPI = {
         "PUT": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $body: {
+                $body?: {
                     "acpi"?: boolean;
                     "affinity"?: string;
                     "agent"?: string;
@@ -3083,7 +3137,7 @@ export type NodesAPI = {
                     "watchdog"?: string
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/qemu/{vmid}/dbus-vmstate": {
@@ -3092,14 +3146,14 @@ export type NodesAPI = {
                 $path: { "node": string; "vmid": number },
                 $body: { "action": "start" | "stop" },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/qemu/{vmid}/feature": {
         "GET": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $query?: { "feature": "snapshot" | "clone" | "copy"; "snapname"?: string },
+                $query: { "feature": "snapshot" | "clone" | "copy"; "snapname"?: string },
             }
             return: { "hasFeature": boolean; "nodes": string[] }
         }
@@ -3124,7 +3178,7 @@ export type NodesAPI = {
                 $path: { "node": string; "vmid": number },
                 $body: { "cidr": string; "comment"?: string; "name": string },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/qemu/{vmid}/firewall/aliases/{name}": {
@@ -3133,7 +3187,7 @@ export type NodesAPI = {
                 $path: { "node": string; "vmid": number; "name": string },
                 $query?: { "digest"?: string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -3144,9 +3198,9 @@ export type NodesAPI = {
         "PUT": {
             parameters: {
                 $path: { "node": string; "vmid": number; "name": string },
-                $body: { "cidr": string; "comment"?: string; "digest"?: string; "rename"?: string },
+                $body?: { "cidr"?: string; "comment"?: string; "digest"?: string; "rename"?: string },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/qemu/{vmid}/firewall/ipset": {
@@ -3161,7 +3215,7 @@ export type NodesAPI = {
                 $path: { "node": string; "vmid": number },
                 $body: { "comment"?: string; "digest"?: string; "name": string; "rename"?: string },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}": {
@@ -3170,7 +3224,7 @@ export type NodesAPI = {
                 $path: { "node": string; "vmid": number; "name": string },
                 $query?: { "force"?: boolean },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -3183,7 +3237,7 @@ export type NodesAPI = {
                 $path: { "node": string; "vmid": number; "name": string },
                 $body: { "cidr": string; "comment"?: string; "nomatch"?: boolean },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/qemu/{vmid}/firewall/ipset/{name}/{cidr}": {
@@ -3192,7 +3246,7 @@ export type NodesAPI = {
                 $path: { "node": string; "vmid": number; "name": string; "cidr": string },
                 $query?: { "digest"?: string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -3203,9 +3257,9 @@ export type NodesAPI = {
         "PUT": {
             parameters: {
                 $path: { "node": string; "vmid": number; "name": string; "cidr": string },
-                $body: { "comment"?: string; "digest"?: string; "nomatch"?: boolean },
+                $body?: { "comment"?: string; "digest"?: string; "nomatch"?: boolean },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/qemu/{vmid}/firewall/log": {
@@ -3238,7 +3292,7 @@ export type NodesAPI = {
         "PUT": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $body: {
+                $body?: {
                     "delete"?: string;
                     "dhcp"?: boolean;
                     "digest"?: string;
@@ -3253,7 +3307,7 @@ export type NodesAPI = {
                     "radv"?: boolean
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/qemu/{vmid}/firewall/refs": {
@@ -3309,7 +3363,7 @@ export type NodesAPI = {
                     "type": "in" | "out" | "forward" | "group"
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/qemu/{vmid}/firewall/rules/{pos}": {
@@ -3318,7 +3372,7 @@ export type NodesAPI = {
                 $path: { "node": string; "vmid": number; "pos": number },
                 $query?: { "digest"?: string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -3345,7 +3399,7 @@ export type NodesAPI = {
         "PUT": {
             parameters: {
                 $path: { "node": string; "vmid": number; "pos": number },
-                $body: {
+                $body?: {
                     "action"?: string;
                     "comment"?: string;
                     "delete"?: string;
@@ -3364,7 +3418,7 @@ export type NodesAPI = {
                     "type"?: "in" | "out" | "forward" | "group"
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/qemu/{vmid}/migrate": {
@@ -3382,7 +3436,7 @@ export type NodesAPI = {
                 "mapped-resource-info": Record<string, unknown>;
                 "mapped-resources": string[];
                 "not_allowed_nodes"?: {
-                    "blocking-ha-resources"?: { "cause": "resource-affinity"; "sid": string }[];
+                    "blocking-ha-resources"?: { "cause": "node-affinity" | "resource-affinity"; "sid": string }[];
                     "unavailable_storages"?: string[]
                 };
                 "running": boolean
@@ -3438,7 +3492,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $body: { "bridges"?: string; "storages"?: string },
+                $body?: { "bridges"?: string; "storages"?: string },
             }
             return: { "socket": string; "ticket": string; "upid": string }
         }
@@ -3447,7 +3501,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $query?: { "socket": string; "ticket": string },
+                $query: { "socket": string; "ticket": string },
             }
             return: { "port"?: string; "socket"?: string }
         }
@@ -3495,7 +3549,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $query?: {
+                $query: {
                     "cf"?: "AVERAGE" | "MAX";
                     "ds": string;
                     "timeframe": "hour" | "day" | "week" | "month" | "year"
@@ -3508,7 +3562,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $query?: { "cf"?: "AVERAGE" | "MAX"; "timeframe": "hour" | "day" | "week" | "month" | "year" },
+                $query: { "cf"?: "AVERAGE" | "MAX"; "timeframe": "hour" | "day" | "week" | "month" | "year" },
             }
             return: Record<string, unknown>[]
         }
@@ -3519,7 +3573,7 @@ export type NodesAPI = {
                 $path: { "node": string; "vmid": number },
                 $body: { "key": string; "skiplock"?: boolean },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/qemu/{vmid}/snapshot": {
@@ -3568,16 +3622,16 @@ export type NodesAPI = {
         "PUT": {
             parameters: {
                 $path: { "node": string; "vmid": number; "snapname": string },
-                $body: { "description"?: string },
+                $body?: { "description"?: string },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/qemu/{vmid}/snapshot/{snapname}/rollback": {
         "POST": {
             parameters: {
                 $path: { "node": string; "vmid": number; "snapname": string },
-                $body: { "start"?: boolean },
+                $body?: { "start"?: boolean },
             }
             return: string
         }
@@ -3586,7 +3640,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $body: { "proxy"?: string },
+                $body?: { "proxy"?: string },
             }
             return: { "host": string; "password": string; "proxy": string; "tls-port": number; "type": string }
         }
@@ -3644,7 +3698,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $body: { "timeout"?: number },
+                $body?: { "timeout"?: number },
             }
             return: string
         }
@@ -3653,7 +3707,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $body: { "skiplock"?: boolean },
+                $body?: { "skiplock"?: boolean },
             }
             return: string
         }
@@ -3662,7 +3716,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $body: { "nocheck"?: boolean; "skiplock"?: boolean },
+                $body?: { "nocheck"?: boolean; "skiplock"?: boolean },
             }
             return: string
         }
@@ -3671,7 +3725,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $body: { "forceStop"?: boolean; "keepActive"?: boolean; "skiplock"?: boolean; "timeout"?: number },
+                $body?: { "forceStop"?: boolean; "keepActive"?: boolean; "skiplock"?: boolean; "timeout"?: number },
             }
             return: string
         }
@@ -3680,7 +3734,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $body: {
+                $body?: {
                     "force-cpu"?: string;
                     "machine"?: string;
                     "migratedfrom"?: string;
@@ -3701,7 +3755,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $body: {
+                $body?: {
                     "keepActive"?: boolean;
                     "migratedfrom"?: string;
                     "overrule-shutdown"?: boolean;
@@ -3716,7 +3770,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $body: { "skiplock"?: boolean; "statestorage"?: string; "todisk"?: boolean },
+                $body?: { "skiplock"?: boolean; "statestorage"?: string; "todisk"?: boolean },
             }
             return: string
         }
@@ -3725,7 +3779,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $body: {
+                $body?: {
                     "disk"?: "ide0" | "ide1" | "ide2" | "ide3" | "scsi0" | "scsi1" | "scsi2" | "scsi3" | "scsi4" | "scsi5" | "scsi6" | "scsi7" | "scsi8" | "scsi9" | "scsi10" | "scsi11" | "scsi12" | "scsi13" | "scsi14" | "scsi15" | "scsi16" | "scsi17" | "scsi18" | "scsi19" | "scsi20" | "scsi21" | "scsi22" | "scsi23" | "scsi24" | "scsi25" | "scsi26" | "scsi27" | "scsi28" | "scsi29" | "scsi30" | "virtio0" | "virtio1" | "virtio2" | "virtio3" | "virtio4" | "virtio5" | "virtio6" | "virtio7" | "virtio8" | "virtio9" | "virtio10" | "virtio11" | "virtio12" | "virtio13" | "virtio14" | "virtio15" | "sata0" | "sata1" | "sata2" | "sata3" | "sata4" | "sata5" | "efidisk0" | "tpmstate0"
                 },
             }
@@ -3736,7 +3790,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $body: { "serial"?: "serial0" | "serial1" | "serial2" | "serial3" },
+                $body?: { "serial"?: "serial0" | "serial1" | "serial2" | "serial3" },
             }
             return: { "port": number; "ticket": string; "upid": string; "user": string }
         }
@@ -3747,14 +3801,14 @@ export type NodesAPI = {
                 $path: { "node": string; "vmid": number },
                 $body: { "force"?: boolean; "idlist": string },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/qemu/{vmid}/vncproxy": {
         "POST": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $body: { "generate-password"?: boolean; "websocket"?: boolean },
+                $body?: { "generate-password"?: boolean; "websocket"?: boolean },
             }
             return: {
                 "cert": string;
@@ -3770,7 +3824,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string; "vmid": number },
-                $query?: { "port": number; "vncticket": string },
+                $query: { "port": number; "vncticket": string },
             }
             return: { "port": string }
         }
@@ -3779,7 +3833,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string },
-                $query?: { "reference": string },
+                $query: { "reference": string },
             }
             return: string[]
         }
@@ -3788,7 +3842,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string },
-                $query?: { "url": string; "verify-certificates"?: boolean },
+                $query: { "url": string; "verify-certificates"?: boolean },
             }
             return: { "filename"?: string; "mimetype"?: string; "size"?: number }
         }
@@ -3799,7 +3853,7 @@ export type NodesAPI = {
                 $path: { "node": string },
                 $query?: { "guest"?: number },
             }
-            return: { "id": string }[]
+            return: { "id": string; "vmtype": "qemu" | "lxc"; "type": "local"; "target"?: string; "source"?: string; "schedule"?: string; "remove_job"?: "local" | "full"; "rate"?: number; "pid"?: number; "next_sync"?: number; "last_try"?: number; "last_sync"?: number; "jobnum": number; "guest": number; "fail_count"?: number; "error"?: string; "duration"?: number; "disable"?: boolean; "comment"?: string }[]
         }
     },
     "/nodes/{node}/replication/{id}": {
@@ -3832,7 +3886,27 @@ export type NodesAPI = {
             parameters: {
                 $path: { "node": string; "id": string },
             }
-            return: Record<string, unknown>
+            return: {
+                "comment"?: string;
+                "disable"?: boolean;
+                "duration"?: number;
+                "error"?: string;
+                "fail_count"?: number;
+                "guest": number;
+                "id": string;
+                "jobnum": number;
+                "last_sync"?: number;
+                "last_try"?: number;
+                "next_sync"?: number;
+                "pid"?: number;
+                "rate"?: number;
+                "remove_job"?: "local" | "full";
+                "schedule"?: string;
+                "source"?: string;
+                "target"?: string;
+                "type": "local";
+                "vmtype": "qemu" | "lxc"
+            }
         }
     },
     "/nodes/{node}/report": {
@@ -3847,7 +3921,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string },
-                $query?: {
+                $query: {
                     "cf"?: "AVERAGE" | "MAX";
                     "ds": string;
                     "timeframe": "hour" | "day" | "week" | "month" | "year" | "decade"
@@ -3860,7 +3934,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string },
-                $query?: {
+                $query: {
                     "cf"?: "AVERAGE" | "MAX";
                     "timeframe": "hour" | "day" | "week" | "month" | "year" | "decade"
                 },
@@ -3880,7 +3954,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string },
-                $query?: { "domain"?: string; "password"?: string; "server": string; "username"?: string },
+                $query: { "domain"?: string; "password"?: string; "server": string; "username"?: string },
             }
             return: { "description": string; "share": string }[]
         }
@@ -3889,7 +3963,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string },
-                $query?: { "portal": string },
+                $query: { "portal": string },
             }
             return: { "portal": string; "target": string }[]
         }
@@ -3906,7 +3980,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string },
-                $query?: { "vg": string },
+                $query: { "vg": string },
             }
             return: { "lv": string }[]
         }
@@ -3915,7 +3989,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string },
-                $query?: { "server": string },
+                $query: { "server": string },
             }
             return: { "options": string; "path": string }[]
         }
@@ -3924,7 +3998,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string },
-                $query?: {
+                $query: {
                     "fingerprint"?: string;
                     "password": string;
                     "port"?: number;
@@ -4141,7 +4215,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string },
-                $body: { "cmd"?: "ceph_install" | "login" | "upgrade"; "cmd-opts"?: string; "proxy"?: string },
+                $body?: { "cmd"?: "ceph_install" | "login" | "upgrade"; "cmd-opts"?: string; "proxy"?: string },
             }
             return: { "host": string; "password": string; "proxy": string; "tls-port": number; "type": string }
         }
@@ -4150,7 +4224,9 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string },
-                $body: { "force"?: boolean; "vms"?: string ;
+                $body?: {
+                    "force"?: boolean;
+                    "vms"?: string;
                     "max-workers"?: number;
                 },
             }
@@ -4170,7 +4246,9 @@ export type NodesAPI = {
                 "loadavg": string[];
                 "memory": { "available": number; "free": number; "total": number; "used": number };
                 "pveversion": string;
-                "rootfs": { "avail": number; "free": number; "total": number; "used": number }
+                "rootfs": { "avail": number; "free": number; "total": number; "used": number };
+                "uptime": number;
+                "idle": number
             }
         },
         "POST": {
@@ -4178,14 +4256,17 @@ export type NodesAPI = {
                 $path: { "node": string },
                 $body: { "command": "reboot" | "shutdown" },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/stopall": {
         "POST": {
             parameters: {
                 $path: { "node": string },
-                $body: { "force-stop"?: boolean; "timeout"?: number; "vms"?: string ;
+                $body?: {
+                    "force-stop"?: boolean;
+                    "timeout"?: number;
+                    "vms"?: string;
                     "max-workers"?: number;
                 },
             }
@@ -4211,7 +4292,7 @@ export type NodesAPI = {
                 "enabled"?: boolean;
                 "formats"?: {
                     "default": "qcow2" | "raw" | "subvol" | "vmdk";
-                    "supported": "qcow2" | "raw" | "subvol" | "vmdk"[]
+                    "supported": ("qcow2" | "raw" | "subvol" | "vmdk")[]
                 };
                 "select_existing"?: boolean;
                 "shared"?: boolean;
@@ -4244,12 +4325,11 @@ export type NodesAPI = {
                 "notes"?: string;
                 "parent"?: string;
                 "protected"?: boolean;
-                "size": number;
+                "size"?: number;
                 "used"?: number;
                 "verification"?: { "state": string; "upid": string };
                 "vmid"?: number;
-                "volid": string
-            ;
+                "volid": string;
                 "approximate-size"?: number;
             }[]
         },
@@ -4297,9 +4377,9 @@ export type NodesAPI = {
         "PUT": {
             parameters: {
                 $path: { "node": string; "storage": string; "volume": string },
-                $body: { "notes"?: string; "protected"?: boolean },
+                $body?: { "notes"?: string; "protected"?: boolean },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/storage/{storage}/download-url": {
@@ -4323,7 +4403,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string; "storage": string },
-                $query?: { "filepath": string; "tar"?: boolean; "volume": string },
+                $query: { "filepath": string; "tar"?: boolean; "volume": string },
             }
             return: unknown
         }
@@ -4332,7 +4412,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string; "storage": string },
-                $query?: { "filepath": string; "volume": string },
+                $query: { "filepath": string; "volume": string },
             }
             return: {
                 "filepath": string;
@@ -4348,7 +4428,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string; "storage": string },
-                $query?: { "volume": string },
+                $query: { "volume": string },
             }
             return: {
                 "create-args": Record<string, unknown>;
@@ -4399,7 +4479,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string; "storage": string },
-                $query?: {
+                $query: {
                     "cf"?: "AVERAGE" | "MAX";
                     "ds": string;
                     "timeframe": "hour" | "day" | "week" | "month" | "year"
@@ -4412,7 +4492,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string; "storage": string },
-                $query?: { "cf"?: "AVERAGE" | "MAX"; "timeframe": "hour" | "day" | "week" | "month" | "year" },
+                $query: { "cf"?: "AVERAGE" | "MAX"; "timeframe": "hour" | "day" | "week" | "month" | "year" },
             }
             return: Record<string, unknown>[]
         }
@@ -4454,7 +4534,7 @@ export type NodesAPI = {
             parameters: {
                 $path: { "node": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -4478,23 +4558,24 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string },
-                $body: { "force"?: boolean },
+                $body?: { "force"?: boolean },
             }
-            return: unknown
+            return: null
         },
         "PUT": {
             parameters: {
                 $path: { "node": string },
                 $body: { "key": string },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/suspendall": {
         "POST": {
             parameters: {
                 $path: { "node": string },
-                $body: { "vms"?: string ;
+                $body?: {
+                    "vms"?: string;
                     "max-workers"?: number;
                 },
             }
@@ -4546,7 +4627,7 @@ export type NodesAPI = {
             parameters: {
                 $path: { "node": string; "upid": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -4587,7 +4668,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string },
-                $body: { "cmd"?: "ceph_install" | "login" | "upgrade"; "cmd-opts"?: string },
+                $body?: { "cmd"?: "ceph_install" | "login" | "upgrade"; "cmd-opts"?: string },
             }
             return: { "port": number; "ticket": string; "upid": string; "user": string }
         }
@@ -4604,7 +4685,7 @@ export type NodesAPI = {
                 $path: { "node": string },
                 $body: { "timezone": string },
             }
-            return: unknown
+            return: null
         }
     },
     "/nodes/{node}/version": {
@@ -4619,7 +4700,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string },
-                $body: {
+                $body?: {
                     "cmd"?: "ceph_install" | "login" | "upgrade";
                     "cmd-opts"?: string;
                     "height"?: number;
@@ -4627,7 +4708,12 @@ export type NodesAPI = {
                     "width"?: number
                 },
             }
-            return: { "cert": string; "port": number; "ticket": string; "upid": string; "user": string ;
+            return: {
+                "cert": string;
+                "port": number;
+                "ticket": string;
+                "upid": string;
+                "user": string;
                 "password"?: string;
             }
         }
@@ -4636,7 +4722,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string },
-                $query?: { "port": number; "vncticket": string },
+                $query: { "port": number; "vncticket": string },
             }
             return: { "port": string }
         }
@@ -4645,7 +4731,7 @@ export type NodesAPI = {
         "POST": {
             parameters: {
                 $path: { "node": string },
-                $body: {
+                $body?: {
                     "all"?: boolean;
                     "bwlimit"?: number;
                     "compress"?: "0" | "1" | "gzip" | "lzo" | "zstd";
@@ -4658,7 +4744,6 @@ export type NodesAPI = {
                     "lockwait"?: number;
                     "mailnotification"?: "always" | "failure";
                     "mailto"?: string;
-                    "maxfiles"?: number;
                     "mode"?: "snapshot" | "suspend" | "stop";
                     "notes-template"?: string;
                     "notification-mode"?: "auto" | "legacy-sendmail" | "notification-system";
@@ -4702,7 +4787,6 @@ export type NodesAPI = {
                 "lockwait"?: number;
                 "mailnotification"?: "always" | "failure";
                 "mailto"?: string;
-                "maxfiles"?: number;
                 "mode"?: "snapshot" | "suspend" | "stop";
                 "node"?: string;
                 "notes-template"?: string;
@@ -4730,7 +4814,7 @@ export type NodesAPI = {
         "GET": {
             parameters: {
                 $path: { "node": string },
-                $query?: { "volume": string },
+                $query: { "volume": string },
             }
             return: string
         }

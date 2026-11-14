@@ -553,6 +553,14 @@ export function createAPI(client: Client): APIClient {
 }
 
 export type { NodeScopedAPI } from "./api/nodes";
+// Endpoint type maps and helpers, e.g. `Ret<"/nodes/{node}/qemu", "GET">[number]` for a VM list entry.
+export type {API, ArgsTuple, BodyOf, Booleanish, HttpMethod, MethodKey, Params, PathContext, QueryOf, RequestInput, Ret} from "./api";
+export type {AccessAPI} from "./api/access";
+export type {ClusterAPI} from "./api/cluster/types";
+export type {NodesAPI, Service} from "./api/nodes/types";
+export type {PoolsAPI} from "./api/pools";
+export type {StorageAPI} from "./api/storage";
+export type {VersionAPI} from "./api/version";
 export {Display, DisplaySession} from "./helpers/Display";
 export type {DisplayConnectionInfo, DisplayOpenOptions, DisplayOptions, DisplayPipe, DisplayTicket} from "./helpers/Display";
 export {Terminal, TerminalSession, TerminalState} from "./helpers/Terminal";

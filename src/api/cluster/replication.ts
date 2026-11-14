@@ -27,7 +27,7 @@ export default function replicationFactory(client: Client) {
                 client.request(
                     "/cluster/replication/{id}",
                     "DELETE",
-                    { ...((args[0]) as any), $path: { id } }
+                    { ...args[0], $path: { id } }
                 ),
             read: (
                 ...args: ArgsTuple<PathContext<ClusterAPI["/cluster/replication/{id}"]["GET"]['parameters']>>
@@ -35,7 +35,7 @@ export default function replicationFactory(client: Client) {
                 client.request(
                     "/cluster/replication/{id}",
                     "GET",
-                    { ...((args[0]) as any), $path: { id } }
+                    { ...args[0], $path: { id } }
                 ),
             update: (
                 ...args: ArgsTuple<PathContext<ClusterAPI["/cluster/replication/{id}"]["PUT"]['parameters']>>
@@ -43,7 +43,7 @@ export default function replicationFactory(client: Client) {
                 client.request(
                     "/cluster/replication/{id}",
                     "PUT",
-                    { ...((args[0]) as any), $path: { id } }
+                    { ...args[0], $path: { id } }
                 ),
         }),
     };

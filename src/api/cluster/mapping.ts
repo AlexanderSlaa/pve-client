@@ -36,7 +36,7 @@ export default function mappingFactory(client: Client) {
                     client.request(
                         "/cluster/mapping/dir/{id}",
                         "DELETE",
-                        { ...((args[0]) as any), $path: { id } }
+                        { ...args[0], $path: { id } }
                     ),
                 get: (
                     ...args: ArgsTuple<PathContext<ClusterAPI["/cluster/mapping/dir/{id}"]["GET"]['parameters']>>
@@ -44,7 +44,7 @@ export default function mappingFactory(client: Client) {
                     client.request(
                         "/cluster/mapping/dir/{id}",
                         "GET",
-                        { ...((args[0]) as any), $path: { id } }
+                        { ...args[0], $path: { id } }
                     ),
                 update: (
                     ...args: ArgsTuple<PathContext<ClusterAPI["/cluster/mapping/dir/{id}"]["PUT"]['parameters']>>
@@ -52,7 +52,7 @@ export default function mappingFactory(client: Client) {
                     client.request(
                         "/cluster/mapping/dir/{id}",
                         "PUT",
-                        { ...((args[0]) as any), $path: { id } }
+                        { ...args[0], $path: { id } }
                     ),
             }),
         },
@@ -80,7 +80,7 @@ export default function mappingFactory(client: Client) {
                     client.request(
                         "/cluster/mapping/pci/{id}",
                         "DELETE",
-                        { ...((args[0]) as any), $path: { id } }
+                        { ...args[0], $path: { id } }
                     ),
                 get: (
                     ...args: ArgsTuple<PathContext<ClusterAPI["/cluster/mapping/pci/{id}"]["GET"]['parameters']>>
@@ -88,7 +88,7 @@ export default function mappingFactory(client: Client) {
                     client.request(
                         "/cluster/mapping/pci/{id}",
                         "GET",
-                        { ...((args[0]) as any), $path: { id } }
+                        { ...args[0], $path: { id } }
                     ),
                 update: (
                     ...args: ArgsTuple<PathContext<ClusterAPI["/cluster/mapping/pci/{id}"]["PUT"]['parameters']>>
@@ -96,7 +96,7 @@ export default function mappingFactory(client: Client) {
                     client.request(
                         "/cluster/mapping/pci/{id}",
                         "PUT",
-                        { ...((args[0]) as any), $path: { id } }
+                        { ...args[0], $path: { id } }
                     ),
             }),
         },
@@ -124,7 +124,7 @@ export default function mappingFactory(client: Client) {
                     client.request(
                         "/cluster/mapping/usb/{id}",
                         "DELETE",
-                        { ...((args[0]) as any), $path: { id } }
+                        { ...args[0], $path: { id } }
                     ),
                 get: (
                     ...args: ArgsTuple<PathContext<ClusterAPI["/cluster/mapping/usb/{id}"]["GET"]['parameters']>>
@@ -132,7 +132,7 @@ export default function mappingFactory(client: Client) {
                     client.request(
                         "/cluster/mapping/usb/{id}",
                         "GET",
-                        { ...((args[0]) as any), $path: { id } }
+                        { ...args[0], $path: { id } }
                     ),
                 update: (
                     ...args: ArgsTuple<PathContext<ClusterAPI["/cluster/mapping/usb/{id}"]["PUT"]['parameters']>>
@@ -140,7 +140,7 @@ export default function mappingFactory(client: Client) {
                     client.request(
                         "/cluster/mapping/usb/{id}",
                         "PUT",
-                        { ...((args[0]) as any), $path: { id } }
+                        { ...args[0], $path: { id } }
                     ),
             }),
         },

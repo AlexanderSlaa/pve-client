@@ -6,9 +6,9 @@ export type PoolsAPI = {
     "/pools": {
         "DELETE": {
             parameters: {
-                $query?: { "poolid": string },
+                $query: { "poolid": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -30,7 +30,7 @@ export type PoolsAPI = {
             parameters: {
                 $body: { "comment"?: string; "poolid": string },
             }
-            return: unknown
+            return: null
         },
         "PUT": {
             parameters: {
@@ -43,7 +43,7 @@ export type PoolsAPI = {
                     "vms"?: string
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/pools/{poolid}": {
@@ -51,7 +51,7 @@ export type PoolsAPI = {
             parameters: {
                 $path: { "poolid": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -72,7 +72,7 @@ export type PoolsAPI = {
         "PUT": {
             parameters: {
                 $path: { "poolid": string },
-                $body: {
+                $body?: {
                     "allow-move"?: boolean;
                     "comment"?: string;
                     "delete"?: boolean;
@@ -80,7 +80,7 @@ export type PoolsAPI = {
                     "vms"?: string
                 },
             }
-            return: unknown
+            return: null
         }
     },
 }

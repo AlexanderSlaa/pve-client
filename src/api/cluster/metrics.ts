@@ -35,7 +35,7 @@ export default function metricsFactory(client: Client) {
                 client.request(
                     "/cluster/metrics/server/{id}",
                     "POST",
-                    { ...((args[0]) as any), $path: { id: (args[0] as any)?.$path?.id } }
+                    { ...args[0], $path: { id: (args[0] as any)?.$path?.id } }
                 ),
             id: (id: string) => ({
                 delete: (
@@ -44,7 +44,7 @@ export default function metricsFactory(client: Client) {
                     client.request(
                         "/cluster/metrics/server/{id}",
                         "DELETE",
-                        { ...((args[0]) as any), $path: { id } }
+                        { ...args[0], $path: { id } }
                     ),
                 get: (
                     ...args: ArgsTuple<PathContext<ClusterAPI["/cluster/metrics/server/{id}"]["GET"]['parameters']>>
@@ -52,7 +52,7 @@ export default function metricsFactory(client: Client) {
                     client.request(
                         "/cluster/metrics/server/{id}",
                         "GET",
-                        { ...((args[0]) as any), $path: { id } }
+                        { ...args[0], $path: { id } }
                     ),
                 update: (
                     ...args: ArgsTuple<PathContext<ClusterAPI["/cluster/metrics/server/{id}"]["PUT"]['parameters']>>
@@ -60,7 +60,7 @@ export default function metricsFactory(client: Client) {
                     client.request(
                         "/cluster/metrics/server/{id}",
                         "PUT",
-                        { ...((args[0]) as any), $path: { id } }
+                        { ...args[0], $path: { id } }
                     ),
             }),
         },

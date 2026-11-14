@@ -58,7 +58,7 @@ export type StorageAPI = {
                     "preallocation"?: "off" | "metadata" | "falloc" | "full";
                     "prune-backups"?: string;
                     "saferemove"?: boolean;
-                    "saferemove-stepsize"?: "1" | "2" | "4" | "8" | "16" | "32";
+                    "saferemove-stepsize"?: 1 | 2 | 4 | 8 | 16 | 32;
                     "saferemove_throughput"?: string;
                     "server"?: string;
                     "share"?: string;
@@ -75,7 +75,8 @@ export type StorageAPI = {
                     "type": "btrfs" | "cephfs" | "cifs" | "dir" | "esxi" | "iscsi" | "iscsidirect" | "lvm" | "lvmthin" | "nfs" | "pbs" | "rbd" | "zfs" | "zfspool";
                     "username"?: string;
                     "vgname"?: string;
-                    "zfs-base-path"?: string
+                    "zfs-base-path"?: string;
+                    "on-volume-remove"?: string
                 },
             }
             return: {
@@ -90,7 +91,7 @@ export type StorageAPI = {
             parameters: {
                 $path: { "storage": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -105,7 +106,7 @@ export type StorageAPI = {
         "PUT": {
             parameters: {
                 $path: { "storage": string },
-                $body: {
+                $body?: {
                     "blocksize"?: string;
                     "bwlimit"?: string;
                     "comstar_hg"?: string;
@@ -144,7 +145,7 @@ export type StorageAPI = {
                     "preallocation"?: "off" | "metadata" | "falloc" | "full";
                     "prune-backups"?: string;
                     "saferemove"?: boolean;
-                    "saferemove-stepsize"?: "1" | "2" | "4" | "8" | "16" | "32";
+                    "saferemove-stepsize"?: 1 | 2 | 4 | 8 | 16 | 32;
                     "saferemove_throughput"?: string;
                     "server"?: string;
                     "shared"?: boolean;
@@ -155,7 +156,8 @@ export type StorageAPI = {
                     "subdir"?: string;
                     "tagged_only"?: boolean;
                     "username"?: string;
-                    "zfs-base-path"?: string
+                    "zfs-base-path"?: string;
+                    "on-volume-remove"?: string
                 },
             }
             return: {

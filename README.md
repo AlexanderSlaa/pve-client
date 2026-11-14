@@ -18,7 +18,9 @@
 
 ---
 
-`pve-client` is a **TypeScript-first** API client covering all **675 endpoints** of the official Proxmox VE REST API — typed end-to-end so your editor knows every path, parameter, and return shape. No hand-rolled fetch calls, no guessing field names.
+`pve-client` is a **TypeScript-first** API client covering all **684 operations** (453 paths) of the official Proxmox VE REST API — typed end-to-end so your editor knows every path, parameter, and return shape. No hand-rolled fetch calls, no guessing field names.
+
+Types are synced with the **Proxmox VE 9.2** API schema (`pve-docs` 9.2.14).
 
 ```ts
 import { Client } from "pve-client";
@@ -52,8 +54,8 @@ const nodes = await client.api.nodes.list();
 
 | | |
 |---|---|
-| **675 typed endpoints** | Every Proxmox VE API path — `GET`, `POST`, `PUT`, `DELETE` — is typed with parameter and return types generated from the official spec |
-| **Two auth methods** | API token (recommended) or username/password ticket flow |
+| **684 typed operations** | Every Proxmox VE API path — `GET`, `POST`, `PUT`, `DELETE` — is typed with parameter and return types generated from the official spec |
+| **Flexible auth** | API token (recommended), username/password with two-factor support, or an existing ticket session with automatic renewal |
 | **Autocomplete everywhere** | Path params, query strings, body fields, and return shapes all resolve in your IDE |
 | **Response unwrapping** | Proxmox wraps responses in `{ data: ... }` — this client strips it automatically |
 | **Task polling** | Built-in `client.task.listen()` and `client.task.wait()` for async Proxmox tasks |
@@ -142,6 +144,41 @@ await client.login(); // exchanges credentials for a ticket + CSRF token
 
 > **Note:** Some Proxmox operations (VM console, terminal access) require ticket-based auth and are unavailable to API tokens regardless of permissions.
 
+### Two-factor authentication
+
+Pass a `tfa` callback; it is called when the account needs a second factor. Return the code the user entered:
+6-8 digits are sent as TOTP, anything else as a recovery key, and a `totp:` / `recovery:` / `yubico:` / `webauthn:`
+prefix is passed through unchanged.
+
+```ts
+const client = new Client({
+  baseUrl: "https://pve.example.com:8006",
+  username: "root",
+  password: "your-password",
+  tfa: async (challenge) => prompt(`Code for ${challenge.username}:`) ?? undefined,
+});
+
+await client.login();
+```
+
+### Existing ticket sessions
+
+Restore a session (e.g. from storage, or one obtained through OpenID login with `client.api.access.openid.login`)
+instead of logging in again. The ticket is renewed with itself when it nears expiry or Proxmox answers `401`.
+
+```ts
+const client = new Client({
+  baseUrl: "https://pve.example.com:8006",
+  session: { ticket, csrf, username: "root@pam" },
+});
+
+// persist new tickets after login or renewal
+const unsubscribe = client.onSession((session) => saveSession(session));
+
+client.session; // the current { ticket, csrf, username, issued }, if any
+await client.renew(); // renew explicitly
+```
+
 ### Using `.env`
 
 ```env
@@ -163,7 +200,7 @@ const client = new Client({
 
 ## API Modules
 
-The client exposes all 675 Proxmox endpoints through six typed modules:
+The client exposes all 684 Proxmox operations through six typed modules:
 
 | Module | Path prefix | Covers |
 |---|---|---|
@@ -176,7 +213,8 @@ The client exposes all 675 Proxmox endpoints through six typed modules:
 
 ### Request argument shape
 
-Every method accepts an object with the following optional keys:
+Every method accepts an object with the following keys. The argument (and `$query` / `$body` inside it) is only
+required when the endpoint has required parameters, so the compiler tells you what is missing:
 
 | Key | Used for |
 |---|---|
@@ -196,6 +234,20 @@ await client.request("/nodes/{node}/qemu", "POST", {
   $body: { vmid: 101, memory: 2048, cores: 2, name: "my-vm" },
 });
 ```
+
+### Using the endpoint types
+
+The endpoint map is exported, so you can name any parameter or return type:
+
+```ts
+import type { NodesAPI, Params, Ret } from "pve-client";
+
+type VmListEntry = Ret<"/nodes/{node}/qemu", "GET">[number];
+type CreateVmBody = NodesAPI["/nodes/{node}/qemu"]["POST"]["parameters"]["$body"];
+type StartVmArgs = Params<"/nodes/{node}/qemu/{vmid}/status/start", "POST">;
+```
+
+Endpoints that return nothing are typed as `null`, which is what the client resolves with.
 
 ---
 
@@ -427,10 +479,26 @@ cd pve-client
 npm install
 
 npm run build           # compile TypeScript + Vite bundle
+npm run check           # type check sources, tests, examples and scripts
 npm test                # run tests (Vitest)
 npm run test:coverage   # run tests with coverage report
 npm run docs:build      # generate TypeDoc HTML docs
 ```
+
+### Syncing with a new Proxmox VE release
+
+The endpoint types follow the Proxmox API schema (`apidoc.js`). Get the newest one from the
+[API viewer](https://pve.proxmox.com/pve-docs/api-viewer/apidoc.js), or — when the website lags behind a
+release — from `/usr/share/pve-docs/api-viewer/apidoc.js` in the `pve-docs` package of the
+[Proxmox repositories](http://download.proxmox.com/debian/pve/dists/), and save it as `res/apidoc.js`. Then:
+
+```bash
+npm run api:sync    # add missing endpoints/parameters, fix optionality, enums and return shapes in place
+npm run api:audit   # report anything still out of sync, including route wrappers in client.api
+```
+
+`api:sync` only makes targeted edits, so hand-written refinements (discriminated unions, named helper types)
+are kept. Add wrappers for new endpoints in `src/api/` and run `api:audit` until it reports no issues.
 
 Test suites cover `Client` authentication, request handling, event polling, task monitoring, and `TimerPulledEventEmitter` internals.
 
@@ -448,12 +516,12 @@ Contributions are welcome! Here is how you can help:
 
 - Keep commits in [Conventional Commits](https://www.conventionalcommits.org/) format (`feat:`, `fix:`, `refactor:`, etc.) — releases are automated via semantic-release
 - All new API surface needs a corresponding type in `src/api/`
-- Run `npm test` and `npm run build` before opening a PR
+- Run `npm run check`, `npm test` and `npm run build` before opening a PR
 - Factory files export a single `export default function` — one thing per file
 
 ### Reporting Proxmox API gaps
 
-The type definitions are generated from the official Proxmox spec in `res/apidoc.js`. If you find a missing or incorrect endpoint, open an issue referencing the Proxmox API path and the expected parameters/return shape.
+The type definitions follow the official Proxmox API schema (see [Syncing with a new Proxmox VE release](#syncing-with-a-new-proxmox-ve-release)). If you find a missing or incorrect endpoint, open an issue referencing the Proxmox API path and the expected parameters/return shape.
 
 ---
 

@@ -32,7 +32,7 @@ export type AccessAPI = {
                     "users"?: string
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/access/domains": {
@@ -84,12 +84,11 @@ export type AccessAPI = {
                     "user_attr"?: string;
                     "user_classes"?: string;
                     "username-claim"?: string;
-                    "verify"?: boolean
-                ;
+                    "verify"?: boolean;
                     "audiences"?: string;
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/access/domains/{realm}": {
@@ -97,7 +96,7 @@ export type AccessAPI = {
             parameters: {
                 $path: { "realm": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -108,7 +107,7 @@ export type AccessAPI = {
         "PUT": {
             parameters: {
                 $path: { "realm": string },
-                $body: {
+                $body?: {
                     "acr-values"?: string;
                     "autocreate"?: boolean;
                     "base_dn"?: string;
@@ -149,19 +148,18 @@ export type AccessAPI = {
                     "tfa"?: string;
                     "user_attr"?: string;
                     "user_classes"?: string;
-                    "verify"?: boolean
-                ;
+                    "verify"?: boolean;
                     "audiences"?: string;
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/access/domains/{realm}/sync": {
         "POST": {
             parameters: {
                 $path: { "realm": string },
-                $body: {
+                $body?: {
                     "dry-run"?: boolean;
                     "enable-new"?: boolean;
                     "full"?: boolean;
@@ -182,7 +180,7 @@ export type AccessAPI = {
             parameters: {
                 $body: { "comment"?: string; "groupid": string },
             }
-            return: unknown
+            return: null
         }
     },
     "/access/groups/{groupid}": {
@@ -190,7 +188,7 @@ export type AccessAPI = {
             parameters: {
                 $path: { "groupid": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -201,9 +199,9 @@ export type AccessAPI = {
         "PUT": {
             parameters: {
                 $path: { "groupid": string },
-                $body: { "comment"?: string },
+                $body?: { "comment"?: string },
             }
-            return: unknown
+            return: null
         }
     },
     "/access/openid": {
@@ -239,7 +237,7 @@ export type AccessAPI = {
             parameters: {
                 $body: { "confirmation-password"?: string; "password": string; "userid": string },
             }
-            return: unknown
+            return: null
         }
     },
     "/access/permissions": {
@@ -259,7 +257,7 @@ export type AccessAPI = {
             parameters: {
                 $body: { "privs"?: string; "roleid": string },
             }
-            return: unknown
+            return: null
         }
     },
     "/access/roles/{roleid}": {
@@ -267,7 +265,7 @@ export type AccessAPI = {
             parameters: {
                 $path: { "roleid": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -326,9 +324,9 @@ export type AccessAPI = {
         "PUT": {
             parameters: {
                 $path: { "roleid": string },
-                $body: { "append"?: boolean; "privs"?: string },
+                $body?: { "append"?: boolean; "privs"?: string },
             }
-            return: unknown
+            return: null
         }
     },
     "/access/tfa": {
@@ -382,7 +380,7 @@ export type AccessAPI = {
                 $path: { "userid": string; "id": string },
                 $query?: { "password"?: string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -399,15 +397,15 @@ export type AccessAPI = {
         "PUT": {
             parameters: {
                 $path: { "userid": string; "id": string },
-                $body: { "description"?: string; "enable"?: boolean; "password"?: string },
+                $body?: { "description"?: string; "enable"?: boolean; "password"?: string },
             }
-            return: unknown
+            return: null
         }
     },
     "/access/ticket": {
         "GET": {
             parameters: {}
-            return: unknown
+            return: null
         },
         "POST": {
             parameters: {
@@ -461,7 +459,7 @@ export type AccessAPI = {
                     "userid": string
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/access/users/{userid}": {
@@ -469,7 +467,7 @@ export type AccessAPI = {
             parameters: {
                 $path: { "userid": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -490,7 +488,7 @@ export type AccessAPI = {
         "PUT": {
             parameters: {
                 $path: { "userid": string },
-                $body: {
+                $body?: {
                     "append"?: boolean;
                     "comment"?: string;
                     "email"?: string;
@@ -502,7 +500,7 @@ export type AccessAPI = {
                     "lastname"?: string
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/access/users/{userid}/tfa": {
@@ -513,7 +511,7 @@ export type AccessAPI = {
             }
             return: {
                 "realm"?: "oath" | "yubico";
-                "types"?: "totp" | "u2f" | "yubico" | "webauthn" | "recovedry"[];
+                "types"?: ("totp" | "u2f" | "yubico" | "webauthn" | "recovedry")[];
                 "user"?: "oath" | "u2f"
             }
         }
@@ -531,7 +529,7 @@ export type AccessAPI = {
             parameters: {
                 $path: { "userid": string; "tokenid": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -542,7 +540,7 @@ export type AccessAPI = {
         "POST": {
             parameters: {
                 $path: { "userid": string; "tokenid": string },
-                $body: { "comment"?: string; "expire"?: number; "privsep"?: boolean },
+                $body?: { "comment"?: string; "expire"?: number; "privsep"?: boolean },
             }
             return: {
                 "full-tokenid": string;
@@ -553,11 +551,18 @@ export type AccessAPI = {
         "PUT": {
             parameters: {
                 $path: { "userid": string; "tokenid": string },
-                $body: { "comment"?: string; "delete"?: string; "expire"?: number; "privsep"?: boolean ;
+                $body?: {
+                    "comment"?: string;
+                    "delete"?: string;
+                    "expire"?: number;
+                    "privsep"?: boolean;
                     "regenerate"?: boolean;
                 },
             }
-            return: { "comment"?: string; "expire"?: number; "privsep"?: boolean ;
+            return: {
+                "comment"?: string;
+                "expire"?: number;
+                "privsep"?: boolean;
                 "full-tokenid"?: string;
                 "value"?: string;
             }
@@ -574,11 +579,15 @@ export type AccessAPI = {
     "/access/vncticket": {
         "POST": {
             parameters: {
-                $body: { "authid": string; "path": string; "privs": string; "vncticket": string ;
+                $body: {
+                    "authid": string;
+                    "path": string;
+                    "privs": string;
+                    "vncticket": string;
                     "port"?: number;
                 },
             }
-            return: unknown
+            return: null
         }
     },
 }

@@ -35,12 +35,88 @@ describe("Nodes factory", () => {
                 $body: { vmid: 200, start: 1, protection: 0 },
             });
 
-            // @ts-expect-error direct generated request boolean fields accept boolean, 0, or 1, but not arbitrary numbers.
             void client.request("/nodes/{node}/qemu", "POST", {
                 $path: { node: "pve1" },
+                // @ts-expect-error direct generated request boolean fields accept boolean, 0, or 1, but not arbitrary numbers.
                 $body: { vmid: 200, start: 2 },
             });
         }
+    });
+
+    it("routes the PVE 9.2 guest agent statistics endpoints", async () => {
+        const client = makeClient();
+        const spy = vi.spyOn(client, "request").mockResolvedValue({} as never);
+        const agent = client.api.nodes.get("pve1").qemu.vmid(100).agent;
+
+        await agent.get_cpustats();
+        await agent.get_disks();
+        await agent.get_diskstats();
+        await agent.get_load();
+
+        for (const [i, cmd] of ["get-cpustats", "get-disks", "get-diskstats", "get-load"].entries()) {
+            expect(spy).toHaveBeenNthCalledWith(i + 1, `/nodes/{node}/qemu/{vmid}/agent/${cmd}`, "GET", {$path: {node: "pve1", vmid: 100}});
+        }
+    });
+
+    it("forwards optional parameters that used to be dropped", async () => {
+        const client = makeClient();
+        const spy = vi.spyOn(client, "request").mockResolvedValue(null as never);
+        const node = client.api.nodes.get("pve1");
+
+        await node.capabilities.qemu.cpu({$query: {arch: "aarch64"}});
+        await node.config.get({$query: {property: "wakeonlan"}});
+        await node.certificates.custom.delete({$query: {restart: true}});
+        await node.qemu.vmid(100).snapshot.snapname("before").delete({$query: {force: true}});
+        await node.lxc.id(101).firewall.ipset.name("trusted").delete({$query: {force: true}});
+
+        expect(spy).toHaveBeenNthCalledWith(1, "/nodes/{node}/capabilities/qemu/cpu", "GET", {$path: {node: "pve1"}, $query: {arch: "aarch64"}});
+        expect(spy).toHaveBeenNthCalledWith(2, "/nodes/{node}/config", "GET", {$path: {node: "pve1"}, $query: {property: "wakeonlan"}});
+        expect(spy).toHaveBeenNthCalledWith(3, "/nodes/{node}/certificates/custom", "DELETE", {$path: {node: "pve1"}, $query: {restart: true}});
+        expect(spy).toHaveBeenNthCalledWith(4, "/nodes/{node}/qemu/{vmid}/snapshot/{snapname}", "DELETE", {
+            $path: {node: "pve1", vmid: 100, snapname: "before"},
+            $query: {force: true},
+        });
+        expect(spy).toHaveBeenNthCalledWith(5, "/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}", "DELETE", {
+            $path: {node: "pve1", vmid: 101, name: "trusted"},
+            $query: {force: true},
+        });
+    });
+
+    it("binds node-level factory helpers without requiring a $path argument", async () => {
+        const client = makeClient();
+        const spy = vi.spyOn(client, "request").mockResolvedValue([] as never);
+
+        await client.api.nodes.apt.index("pve1");
+        await client.api.nodes.get("pve1").apt.changelog({$query: {name: "pve-manager"}});
+
+        expect(spy).toHaveBeenNthCalledWith(1, "/nodes/{node}/apt", "GET", {$path: {node: "pve1"}});
+        expect(spy).toHaveBeenNthCalledWith(2, "/nodes/{node}/apt/changelog", "GET", {$path: {node: "pve1"}, $query: {name: "pve-manager"}});
+    });
+
+    it("types node-scoped wrapper arguments per endpoint", () => {
+        const client = makeClient();
+        const vm = client.api.nodes.get("pve1").qemu.vmid(100);
+
+        if (false) {
+            void vm.status.start({$body: {skiplock: true}});
+            // @ts-expect-error unknown body fields are rejected.
+            void vm.status.start({$body: {notAField: 1}});
+            // @ts-expect-error agent exec needs a command.
+            void vm.agent.exec({$body: {}});
+            // @ts-expect-error apt changelog needs a package name.
+            void client.api.nodes.get("pve1").apt.changelog();
+        }
+    });
+
+    it("coerces numeric path parameters passed as strings", async () => {
+        const client = makeClient();
+        const spy = vi.spyOn(client, "request").mockResolvedValue({} as never);
+
+        await client.api.nodes.get("pve1").firewall.rules.pos("3").get();
+        await client.api.nodes.get("pve1").ceph.osd.osdid("7").metadata();
+
+        expect(spy).toHaveBeenNthCalledWith(1, "/nodes/{node}/firewall/rules/{pos}", "GET", {$path: {node: "pve1", pos: 3}});
+        expect(spy).toHaveBeenNthCalledWith(2, "/nodes/{node}/ceph/osd/{osdid}/metadata", "GET", {$path: {node: "pve1", osdid: 7}});
     });
 
     it("list → GET /nodes", async () => {

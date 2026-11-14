@@ -52,7 +52,10 @@ export default function sdnFactory(client: Client) {
 
         fabrics: {
             index: () => client.request("/cluster/sdn/fabrics", "GET", {}),
-            all: { index: () => client.request("/cluster/sdn/fabrics/all", "GET", {}) },
+            all: {
+                index: (...args: ArgsTuple<Params<"/cluster/sdn/fabrics/all", "GET">>) =>
+                    client.request("/cluster/sdn/fabrics/all", "GET", args[0] ?? {}),
+            },
             fabric: {
                 index: (...args: ArgsTuple<Params<"/cluster/sdn/fabrics/fabric", "GET">>) =>
                     client.request("/cluster/sdn/fabrics/fabric", "GET", args[0] ?? {}),
@@ -68,7 +71,8 @@ export default function sdnFactory(client: Client) {
                 }),
             },
             node: {
-                index: () => client.request("/cluster/sdn/fabrics/node", "GET", {}),
+                index: (...args: ArgsTuple<Params<"/cluster/sdn/fabrics/node", "GET">>) =>
+                    client.request("/cluster/sdn/fabrics/node", "GET", args[0] ?? {}),
                 fabric_id: (fabric_id: string) => ({
                     index: (...args: ArgsTuple<BoundParams<"/cluster/sdn/fabrics/node/{fabric_id}", "GET">>) =>
                         client.request("/cluster/sdn/fabrics/node/{fabric_id}", "GET", { ...(args[0] ?? {}), $path: { fabric_id } }),

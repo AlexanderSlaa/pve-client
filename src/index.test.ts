@@ -48,7 +48,7 @@ describe("Client", () => {
         await client.login();
         expect(client.sessionCookie()).toBe("PVEAuthCookie=ticket-value");
 
-        const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+        const [url, init] = vi.mocked(fetchMock).mock.calls[0] as [string, RequestInit];
         expect(url).toBe("https://pve.local/api2/json/access/ticket");
         expect(init.method).toBe("POST");
         expect((init.headers as Record<string, string>)["Content-Type"]).toBe("application/x-www-form-urlencoded");
@@ -363,8 +363,8 @@ describe("Client", () => {
         await lxc.clone({$body: {newid: 101}} as never);
         await lxc.config.get({$query: {current: true}} as never);
         await lxc.config.update({$body: {memory: 2048}} as never);
-        await lxc.interfaces({} as never);
-        await lxc.status.current({} as never);
+        await lxc.interfaces();
+        await lxc.status.current();
         await lxc.status.start({$body: {debug: true}} as never);
         await lxc.termproxy({} as never);
         await lxc.vncproxy({$body: {websocket: true}} as never);
@@ -421,7 +421,7 @@ describe("Client", () => {
         await qemu.config.get({} as never);
         await qemu.config.update_async({$body: {memory: "4096"}} as never);
         await qemu.config.update({$body: {name: "vm-200"}} as never);
-        await qemu.status.current({} as never);
+        await qemu.status.current();
         await qemu.status.start({$body: {skiplock: true}} as never);
         await qemu.termproxy({$body: {serial: "serial0"}} as never);
         await qemu.vncproxy({$body: {websocket: true}} as never);
@@ -495,7 +495,7 @@ describe("Client", () => {
             $body: "raw-string-body",
         } as never);
 
-        const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+        const [, init] = vi.mocked(fetchMock).mock.calls[0] as [string, RequestInit];
         expect(init.body).toBe("raw-string-body");
     });
 

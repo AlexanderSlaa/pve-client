@@ -54,7 +54,7 @@ export type ClusterAPI = {
         "PUT": {
             parameters: {
                 $path: { "name": string },
-                $body: { "contact"?: string },
+                $body?: { "contact"?: string },
             }
             return: string
         }
@@ -90,7 +90,7 @@ export type ClusterAPI = {
                 $query?: { "type"?: "dns" | "standalone" },
             }
             return: {
-                "api"?: "1984hosting" | "acmedns" | "acmeproxy" | "active24" | "ad" | "ali" | "alviy" | "anx" | "artfiles" | "arvan" | "aurora" | "autodns" | "aws" | "azion" | "azure" | "beget" | "bookmyname" | "bunny" | "cf" | "clouddns" | "cloudns" | "cn" | "conoha" | "constellix" | "cpanel" | "curanet" | "cyon" | "da" | "ddnss" | "desec" | "df" | "dgon" | "dnsexit" | "dnshome" | "dnsimple" | "dnsservices" | "doapi" | "domeneshop" | "dp" | "dpi" | "dreamhost" | "duckdns" | "durabledns" | "dyn" | "dynu" | "dynv6" | "easydns" | "edgecenter" | "edgedns" | "euserv" | "exoscale" | "fornex" | "freedns" | "freemyip" | "gandi_livedns" | "gcloud" | "gcore" | "gd" | "geoscaling" | "googledomains" | "he" | "he_ddns" | "hetzner" | "hexonet" | "hostingde" | "huaweicloud" | "infoblox" | "infomaniak" | "internetbs" | "inwx" | "ionos" | "ionos_cloud" | "ipv64" | "ispconfig" | "jd" | "joker" | "kappernet" | "kas" | "kinghost" | "knot" | "la" | "leaseweb" | "lexicon" | "limacity" | "linode" | "linode_v4" | "loopia" | "lua" | "maradns" | "me" | "miab" | "mijnhost" | "misaka" | "myapi" | "mydevil" | "mydnsjp" | "mythic_beasts" | "namecheap" | "namecom" | "namesilo" | "nanelo" | "nederhost" | "neodigit" | "netcup" | "netlify" | "nic" | "njalla" | "nm" | "nsd" | "nsone" | "nsupdate" | "nw" | "oci" | "omglol" | "one" | "online" | "openprovider" | "openstack" | "opnsense" | "ovh" | "pdns" | "pleskxml" | "pointhq" | "porkbun" | "rackcorp" | "rackspace" | "rage4" | "rcode0" | "regru" | "scaleway" | "schlundtech" | "selectel" | "selfhost" | "servercow" | "simply" | "technitium" | "tele3" | "tencent" | "timeweb" | "transip" | "udr" | "ultra" | "unoeuro" | "variomedia" | "veesp" | "vercel" | "vscale" | "vultr" | "websupport" | "west_cn" | "world4you" | "yandex360" | "yc" | "zilore" | "zone" | "zoneedit" | "zonomi";
+                "api"?: "1984hosting" | "acmedns" | "acmeproxy" | "active24" | "ad" | "ali" | "alviy" | "anx" | "artfiles" | "arvan" | "aurora" | "autodns" | "aws" | "azion" | "azure" | "beget" | "bookmyname" | "bunny" | "cf" | "clouddns" | "cloudns" | "cn" | "conoha" | "constellix" | "cpanel" | "curanet" | "cyon" | "da" | "ddnss" | "desec" | "df" | "dgon" | "dnsexit" | "dnshome" | "dnsimple" | "dnsservices" | "doapi" | "domeneshop" | "dp" | "dpi" | "dreamhost" | "duckdns" | "durabledns" | "dyn" | "dynu" | "dynv6" | "easydns" | "edgecenter" | "edgedns" | "euserv" | "exoscale" | "fornex" | "freedns" | "freemyip" | "gandi_livedns" | "gcloud" | "gcore" | "gd" | "geoscaling" | "googledomains" | "he" | "he_ddns" | "hetzner" | "hetznercloud" | "hexonet" | "hostingde" | "huaweicloud" | "infoblox" | "infomaniak" | "internetbs" | "inwx" | "ionos" | "ionos_cloud" | "ipv64" | "ispconfig" | "jd" | "joker" | "kappernet" | "kas" | "kinghost" | "knot" | "la" | "leaseweb" | "lexicon" | "limacity" | "linode" | "linode_v4" | "loopia" | "lua" | "maradns" | "me" | "miab" | "mijnhost" | "misaka" | "myapi" | "mydevil" | "mydnsjp" | "mythic_beasts" | "namecheap" | "namecom" | "namesilo" | "nanelo" | "nederhost" | "neodigit" | "netcup" | "netlify" | "nic" | "njalla" | "nm" | "nsd" | "nsone" | "nsupdate" | "nw" | "oci" | "omglol" | "one" | "online" | "openprovider" | "openprovider_rest" | "openstack" | "opnsense" | "ovh" | "pdns" | "pleskxml" | "pointhq" | "porkbun" | "rackcorp" | "rackspace" | "rage4" | "rcode0" | "regru" | "scaleway" | "schlundtech" | "selectel" | "selfhost" | "servercow" | "simply" | "spaceship" | "technitium" | "tele3" | "tencent" | "timeweb" | "transip" | "udr" | "ultra" | "unoeuro" | "variomedia" | "veesp" | "vercel" | "vscale" | "vultr" | "websupport" | "west_cn" | "world4you" | "yandex360" | "yc" | "zilore" | "zone" | "zoneedit" | "zonomi";
                 "data"?: string;
                 "digest"?: string;
                 "disable"?: boolean;
@@ -103,7 +103,7 @@ export type ClusterAPI = {
         "POST": {
             parameters: {
                 $body: {
-                    "api"?: "1984hosting" | "acmedns" | "acmeproxy" | "active24" | "ad" | "ali" | "alviy" | "anx" | "artfiles" | "arvan" | "aurora" | "autodns" | "aws" | "azion" | "azure" | "beget" | "bookmyname" | "bunny" | "cf" | "clouddns" | "cloudns" | "cn" | "conoha" | "constellix" | "cpanel" | "curanet" | "cyon" | "da" | "ddnss" | "desec" | "df" | "dgon" | "dnsexit" | "dnshome" | "dnsimple" | "dnsservices" | "doapi" | "domeneshop" | "dp" | "dpi" | "dreamhost" | "duckdns" | "durabledns" | "dyn" | "dynu" | "dynv6" | "easydns" | "edgecenter" | "edgedns" | "euserv" | "exoscale" | "fornex" | "freedns" | "freemyip" | "gandi_livedns" | "gcloud" | "gcore" | "gd" | "geoscaling" | "googledomains" | "he" | "he_ddns" | "hetzner" | "hexonet" | "hostingde" | "huaweicloud" | "infoblox" | "infomaniak" | "internetbs" | "inwx" | "ionos" | "ionos_cloud" | "ipv64" | "ispconfig" | "jd" | "joker" | "kappernet" | "kas" | "kinghost" | "knot" | "la" | "leaseweb" | "lexicon" | "limacity" | "linode" | "linode_v4" | "loopia" | "lua" | "maradns" | "me" | "miab" | "mijnhost" | "misaka" | "myapi" | "mydevil" | "mydnsjp" | "mythic_beasts" | "namecheap" | "namecom" | "namesilo" | "nanelo" | "nederhost" | "neodigit" | "netcup" | "netlify" | "nic" | "njalla" | "nm" | "nsd" | "nsone" | "nsupdate" | "nw" | "oci" | "omglol" | "one" | "online" | "openprovider" | "openstack" | "opnsense" | "ovh" | "pdns" | "pleskxml" | "pointhq" | "porkbun" | "rackcorp" | "rackspace" | "rage4" | "rcode0" | "regru" | "scaleway" | "schlundtech" | "selectel" | "selfhost" | "servercow" | "simply" | "technitium" | "tele3" | "tencent" | "timeweb" | "transip" | "udr" | "ultra" | "unoeuro" | "variomedia" | "veesp" | "vercel" | "vscale" | "vultr" | "websupport" | "west_cn" | "world4you" | "yandex360" | "yc" | "zilore" | "zone" | "zoneedit" | "zonomi";
+                    "api"?: "1984hosting" | "acmedns" | "acmeproxy" | "active24" | "ad" | "ali" | "alviy" | "anx" | "artfiles" | "arvan" | "aurora" | "autodns" | "aws" | "azion" | "azure" | "beget" | "bookmyname" | "bunny" | "cf" | "clouddns" | "cloudns" | "cn" | "conoha" | "constellix" | "cpanel" | "curanet" | "cyon" | "da" | "ddnss" | "desec" | "df" | "dgon" | "dnsexit" | "dnshome" | "dnsimple" | "dnsservices" | "doapi" | "domeneshop" | "dp" | "dpi" | "dreamhost" | "duckdns" | "durabledns" | "dyn" | "dynu" | "dynv6" | "easydns" | "edgecenter" | "edgedns" | "euserv" | "exoscale" | "fornex" | "freedns" | "freemyip" | "gandi_livedns" | "gcloud" | "gcore" | "gd" | "geoscaling" | "googledomains" | "he" | "he_ddns" | "hetzner" | "hetznercloud" | "hexonet" | "hostingde" | "huaweicloud" | "infoblox" | "infomaniak" | "internetbs" | "inwx" | "ionos" | "ionos_cloud" | "ipv64" | "ispconfig" | "jd" | "joker" | "kappernet" | "kas" | "kinghost" | "knot" | "la" | "leaseweb" | "lexicon" | "limacity" | "linode" | "linode_v4" | "loopia" | "lua" | "maradns" | "me" | "miab" | "mijnhost" | "misaka" | "myapi" | "mydevil" | "mydnsjp" | "mythic_beasts" | "namecheap" | "namecom" | "namesilo" | "nanelo" | "nederhost" | "neodigit" | "netcup" | "netlify" | "nic" | "njalla" | "nm" | "nsd" | "nsone" | "nsupdate" | "nw" | "oci" | "omglol" | "one" | "online" | "openprovider" | "openprovider_rest" | "openstack" | "opnsense" | "ovh" | "pdns" | "pleskxml" | "pointhq" | "porkbun" | "rackcorp" | "rackspace" | "rage4" | "rcode0" | "regru" | "scaleway" | "schlundtech" | "selectel" | "selfhost" | "servercow" | "simply" | "spaceship" | "technitium" | "tele3" | "tencent" | "timeweb" | "transip" | "udr" | "ultra" | "unoeuro" | "variomedia" | "veesp" | "vercel" | "vscale" | "vultr" | "websupport" | "west_cn" | "world4you" | "yandex360" | "yc" | "zilore" | "zone" | "zoneedit" | "zonomi";
                     "data"?: string;
                     "disable"?: boolean;
                     "id": string;
@@ -112,7 +112,7 @@ export type ClusterAPI = {
                     "validation-delay"?: number
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/acme/plugins/{id}": {
@@ -120,14 +120,14 @@ export type ClusterAPI = {
             parameters: {
                 $path: { "id": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
                 $path: { "id": string },
             }
             return: {
-                "api"?: "1984hosting" | "acmedns" | "acmeproxy" | "active24" | "ad" | "ali" | "alviy" | "anx" | "artfiles" | "arvan" | "aurora" | "autodns" | "aws" | "azion" | "azure" | "beget" | "bookmyname" | "bunny" | "cf" | "clouddns" | "cloudns" | "cn" | "conoha" | "constellix" | "cpanel" | "curanet" | "cyon" | "da" | "ddnss" | "desec" | "df" | "dgon" | "dnsexit" | "dnshome" | "dnsimple" | "dnsservices" | "doapi" | "domeneshop" | "dp" | "dpi" | "dreamhost" | "duckdns" | "durabledns" | "dyn" | "dynu" | "dynv6" | "easydns" | "edgecenter" | "edgedns" | "euserv" | "exoscale" | "fornex" | "freedns" | "freemyip" | "gandi_livedns" | "gcloud" | "gcore" | "gd" | "geoscaling" | "googledomains" | "he" | "he_ddns" | "hetzner" | "hexonet" | "hostingde" | "huaweicloud" | "infoblox" | "infomaniak" | "internetbs" | "inwx" | "ionos" | "ionos_cloud" | "ipv64" | "ispconfig" | "jd" | "joker" | "kappernet" | "kas" | "kinghost" | "knot" | "la" | "leaseweb" | "lexicon" | "limacity" | "linode" | "linode_v4" | "loopia" | "lua" | "maradns" | "me" | "miab" | "mijnhost" | "misaka" | "myapi" | "mydevil" | "mydnsjp" | "mythic_beasts" | "namecheap" | "namecom" | "namesilo" | "nanelo" | "nederhost" | "neodigit" | "netcup" | "netlify" | "nic" | "njalla" | "nm" | "nsd" | "nsone" | "nsupdate" | "nw" | "oci" | "omglol" | "one" | "online" | "openprovider" | "openstack" | "opnsense" | "ovh" | "pdns" | "pleskxml" | "pointhq" | "porkbun" | "rackcorp" | "rackspace" | "rage4" | "rcode0" | "regru" | "scaleway" | "schlundtech" | "selectel" | "selfhost" | "servercow" | "simply" | "technitium" | "tele3" | "tencent" | "timeweb" | "transip" | "udr" | "ultra" | "unoeuro" | "variomedia" | "veesp" | "vercel" | "vscale" | "vultr" | "websupport" | "west_cn" | "world4you" | "yandex360" | "yc" | "zilore" | "zone" | "zoneedit" | "zonomi";
+                "api"?: "1984hosting" | "acmedns" | "acmeproxy" | "active24" | "ad" | "ali" | "alviy" | "anx" | "artfiles" | "arvan" | "aurora" | "autodns" | "aws" | "azion" | "azure" | "beget" | "bookmyname" | "bunny" | "cf" | "clouddns" | "cloudns" | "cn" | "conoha" | "constellix" | "cpanel" | "curanet" | "cyon" | "da" | "ddnss" | "desec" | "df" | "dgon" | "dnsexit" | "dnshome" | "dnsimple" | "dnsservices" | "doapi" | "domeneshop" | "dp" | "dpi" | "dreamhost" | "duckdns" | "durabledns" | "dyn" | "dynu" | "dynv6" | "easydns" | "edgecenter" | "edgedns" | "euserv" | "exoscale" | "fornex" | "freedns" | "freemyip" | "gandi_livedns" | "gcloud" | "gcore" | "gd" | "geoscaling" | "googledomains" | "he" | "he_ddns" | "hetzner" | "hetznercloud" | "hexonet" | "hostingde" | "huaweicloud" | "infoblox" | "infomaniak" | "internetbs" | "inwx" | "ionos" | "ionos_cloud" | "ipv64" | "ispconfig" | "jd" | "joker" | "kappernet" | "kas" | "kinghost" | "knot" | "la" | "leaseweb" | "lexicon" | "limacity" | "linode" | "linode_v4" | "loopia" | "lua" | "maradns" | "me" | "miab" | "mijnhost" | "misaka" | "myapi" | "mydevil" | "mydnsjp" | "mythic_beasts" | "namecheap" | "namecom" | "namesilo" | "nanelo" | "nederhost" | "neodigit" | "netcup" | "netlify" | "nic" | "njalla" | "nm" | "nsd" | "nsone" | "nsupdate" | "nw" | "oci" | "omglol" | "one" | "online" | "openprovider" | "openprovider_rest" | "openstack" | "opnsense" | "ovh" | "pdns" | "pleskxml" | "pointhq" | "porkbun" | "rackcorp" | "rackspace" | "rage4" | "rcode0" | "regru" | "scaleway" | "schlundtech" | "selectel" | "selfhost" | "servercow" | "simply" | "spaceship" | "technitium" | "tele3" | "tencent" | "timeweb" | "transip" | "udr" | "ultra" | "unoeuro" | "variomedia" | "veesp" | "vercel" | "vscale" | "vultr" | "websupport" | "west_cn" | "world4you" | "yandex360" | "yc" | "zilore" | "zone" | "zoneedit" | "zonomi";
                 "data"?: string;
                 "digest"?: string;
                 "disable"?: boolean;
@@ -140,8 +140,8 @@ export type ClusterAPI = {
         "PUT": {
             parameters: {
                 $path: { "id": string },
-                $body: {
-                    "api"?: "1984hosting" | "acmedns" | "acmeproxy" | "active24" | "ad" | "ali" | "alviy" | "anx" | "artfiles" | "arvan" | "aurora" | "autodns" | "aws" | "azion" | "azure" | "beget" | "bookmyname" | "bunny" | "cf" | "clouddns" | "cloudns" | "cn" | "conoha" | "constellix" | "cpanel" | "curanet" | "cyon" | "da" | "ddnss" | "desec" | "df" | "dgon" | "dnsexit" | "dnshome" | "dnsimple" | "dnsservices" | "doapi" | "domeneshop" | "dp" | "dpi" | "dreamhost" | "duckdns" | "durabledns" | "dyn" | "dynu" | "dynv6" | "easydns" | "edgecenter" | "edgedns" | "euserv" | "exoscale" | "fornex" | "freedns" | "freemyip" | "gandi_livedns" | "gcloud" | "gcore" | "gd" | "geoscaling" | "googledomains" | "he" | "he_ddns" | "hetzner" | "hexonet" | "hostingde" | "huaweicloud" | "infoblox" | "infomaniak" | "internetbs" | "inwx" | "ionos" | "ionos_cloud" | "ipv64" | "ispconfig" | "jd" | "joker" | "kappernet" | "kas" | "kinghost" | "knot" | "la" | "leaseweb" | "lexicon" | "limacity" | "linode" | "linode_v4" | "loopia" | "lua" | "maradns" | "me" | "miab" | "mijnhost" | "misaka" | "myapi" | "mydevil" | "mydnsjp" | "mythic_beasts" | "namecheap" | "namecom" | "namesilo" | "nanelo" | "nederhost" | "neodigit" | "netcup" | "netlify" | "nic" | "njalla" | "nm" | "nsd" | "nsone" | "nsupdate" | "nw" | "oci" | "omglol" | "one" | "online" | "openprovider" | "openstack" | "opnsense" | "ovh" | "pdns" | "pleskxml" | "pointhq" | "porkbun" | "rackcorp" | "rackspace" | "rage4" | "rcode0" | "regru" | "scaleway" | "schlundtech" | "selectel" | "selfhost" | "servercow" | "simply" | "technitium" | "tele3" | "tencent" | "timeweb" | "transip" | "udr" | "ultra" | "unoeuro" | "variomedia" | "veesp" | "vercel" | "vscale" | "vultr" | "websupport" | "west_cn" | "world4you" | "yandex360" | "yc" | "zilore" | "zone" | "zoneedit" | "zonomi";
+                $body?: {
+                    "api"?: "1984hosting" | "acmedns" | "acmeproxy" | "active24" | "ad" | "ali" | "alviy" | "anx" | "artfiles" | "arvan" | "aurora" | "autodns" | "aws" | "azion" | "azure" | "beget" | "bookmyname" | "bunny" | "cf" | "clouddns" | "cloudns" | "cn" | "conoha" | "constellix" | "cpanel" | "curanet" | "cyon" | "da" | "ddnss" | "desec" | "df" | "dgon" | "dnsexit" | "dnshome" | "dnsimple" | "dnsservices" | "doapi" | "domeneshop" | "dp" | "dpi" | "dreamhost" | "duckdns" | "durabledns" | "dyn" | "dynu" | "dynv6" | "easydns" | "edgecenter" | "edgedns" | "euserv" | "exoscale" | "fornex" | "freedns" | "freemyip" | "gandi_livedns" | "gcloud" | "gcore" | "gd" | "geoscaling" | "googledomains" | "he" | "he_ddns" | "hetzner" | "hetznercloud" | "hexonet" | "hostingde" | "huaweicloud" | "infoblox" | "infomaniak" | "internetbs" | "inwx" | "ionos" | "ionos_cloud" | "ipv64" | "ispconfig" | "jd" | "joker" | "kappernet" | "kas" | "kinghost" | "knot" | "la" | "leaseweb" | "lexicon" | "limacity" | "linode" | "linode_v4" | "loopia" | "lua" | "maradns" | "me" | "miab" | "mijnhost" | "misaka" | "myapi" | "mydevil" | "mydnsjp" | "mythic_beasts" | "namecheap" | "namecom" | "namesilo" | "nanelo" | "nederhost" | "neodigit" | "netcup" | "netlify" | "nic" | "njalla" | "nm" | "nsd" | "nsone" | "nsupdate" | "nw" | "oci" | "omglol" | "one" | "online" | "openprovider" | "openprovider_rest" | "openstack" | "opnsense" | "ovh" | "pdns" | "pleskxml" | "pointhq" | "porkbun" | "rackcorp" | "rackspace" | "rage4" | "rcode0" | "regru" | "scaleway" | "schlundtech" | "selectel" | "selfhost" | "servercow" | "simply" | "spaceship" | "technitium" | "tele3" | "tencent" | "timeweb" | "transip" | "udr" | "ultra" | "unoeuro" | "variomedia" | "veesp" | "vercel" | "vscale" | "vultr" | "websupport" | "west_cn" | "world4you" | "yandex360" | "yc" | "zilore" | "zone" | "zoneedit" | "zonomi";
                     "data"?: string;
                     "delete"?: string;
                     "digest"?: string;
@@ -150,7 +150,7 @@ export type ClusterAPI = {
                     "validation-delay"?: number
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/acme/tos": {
@@ -164,7 +164,8 @@ export type ClusterAPI = {
     "/cluster/backup": {
         "GET": {
             parameters: {}
-            return: { "id": string ;
+            return: {
+                "id": string;
                 "all"?: boolean;
                 "bwlimit"?: number;
                 "comment"?: string;
@@ -205,7 +206,7 @@ export type ClusterAPI = {
         },
         "POST": {
             parameters: {
-                $body: {
+                $body?: {
                     "all"?: boolean;
                     "bwlimit"?: number;
                     "comment"?: string;
@@ -221,7 +222,6 @@ export type ClusterAPI = {
                     "lockwait"?: number;
                     "mailnotification"?: "always" | "failure";
                     "mailto"?: string;
-                    "maxfiles"?: number;
                     "mode"?: "snapshot" | "suspend" | "stop";
                     "node"?: string;
                     "notes-template"?: string;
@@ -247,7 +247,7 @@ export type ClusterAPI = {
                     "zstd"?: number
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/backup-info": {
@@ -267,18 +267,64 @@ export type ClusterAPI = {
             parameters: {
                 $path: { "id": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
                 $path: { "id": string },
             }
-            return: Record<string, unknown>
+            return: {
+                "all"?: boolean;
+                "bwlimit"?: number;
+                "comment"?: string;
+                "compress"?: "0" | "1" | "gzip" | "lzo" | "zstd";
+                "dumpdir"?: string;
+                "enabled"?: boolean;
+                "exclude"?: string;
+                "exclude-path"?: string[];
+                "fleecing"?: { "enabled"?: boolean; "storage"?: string };
+                "id": string;
+                "ionice"?: number;
+                "lockwait"?: number;
+                "mailnotification"?: "always" | "failure";
+                "mailto"?: string;
+                "mode"?: "snapshot" | "suspend" | "stop";
+                "next-run"?: number;
+                "node"?: string;
+                "notes-template"?: string;
+                "notification-mode"?: "auto" | "legacy-sendmail" | "notification-system";
+                "pbs-change-detection-mode"?: "legacy" | "data" | "metadata";
+                "performance"?: { "max-workers"?: number; "pbs-entries-max"?: number };
+                "pigz"?: number;
+                "pool"?: string;
+                "protected"?: boolean;
+                "prune-backups"?: {
+                    "keep-all"?: boolean;
+                    "keep-daily"?: number;
+                    "keep-hourly"?: number;
+                    "keep-last"?: number;
+                    "keep-monthly"?: number;
+                    "keep-weekly"?: number;
+                    "keep-yearly"?: number
+                };
+                "quiet"?: boolean;
+                "remove"?: boolean;
+                "repeat-missed"?: boolean;
+                "schedule"?: string;
+                "script"?: string;
+                "stdexcludes"?: boolean;
+                "stop"?: boolean;
+                "stopwait"?: number;
+                "storage"?: string;
+                "tmpdir"?: string;
+                "vmid"?: string;
+                "zstd"?: number
+            }
         },
         "PUT": {
             parameters: {
                 $path: { "id": string },
-                $body: {
+                $body?: {
                     "all"?: boolean;
                     "bwlimit"?: number;
                     "comment"?: string;
@@ -294,7 +340,6 @@ export type ClusterAPI = {
                     "lockwait"?: number;
                     "mailnotification"?: "always" | "failure";
                     "mailto"?: string;
-                    "maxfiles"?: number;
                     "mode"?: "snapshot" | "suspend" | "stop";
                     "node"?: string;
                     "notes-template"?: string;
@@ -320,7 +365,7 @@ export type ClusterAPI = {
                     "zstd"?: number
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/backup/{id}/included_volumes": {
@@ -358,8 +403,7 @@ export type ClusterAPI = {
                     "online"?: boolean;
                     "target": string;
                     "vms"?: number[];
-                    "with-local-disks"?: boolean
-                ;
+                    "with-local-disks"?: boolean;
                     "max-workers"?: number;
                 },
             }
@@ -369,7 +413,11 @@ export type ClusterAPI = {
     "/cluster/bulk-action/guest/shutdown": {
         "POST": {
             parameters: {
-                $body: { "force-stop"?: boolean; "maxworkers"?: number; "timeout"?: number; "vms"?: number[] ;
+                $body?: {
+                    "force-stop"?: boolean;
+                    "maxworkers"?: number;
+                    "timeout"?: number;
+                    "vms"?: number[];
                     "max-workers"?: number;
                 },
             }
@@ -379,7 +427,10 @@ export type ClusterAPI = {
     "/cluster/bulk-action/guest/start": {
         "POST": {
             parameters: {
-                $body: { "maxworkers"?: number; "timeout"?: number; "vms"?: number[] ;
+                $body?: {
+                    "maxworkers"?: number;
+                    "timeout"?: number;
+                    "vms"?: number[];
                     "max-workers"?: number;
                 },
             }
@@ -389,7 +440,11 @@ export type ClusterAPI = {
     "/cluster/bulk-action/guest/suspend": {
         "POST": {
             parameters: {
-                $body: { "maxworkers"?: number; "statestorage"?: string; "to-disk"?: boolean; "vms"?: number[] ;
+                $body?: {
+                    "maxworkers"?: number;
+                    "statestorage"?: string;
+                    "to-disk"?: boolean;
+                    "vms"?: number[];
                     "max-workers"?: number;
                 },
             }
@@ -407,13 +462,13 @@ export type ClusterAPI = {
             parameters: {}
             return: {
                 "description": string;
-                "name": "nobackfill" | "nodeep-scrub" | "nodown" | "noin" | "noout" | "norebalance" | "norecover" | "noscrub" | "notieragent" | "noup" | "pause";
+                "name": "noautoscale" | "nobackfill" | "nodeep-scrub" | "nodown" | "noin" | "noout" | "norebalance" | "norecover" | "noscrub" | "notieragent" | "noup" | "pause";
                 "value": boolean
             }[]
         },
         "PUT": {
             parameters: {
-                $body: {
+                $body?: {
                     "nobackfill"?: boolean;
                     "nodeep-scrub"?: boolean;
                     "nodown"?: boolean;
@@ -424,7 +479,8 @@ export type ClusterAPI = {
                     "noscrub"?: boolean;
                     "notieragent"?: boolean;
                     "noup"?: boolean;
-                    "pause"?: boolean
+                    "pause"?: boolean;
+                    "noautoscale"?: boolean
                 },
             }
             return: string
@@ -434,7 +490,7 @@ export type ClusterAPI = {
         "GET": {
             parameters: {
                 $path: {
-                    "flag": "nobackfill" | "nodeep-scrub" | "nodown" | "noin" | "noout" | "norebalance" | "norecover" | "noscrub" | "notieragent" | "noup" | "pause"
+                    "flag": "noautoscale" | "nobackfill" | "nodeep-scrub" | "nodown" | "noin" | "noout" | "norebalance" | "norecover" | "noscrub" | "notieragent" | "noup" | "pause"
                 },
             }
             return: boolean
@@ -442,11 +498,11 @@ export type ClusterAPI = {
         "PUT": {
             parameters: {
                 $path: {
-                    "flag": "nobackfill" | "nodeep-scrub" | "nodown" | "noin" | "noout" | "norebalance" | "norecover" | "noscrub" | "notieragent" | "noup" | "pause"
+                    "flag": "noautoscale" | "nobackfill" | "nodeep-scrub" | "nodown" | "noin" | "noout" | "norebalance" | "norecover" | "noscrub" | "notieragent" | "noup" | "pause"
                 },
                 $body: { "value": boolean },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/ceph/health-mute": {
@@ -512,7 +568,22 @@ export type ClusterAPI = {
                     }
                 };
                 "node": { "{node}": { "buildcommit": string; "version": { "parts": unknown[]; "str": string } } };
-                "osd": unknown[]
+                "osd": {
+                    "back_addr": string;
+                    "ceph_release": string;
+                    "ceph_version": string;
+                    "ceph_version_short": string;
+                    "device_ids"?: string;
+                    "device_paths"?: string;
+                    "devices"?: string;
+                    "front_addr": string;
+                    "hostname": string;
+                    "id": number;
+                    "mem_swap_kb": number;
+                    "mem_total_kb": number;
+                    "osd_data": string;
+                    "osd_objectstore": string
+                }[]
             }
         }
     },
@@ -543,7 +614,11 @@ export type ClusterAPI = {
         },
         "POST": {
             parameters: {
-                $body: { "clustername": string; "link[n]"?: string; "nodeid"?: number; "votes"?: number ;
+                $body: {
+                    "clustername": string;
+                    "link[n]"?: string;
+                    "nodeid"?: number;
+                    "votes"?: number;
                     "token-coefficient"?: number;
                 },
             }
@@ -601,12 +676,12 @@ export type ClusterAPI = {
             parameters: {
                 $path: { "node": string },
             }
-            return: unknown
+            return: null
         },
         "POST": {
             parameters: {
                 $path: { "node": string },
-                $body: {
+                $body?: {
                     "apiversion"?: number;
                     "force"?: boolean;
                     "link[n]"?: string;
@@ -645,7 +720,7 @@ export type ClusterAPI = {
             parameters: {
                 $body: { "cidr": string; "comment"?: string; "name": string },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/firewall/aliases/{name}": {
@@ -654,7 +729,7 @@ export type ClusterAPI = {
                 $path: { "name": string },
                 $query?: { "digest"?: string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -665,9 +740,9 @@ export type ClusterAPI = {
         "PUT": {
             parameters: {
                 $path: { "name": string },
-                $body: { "cidr": string; "comment"?: string; "digest"?: string; "rename"?: string },
+                $body?: { "cidr"?: string; "comment"?: string; "digest"?: string; "rename"?: string },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/firewall/groups": {
@@ -679,7 +754,7 @@ export type ClusterAPI = {
             parameters: {
                 $body: { "comment"?: string; "digest"?: string; "group": string; "rename"?: string },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/firewall/groups/{group}": {
@@ -687,7 +762,7 @@ export type ClusterAPI = {
             parameters: {
                 $path: { "group": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -732,7 +807,7 @@ export type ClusterAPI = {
                     "type": "in" | "out" | "forward" | "group"
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/firewall/groups/{group}/{pos}": {
@@ -741,7 +816,7 @@ export type ClusterAPI = {
                 $path: { "group": string; "pos": number },
                 $query?: { "digest"?: string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -768,7 +843,7 @@ export type ClusterAPI = {
         "PUT": {
             parameters: {
                 $path: { "group": string; "pos": number },
-                $body: {
+                $body?: {
                     "action"?: string;
                     "comment"?: string;
                     "delete"?: string;
@@ -787,7 +862,7 @@ export type ClusterAPI = {
                     "type"?: "in" | "out" | "forward" | "group"
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/firewall/ipset": {
@@ -799,7 +874,7 @@ export type ClusterAPI = {
             parameters: {
                 $body: { "comment"?: string; "digest"?: string; "name": string; "rename"?: string },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/firewall/ipset/{name}": {
@@ -808,7 +883,7 @@ export type ClusterAPI = {
                 $path: { "name": string },
                 $query?: { "force"?: boolean },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -821,7 +896,7 @@ export type ClusterAPI = {
                 $path: { "name": string },
                 $body: { "cidr": string; "comment"?: string; "nomatch"?: boolean },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/firewall/ipset/{name}/{cidr}": {
@@ -830,7 +905,7 @@ export type ClusterAPI = {
                 $path: { "name": string; "cidr": string },
                 $query?: { "digest"?: string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -841,9 +916,9 @@ export type ClusterAPI = {
         "PUT": {
             parameters: {
                 $path: { "name": string; "cidr": string },
-                $body: { "comment"?: string; "digest"?: string; "nomatch"?: boolean },
+                $body?: { "comment"?: string; "digest"?: string; "nomatch"?: boolean },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/firewall/macros": {
@@ -866,7 +941,7 @@ export type ClusterAPI = {
         },
         "PUT": {
             parameters: {
-                $body: {
+                $body?: {
                     "delete"?: string;
                     "digest"?: string;
                     "ebtables"?: boolean;
@@ -877,7 +952,7 @@ export type ClusterAPI = {
                     "policy_out"?: "ACCEPT" | "REJECT" | "DROP"
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/firewall/refs": {
@@ -929,7 +1004,7 @@ export type ClusterAPI = {
                     "type": "in" | "out" | "forward" | "group"
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/firewall/rules/{pos}": {
@@ -938,7 +1013,7 @@ export type ClusterAPI = {
                 $path: { "pos": number },
                 $query?: { "digest"?: string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -965,7 +1040,7 @@ export type ClusterAPI = {
         "PUT": {
             parameters: {
                 $path: { "pos": number },
-                $body: {
+                $body?: {
                     "action"?: string;
                     "comment"?: string;
                     "delete"?: string;
@@ -984,7 +1059,7 @@ export type ClusterAPI = {
                     "type"?: "in" | "out" | "forward" | "group"
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/ha": {
@@ -1009,7 +1084,7 @@ export type ClusterAPI = {
                     "type"?: "group"
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/ha/groups/{group}": {
@@ -1017,7 +1092,7 @@ export type ClusterAPI = {
             parameters: {
                 $path: { "group": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -1028,7 +1103,7 @@ export type ClusterAPI = {
         "PUT": {
             parameters: {
                 $path: { "group": string },
-                $body: {
+                $body?: {
                     "comment"?: string;
                     "delete"?: string;
                     "digest"?: string;
@@ -1037,7 +1112,7 @@ export type ClusterAPI = {
                     "restricted"?: boolean
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/ha/resources": {
@@ -1057,12 +1132,11 @@ export type ClusterAPI = {
                     "max_restart"?: number;
                     "sid": string;
                     "state"?: "started" | "stopped" | "enabled" | "disabled" | "ignored";
-                    "type"?: "ct" | "vm"
-                ;
+                    "type"?: "ct" | "vm";
                     "auto-rebalance"?: boolean;
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/ha/resources/{sid}": {
@@ -1071,7 +1145,7 @@ export type ClusterAPI = {
                 $path: { "sid": string },
                 $query?: { "purge"?: boolean },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -1086,15 +1160,14 @@ export type ClusterAPI = {
                 "max_restart"?: number;
                 "sid": string;
                 "state"?: "started" | "stopped" | "enabled" | "disabled" | "ignored";
-                "type": string
-            ;
+                "type": string;
                 "auto-rebalance"?: boolean;
             }
         },
         "PUT": {
             parameters: {
                 $path: { "sid": string },
-                $body: {
+                $body?: {
                     "comment"?: string;
                     "delete"?: string;
                     "digest"?: string;
@@ -1102,12 +1175,11 @@ export type ClusterAPI = {
                     "group"?: string;
                     "max_relocate"?: number;
                     "max_restart"?: number;
-                    "state"?: "started" | "stopped" | "enabled" | "disabled" | "ignored"
-                ;
+                    "state"?: "started" | "stopped" | "enabled" | "disabled" | "ignored";
                     "auto-rebalance"?: boolean;
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/ha/resources/{sid}/migrate": {
@@ -1117,7 +1189,7 @@ export type ClusterAPI = {
                 $body: { "node": string },
             }
             return: {
-                "blocking-resources"?: { "cause": "resource-affinity"; "sid": string }[];
+                "blocking-resources"?: { "cause": "node-affinity" | "resource-affinity"; "sid": string }[];
                 "comigrated-resources"?: unknown[];
                 "requested-node": string;
                 "sid": string
@@ -1131,7 +1203,7 @@ export type ClusterAPI = {
                 $body: { "node": string },
             }
             return: {
-                "blocking-resources"?: { "cause": "resource-affinity"; "sid": string }[];
+                "blocking-resources"?: { "cause": "node-affinity" | "resource-affinity"; "sid": string }[];
                 "comigrated-resources"?: string[];
                 "requested-node": string;
                 "sid": string
@@ -1152,7 +1224,7 @@ export type ClusterAPI = {
                     { "type": "resource-affinity"; "affinity": "positive" | "negative"; "nodes"?: never; "strict"?: never }
                 ),
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/ha/rules/{rule}": {
@@ -1160,7 +1232,7 @@ export type ClusterAPI = {
             parameters: {
                 $path: { "rule": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -1176,7 +1248,7 @@ export type ClusterAPI = {
                     { "type": "resource-affinity"; "affinity"?: "positive" | "negative"; "nodes"?: never; "strict"?: never }
                 ),
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/ha/status": {
@@ -1201,8 +1273,7 @@ export type ClusterAPI = {
                 "state"?: string;
                 "status": string;
                 "timestamp"?: number;
-                "type": "quorum" | "master" | "lrm" | "service"
-            ;
+                "type": "quorum" | "master" | "lrm" | "service";
                 "armed-state"?: "armed" | "standby" | "disarming" | "disarmed";
                 "auto-rebalance"?: boolean;
                 "resource_mode"?: "freeze" | "ignore";
@@ -1242,7 +1313,7 @@ export type ClusterAPI = {
             parameters: {
                 $path: { "id": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -1263,7 +1334,7 @@ export type ClusterAPI = {
                     "scope"?: "users" | "groups" | "both"
                 },
             }
-            return: unknown
+            return: null
         },
         "PUT": {
             parameters: {
@@ -1278,13 +1349,13 @@ export type ClusterAPI = {
                     "scope"?: "users" | "groups" | "both"
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/jobs/schedule-analyze": {
         "GET": {
             parameters: {
-                $query?: { "iterations"?: number; "schedule": string; "starttime"?: number },
+                $query: { "iterations"?: number; "schedule": string; "starttime"?: number },
             }
             return: { "timestamp": number; "utc": string }[]
         }
@@ -1319,7 +1390,7 @@ export type ClusterAPI = {
             parameters: {
                 $body: { "description"?: string; "id": string; "map": string[] },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/mapping/dir/{id}": {
@@ -1327,7 +1398,7 @@ export type ClusterAPI = {
             parameters: {
                 $path: { "id": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -1338,9 +1409,9 @@ export type ClusterAPI = {
         "PUT": {
             parameters: {
                 $path: { "id": string },
-                $body: { "delete"?: string; "description"?: string; "digest"?: string; "map"?: string[] },
+                $body?: { "delete"?: string; "description"?: string; "digest"?: string; "map"?: string[] },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/mapping/pci": {
@@ -1365,7 +1436,7 @@ export type ClusterAPI = {
                     "mdev"?: boolean
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/mapping/pci/{id}": {
@@ -1373,7 +1444,7 @@ export type ClusterAPI = {
             parameters: {
                 $path: { "id": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -1384,7 +1455,7 @@ export type ClusterAPI = {
         "PUT": {
             parameters: {
                 $path: { "id": string },
-                $body: {
+                $body?: {
                     "delete"?: string;
                     "description"?: string;
                     "digest"?: string;
@@ -1393,7 +1464,7 @@ export type ClusterAPI = {
                     "mdev"?: boolean
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/mapping/usb": {
@@ -1407,7 +1478,7 @@ export type ClusterAPI = {
             parameters: {
                 $body: { "description"?: string; "id": string; "map": string[] },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/mapping/usb/{id}": {
@@ -1415,7 +1486,7 @@ export type ClusterAPI = {
             parameters: {
                 $path: { "id": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -1428,7 +1499,7 @@ export type ClusterAPI = {
                 $path: { "id": string },
                 $body: { "delete"?: string; "description"?: string; "digest"?: string; "map": string[] },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/metrics": {
@@ -1464,7 +1535,7 @@ export type ClusterAPI = {
             parameters: {
                 $path: { "id": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -1501,7 +1572,7 @@ export type ClusterAPI = {
                     "verify-certificate"?: boolean
                 },
             }
-            return: unknown
+            return: null
         },
         "PUT": {
             parameters: {
@@ -1533,7 +1604,7 @@ export type ClusterAPI = {
                     "verify-certificate"?: boolean
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/nextid": {
@@ -1571,7 +1642,7 @@ export type ClusterAPI = {
             parameters: {
                 $body: { "comment"?: string; "disable"?: boolean; "name": string; "server": string; "token": string },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/notifications/endpoints/gotify/{name}": {
@@ -1579,7 +1650,7 @@ export type ClusterAPI = {
             parameters: {
                 $path: { "name": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -1590,7 +1661,7 @@ export type ClusterAPI = {
         "PUT": {
             parameters: {
                 $path: { "name": string },
-                $body: {
+                $body?: {
                     "comment"?: string;
                     "delete"?: string[];
                     "digest"?: string;
@@ -1599,7 +1670,7 @@ export type ClusterAPI = {
                     "token"?: string
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/notifications/endpoints/sendmail": {
@@ -1628,7 +1699,7 @@ export type ClusterAPI = {
                     "name": string
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/notifications/endpoints/sendmail/{name}": {
@@ -1636,7 +1707,7 @@ export type ClusterAPI = {
             parameters: {
                 $path: { "name": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -1656,7 +1727,7 @@ export type ClusterAPI = {
         "PUT": {
             parameters: {
                 $path: { "name": string },
-                $body: {
+                $body?: {
                     "author"?: string;
                     "comment"?: string;
                     "delete"?: string[];
@@ -1667,7 +1738,7 @@ export type ClusterAPI = {
                     "mailto-user"?: string[]
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/notifications/endpoints/smtp": {
@@ -1705,7 +1776,7 @@ export type ClusterAPI = {
                     "username"?: string
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/notifications/endpoints/smtp/{name}": {
@@ -1713,7 +1784,7 @@ export type ClusterAPI = {
             parameters: {
                 $path: { "name": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -1737,7 +1808,7 @@ export type ClusterAPI = {
         "PUT": {
             parameters: {
                 $path: { "name": string },
-                $body: {
+                $body?: {
                     "author"?: string;
                     "comment"?: string;
                     "delete"?: string[];
@@ -1753,7 +1824,7 @@ export type ClusterAPI = {
                     "username"?: string
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/notifications/endpoints/webhook": {
@@ -1784,7 +1855,7 @@ export type ClusterAPI = {
                     "url": string
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/notifications/endpoints/webhook/{name}": {
@@ -1792,7 +1863,7 @@ export type ClusterAPI = {
             parameters: {
                 $path: { "name": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -1813,7 +1884,7 @@ export type ClusterAPI = {
         "PUT": {
             parameters: {
                 $path: { "name": string },
-                $body: {
+                $body?: {
                     "body"?: string;
                     "comment"?: string;
                     "delete"?: string[];
@@ -1825,7 +1896,7 @@ export type ClusterAPI = {
                     "url"?: string
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/notifications/matcher-field-values": {
@@ -1853,7 +1924,8 @@ export type ClusterAPI = {
                 "mode"?: "all" | "any";
                 "name": string;
                 "origin": "user-created" | "builtin" | "modified-builtin";
-                "target"?: string[]
+                "target"?: string[];
+                "expression"?: string
             }[]
         },
         "POST": {
@@ -1867,10 +1939,11 @@ export type ClusterAPI = {
                     "match-severity"?: string[];
                     "mode"?: "all" | "any";
                     "name": string;
-                    "target"?: string[]
+                    "target"?: string[];
+                    "expression"?: string
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/notifications/matchers/{name}": {
@@ -1878,11 +1951,12 @@ export type ClusterAPI = {
             parameters: {
                 $path: { "name": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
                 $path: { "name": string },
+                $query?: { "migrate-to-expression"?: boolean },
             }
             return: {
                 "comment"?: string;
@@ -1894,13 +1968,14 @@ export type ClusterAPI = {
                 "match-severity"?: string[];
                 "mode"?: "all" | "any";
                 "name": string;
-                "target"?: string[]
+                "target"?: string[];
+                "expression"?: string
             }
         },
         "PUT": {
             parameters: {
                 $path: { "name": string },
-                $body: {
+                $body?: {
                     "comment"?: string;
                     "delete"?: string[];
                     "digest"?: string;
@@ -1910,10 +1985,11 @@ export type ClusterAPI = {
                     "match-field"?: string[];
                     "match-severity"?: string[];
                     "mode"?: "all" | "any";
-                    "target"?: string[]
+                    "target"?: string[];
+                    "expression"?: string
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/notifications/targets": {
@@ -1933,7 +2009,7 @@ export type ClusterAPI = {
             parameters: {
                 $path: { "name": string },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/options": {
@@ -1949,8 +2025,8 @@ export type ClusterAPI = {
                 "fencing"?: "watchdog" | "hardware" | "both";
                 "ha"?: string;
                 "http_proxy"?: string;
-                "keyboard"?: string;
-                "language"?: string;
+                "keyboard"?: "de" | "de-ch" | "da" | "en-gb" | "en-us" | "es" | "fi" | "fr" | "fr-be" | "fr-ca" | "fr-ch" | "hu" | "is" | "it" | "ja" | "lt" | "mk" | "nl" | "no" | "pl" | "pt" | "pt-br" | "sv" | "sl" | "tr";
+                "language"?: "ar" | "ca" | "da" | "de" | "en" | "es" | "eu" | "fa" | "fr" | "hr" | "he" | "it" | "ja" | "ka" | "kr" | "nb" | "nl" | "nn" | "pl" | "pt_BR" | "ru" | "sl" | "sv" | "tr" | "ukr" | "zh_CN" | "zh_TW";
                 "location"?: string;
                 "mac_prefix"?: string;
                 "max_workers"?: number;
@@ -1963,14 +2039,13 @@ export type ClusterAPI = {
                 "tag-style"?: string;
                 "u2f"?: string;
                 "user-tag-access"?: string;
-                "webauthn"?: string
-            ;
+                "webauthn"?: string;
                 "description"?: string;
             }
         },
         "PUT": {
             parameters: {
-                $body: {
+                $body?: {
                     "bwlimit"?: string;
                     "consent-text"?: string;
                     "console"?: "applet" | "vv" | "html5" | "xtermjs";
@@ -1998,7 +2073,7 @@ export type ClusterAPI = {
                     "webauthn"?: string
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/replication": {
@@ -2015,7 +2090,8 @@ export type ClusterAPI = {
                 "schedule"?: string;
                 "source"?: string;
                 "target": string;
-                "type": "local"
+                "type": "local";
+                "skip-freeze-fs"?: boolean
             }[]
         },
         "POST": {
@@ -2029,10 +2105,11 @@ export type ClusterAPI = {
                     "schedule"?: string;
                     "source"?: string;
                     "target": string;
-                    "type": "local"
+                    "type": "local";
+                    "skip-freeze-fs"?: boolean
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/replication/{id}": {
@@ -2041,7 +2118,7 @@ export type ClusterAPI = {
                 $path: { "id": string },
                 $query?: { "force"?: boolean; "keep"?: boolean },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -2059,13 +2136,14 @@ export type ClusterAPI = {
                 "schedule"?: string;
                 "source"?: string;
                 "target": string;
-                "type": "local"
+                "type": "local";
+                "skip-freeze-fs"?: boolean
             }
         },
         "PUT": {
             parameters: {
                 $path: { "id": string },
-                $body: {
+                $body?: {
                     "comment"?: string;
                     "delete"?: string;
                     "digest"?: string;
@@ -2073,10 +2151,11 @@ export type ClusterAPI = {
                     "rate"?: number;
                     "remove_job"?: "local" | "full";
                     "schedule"?: string;
-                    "source"?: string
+                    "source"?: string;
+                    "skip-freeze-fs"?: boolean
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/resources": {
@@ -2117,8 +2196,7 @@ export type ClusterAPI = {
                 "type": "node" | "storage" | "pool" | "qemu" | "lxc" | "openvz" | "sdn" | "network";
                 "uptime"?: number;
                 "vmid"?: number;
-                "zone-type"?: string
-            ;
+                "zone-type"?: string;
                 "host-arch"?: "x86_64" | "aarch64";
                 "shared"?: boolean;
             }[]
@@ -2131,7 +2209,7 @@ export type ClusterAPI = {
         },
         "PUT": {
             parameters: {
-                $body: { "lock-token"?: string; "release-lock"?: boolean },
+                $body?: { "lock-token"?: string; "release-lock"?: boolean },
             }
             return: string
         }
@@ -2164,11 +2242,13 @@ export type ClusterAPI = {
                     "isis-net"?: string;
                     "loopback"?: string;
                     "node"?: string;
-                    "peers"?: string
+                    "peers"?: string;
+                    "peer-group-name"?: string;
+                    "nodes"?: string;
+                    "bgp-mode"?: "auto" | "external" | "internal"
                 };
                 "state"?: "new" | "changed" | "deleted";
-                "type": "bgp" | "evpn" | "faucet" | "isis"
-            ;
+                "type": "bgp" | "evpn" | "faucet" | "isis";
                 "bgp-mode"?: "auto" | "external" | "internal";
                 "nodes"?: string;
                 "peer-group-name"?: string;
@@ -2190,8 +2270,7 @@ export type ClusterAPI = {
                     "loopback"?: string;
                     "node"?: string;
                     "peers"?: string;
-                    "type": "bgp" | "evpn" | "faucet" | "isis"
-                ;
+                    "type": "bgp" | "evpn" | "faucet" | "isis";
                     "bgp-mode"?: "auto" | "external" | "internal";
                     "nodes"?: string;
                     "peer-group-name"?: string;
@@ -2199,7 +2278,7 @@ export type ClusterAPI = {
                     "route-map-out"?: string;
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/sdn/controllers/{controller}": {
@@ -2208,7 +2287,7 @@ export type ClusterAPI = {
                 $path: { "controller": string },
                 $query?: { "lock-token"?: string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -2238,11 +2317,13 @@ export type ClusterAPI = {
                     "isis-net"?: string;
                     "loopback"?: string;
                     "node"?: string;
-                    "peers"?: string
+                    "peers"?: string;
+                    "peer-group-name"?: string;
+                    "nodes"?: string;
+                    "bgp-mode"?: "auto" | "external" | "internal"
                 };
                 "state"?: "new" | "changed" | "deleted";
-                "type": "bgp" | "evpn" | "faucet" | "isis"
-            ;
+                "type": "bgp" | "evpn" | "faucet" | "isis";
                 "bgp-mode"?: "auto" | "external" | "internal";
                 "nodes"?: string;
                 "peer-group-name"?: string;
@@ -2251,7 +2332,7 @@ export type ClusterAPI = {
         "PUT": {
             parameters: {
                 $path: { "controller": string },
-                $body: {
+                $body?: {
                     "asn"?: number;
                     "bgp-multipath-as-path-relax"?: boolean;
                     "delete"?: string;
@@ -2265,8 +2346,7 @@ export type ClusterAPI = {
                     "lock-token"?: string;
                     "loopback"?: string;
                     "node"?: string;
-                    "peers"?: string
-                ;
+                    "peers"?: string;
                     "bgp-mode"?: "auto" | "external" | "internal";
                     "nodes"?: string;
                     "peer-group-name"?: string;
@@ -2274,7 +2354,7 @@ export type ClusterAPI = {
                     "route-map-out"?: string;
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/sdn/dns": {
@@ -2298,7 +2378,7 @@ export type ClusterAPI = {
                     "url": string
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/sdn/dns/{dns}": {
@@ -2307,7 +2387,7 @@ export type ClusterAPI = {
                 $path: { "dns": string },
                 $query?: { "lock-token"?: string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -2318,7 +2398,7 @@ export type ClusterAPI = {
         "PUT": {
             parameters: {
                 $path: { "dns": string },
-                $body: {
+                $body?: {
                     "delete"?: string;
                     "digest"?: string;
                     "fingerprint"?: string;
@@ -2329,7 +2409,7 @@ export type ClusterAPI = {
                     "url"?: string
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/sdn/fabrics": {
@@ -2361,7 +2441,7 @@ export type ClusterAPI = {
                 "nodes": {
                     "digest"?: string;
                     "fabric_id": string;
-                    "interfaces": string[];
+                    "interfaces"?: string[];
                     "ip"?: string;
                     "ip6"?: string;
                     "lock-token"?: string;
@@ -2369,7 +2449,12 @@ export type ClusterAPI = {
                     "redistribute"?: string[];
                     "route_filter"?: string;
                     "node_id": string;
-                    "protocol": FabricProtocol
+                    "protocol": FabricProtocol;
+                    "role"?: "internal" | "external";
+                    "public_key"?: string;
+                    "peers"?: string[];
+                    "endpoint"?: string;
+                    "allowed_ips"?: string[]
                 }[]
             }
         }
@@ -2411,7 +2496,7 @@ export type ClusterAPI = {
                     "protocol": FabricProtocol
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/sdn/fabrics/fabric/{id}": {
@@ -2419,7 +2504,7 @@ export type ClusterAPI = {
             parameters: {
                 $path: { "id": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -2458,7 +2543,7 @@ export type ClusterAPI = {
                     "protocol": FabricProtocol
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/sdn/fabrics/node": {
@@ -2471,7 +2556,7 @@ export type ClusterAPI = {
                 "fabric_id": string;
                 "allowed_ips"?: string[];
                     "endpoint"?: string;
-                    "interfaces": string[];
+                    "interfaces"?: string[];
                     "peers"?: string[];
                     "public_key"?: string;
                     "role"?: "internal" | "external";
@@ -2494,7 +2579,7 @@ export type ClusterAPI = {
                 "fabric_id": string;
                 "allowed_ips"?: string[];
                     "endpoint"?: string;
-                    "interfaces": string[];
+                    "interfaces"?: string[];
                     "peers"?: string[];
                     "public_key"?: string;
                     "role"?: "internal" | "external";
@@ -2512,7 +2597,7 @@ export type ClusterAPI = {
                     "digest"?: string;
                     "allowed_ips"?: string[];
                     "endpoint"?: string;
-                    "interfaces": string[];
+                    "interfaces"?: string[];
                     "peers"?: string[];
                     "public_key"?: string;
                     "role"?: "internal" | "external";
@@ -2523,7 +2608,7 @@ export type ClusterAPI = {
                     "protocol": FabricProtocol
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/sdn/fabrics/node/{fabric_id}/{node_id}": {
@@ -2531,7 +2616,7 @@ export type ClusterAPI = {
             parameters: {
                 $path: { "fabric_id": string; "node_id": string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -2542,7 +2627,7 @@ export type ClusterAPI = {
                 "fabric_id": string;
                 "allowed_ips"?: string[];
                     "endpoint"?: string;
-                    "interfaces": string[];
+                    "interfaces"?: string[];
                     "peers"?: string[];
                     "public_key"?: string;
                     "role"?: "internal" | "external";
@@ -2561,7 +2646,7 @@ export type ClusterAPI = {
                     "digest"?: string;
                     "allowed_ips"?: string[];
                     "endpoint"?: string;
-                    "interfaces": string[];
+                    "interfaces"?: string[];
                     "peers"?: string[];
                     "public_key"?: string;
                     "role"?: "internal" | "external";
@@ -2571,7 +2656,7 @@ export type ClusterAPI = {
                     "protocol": FabricProtocol
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/sdn/ipams": {
@@ -2593,7 +2678,7 @@ export type ClusterAPI = {
                     "url"?: string
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/sdn/ipams/{ipam}": {
@@ -2602,7 +2687,7 @@ export type ClusterAPI = {
                 $path: { "ipam": string },
                 $query?: { "lock-token"?: string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -2613,7 +2698,7 @@ export type ClusterAPI = {
         "PUT": {
             parameters: {
                 $path: { "ipam": string },
-                $body: {
+                $body?: {
                     "delete"?: string;
                     "digest"?: string;
                     "fingerprint"?: string;
@@ -2623,7 +2708,7 @@ export type ClusterAPI = {
                     "url"?: string
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/sdn/ipams/{ipam}/status": {
@@ -2639,11 +2724,11 @@ export type ClusterAPI = {
             parameters: {
                 $query?: { "force"?: boolean; "lock-token"?: string },
             }
-            return: unknown
+            return: null
         },
         "POST": {
             parameters: {
-                $body: { "allow-pending"?: boolean },
+                $body?: { "allow-pending"?: boolean },
             }
             return: string
         }
@@ -2651,9 +2736,9 @@ export type ClusterAPI = {
     "/cluster/sdn/rollback": {
         "POST": {
             parameters: {
-                $body: { "lock-token"?: string; "release-lock"?: boolean },
+                $body?: { "lock-token"?: string; "release-lock"?: boolean },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/sdn/vnets": {
@@ -2693,7 +2778,7 @@ export type ClusterAPI = {
                     "zone": string
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/sdn/vnets/{vnet}": {
@@ -2702,7 +2787,7 @@ export type ClusterAPI = {
                 $path: { "vnet": string },
                 $query?: { "lock-token"?: string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -2731,7 +2816,7 @@ export type ClusterAPI = {
         "PUT": {
             parameters: {
                 $path: { "vnet": string },
-                $body: {
+                $body?: {
                     "alias"?: string;
                     "delete"?: string;
                     "digest"?: string;
@@ -2742,7 +2827,7 @@ export type ClusterAPI = {
                     "zone"?: string
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/sdn/vnets/{vnet}/firewall": {
@@ -2767,7 +2852,7 @@ export type ClusterAPI = {
         "PUT": {
             parameters: {
                 $path: { "vnet": string },
-                $body: {
+                $body?: {
                     "delete"?: string;
                     "digest"?: string;
                     "enable"?: boolean;
@@ -2775,7 +2860,7 @@ export type ClusterAPI = {
                     "policy_forward"?: "ACCEPT" | "DROP"
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/sdn/vnets/{vnet}/firewall/rules": {
@@ -2822,7 +2907,7 @@ export type ClusterAPI = {
                     "type": "in" | "out" | "forward" | "group"
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/sdn/vnets/{vnet}/firewall/rules/{pos}": {
@@ -2831,7 +2916,7 @@ export type ClusterAPI = {
                 $path: { "vnet": string; "pos": number },
                 $query?: { "digest"?: string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -2858,7 +2943,7 @@ export type ClusterAPI = {
         "PUT": {
             parameters: {
                 $path: { "vnet": string; "pos": number },
-                $body: {
+                $body?: {
                     "action"?: string;
                     "comment"?: string;
                     "delete"?: string;
@@ -2877,30 +2962,30 @@ export type ClusterAPI = {
                     "type"?: "in" | "out" | "forward" | "group"
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/sdn/vnets/{vnet}/ips": {
         "DELETE": {
             parameters: {
                 $path: { "vnet": string },
-                $query?: { "ip": string; "mac"?: string; "zone": string },
+                $query: { "ip": string; "mac"?: string; "zone"?: string },
             }
-            return: unknown
+            return: null
         },
         "POST": {
             parameters: {
                 $path: { "vnet": string },
-                $body: { "ip": string; "mac"?: string; "zone": string },
+                $body: { "ip": string; "mac"?: string; "zone"?: string },
             }
-            return: unknown
+            return: null
         },
         "PUT": {
             parameters: {
                 $path: { "vnet": string },
-                $body: { "ip": string; "mac"?: string; "vmid"?: number; "zone": string },
+                $body: { "ip": string; "mac"?: string; "vmid"?: number; "zone"?: string },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/sdn/vnets/{vnet}/subnets": {
@@ -2925,7 +3010,7 @@ export type ClusterAPI = {
                     "type": "subnet"
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/sdn/vnets/{vnet}/subnets/{subnet}": {
@@ -2934,7 +3019,7 @@ export type ClusterAPI = {
                 $path: { "vnet": string; "subnet": string },
                 $query?: { "lock-token"?: string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -2946,7 +3031,7 @@ export type ClusterAPI = {
         "PUT": {
             parameters: {
                 $path: { "vnet": string; "subnet": string },
-                $body: {
+                $body?: {
                     "delete"?: string;
                     "dhcp-dns-server"?: string;
                     "dhcp-range"?: string[];
@@ -2957,7 +3042,7 @@ export type ClusterAPI = {
                     "snat"?: boolean
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/sdn/zones": {
@@ -3009,7 +3094,8 @@ export type ClusterAPI = {
                     "tag"?: number;
                     "vlan-protocol"?: "802.1q" | "802.1ad";
                     "vrf-vxlan"?: number;
-                    "vxlan-port"?: number
+                    "vxlan-port"?: number;
+                    "secondary-controllers"?: string[]
                 };
                 "reversedns"?: string;
                 "rt-import"?: string;
@@ -3019,8 +3105,7 @@ export type ClusterAPI = {
                 "vlan-protocol"?: "802.1q" | "802.1ad";
                 "vrf-vxlan"?: number;
                 "vxlan-port"?: number;
-                "zone": string
-            ;
+                "zone": string;
                 "secondary-controllers"?: (string)[];
             }[]
         },
@@ -3053,12 +3138,11 @@ export type ClusterAPI = {
                     "vlan-protocol"?: "802.1q" | "802.1ad";
                     "vrf-vxlan"?: number;
                     "vxlan-port"?: number;
-                    "zone": string
-                ;
+                    "zone": string;
                     "secondary-controllers"?: (string)[];
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/sdn/zones/{zone}": {
@@ -3067,7 +3151,7 @@ export type ClusterAPI = {
                 $path: { "zone": string },
                 $query?: { "lock-token"?: string },
             }
-            return: unknown
+            return: null
         },
         "GET": {
             parameters: {
@@ -3114,7 +3198,8 @@ export type ClusterAPI = {
                     "tag"?: number;
                     "vlan-protocol"?: "802.1q" | "802.1ad";
                     "vrf-vxlan"?: number;
-                    "vxlan-port"?: number
+                    "vxlan-port"?: number;
+                    "secondary-controllers"?: string[]
                 };
                 "reversedns"?: string;
                 "rt-import"?: string;
@@ -3124,15 +3209,14 @@ export type ClusterAPI = {
                 "vlan-protocol"?: "802.1q" | "802.1ad";
                 "vrf-vxlan"?: number;
                 "vxlan-port"?: number;
-                "zone": string
-            ;
+                "zone": string;
                 "secondary-controllers"?: (string)[];
             }
         },
         "PUT": {
             parameters: {
                 $path: { "zone": string },
-                $body: {
+                $body?: {
                     "advertise-subnets"?: boolean;
                     "bridge"?: string;
                     "bridge-disable-mac-learning"?: boolean;
@@ -3159,12 +3243,11 @@ export type ClusterAPI = {
                     "tag"?: number;
                     "vlan-protocol"?: "802.1q" | "802.1ad";
                     "vrf-vxlan"?: number;
-                    "vxlan-port"?: number
-                ;
+                    "vxlan-port"?: number;
                     "secondary-controllers"?: (string)[];
                 },
             }
-            return: unknown
+            return: null
         }
     },
     "/cluster/status": {
@@ -3250,14 +3333,14 @@ export type ClusterAPI = {
                 "hv-vendor-id"?: string;
                 "level"?: number;
                 "phys-bits"?: string;
-                "reported-model"?: "486" | "a64fx" | "athlon" | "Broadwell" | "Broadwell-IBRS" | "Broadwell-noTSX" | "Broadwell-noTSX-IBRS" | "Cascadelake-Server" | "Cascadelake-Server-noTSX" | "Cascadelake-Server-v2" | "Cascadelake-Server-v4" | "Cascadelake-Server-v5" | "ClearwaterForest" | "ClearwaterForest-v2" | "ClearwaterForest-v3" | "Conroe" | "Cooperlake" | "Cooperlake-v2" | "core2duo" | "coreduo" | "cortex-a35" | "cortex-a53" | "cortex-a55" | "cortex-a57" | "cortex-a710" | "cortex-a72" | "cortex-a76" | "cortex-a78ae" | "DiamondRapids" | "EPYC" | "EPYC-Genoa" | "EPYC-Genoa-v2" | "EPYC-IBPB" | "EPYC-Milan" | "EPYC-Milan-v2" | "EPYC-Milan-v3" | "EPYC-Rome" | "EPYC-Rome-v2" | "EPYC-Rome-v3" | "EPYC-Rome-v4" | "EPYC-Rome-v5" | "EPYC-Turin" | "EPYC-v3" | "EPYC-v4" | "EPYC-v5" | "GraniteRapids" | "GraniteRapids-v2" | "GraniteRapids-v3" | "GraniteRapids-v4" | "GraniteRapids-v5" | "Haswell" | "Haswell-IBRS" | "Haswell-noTSX" | "Haswell-noTSX-IBRS" | "host" | "Icelake-Client" | "Icelake-Client-noTSX" | "Icelake-Server" | "Icelake-Server-noTSX" | "Icelake-Server-v3" | "Icelake-Server-v4" | "Icelake-Server-v5" | "Icelake-Server-v6" | "Icelake-Server-v7" | "IvyBridge" | "IvyBridge-IBRS" | "KnightsMill" | "kvm32" | "kvm64" | "max" | "Nehalem" | "Nehalem-IBRS" | "neoverse-n1" | "neoverse-n2" | "neoverse-v1" | "Opteron_G1" | "Opteron_G2" | "Opteron_G3" | "Opteron_G4" | "Opteron_G5" | "Penryn" | "pentium" | "pentium2" | "pentium3" | "phenom" | "qemu32" | "qemu64" | "SandyBridge" | "SandyBridge-IBRS" | "SapphireRapids" | "SapphireRapids-v2" | "SapphireRapids-v3" | "SapphireRapids-v4" | "SapphireRapids-v5" | "SapphireRapids-v6" | "SierraForest" | "SierraForest-v2" | "SierraForest-v3" | "SierraForest-v4" | "SierraForest-v5" | "Skylake-Client" | "Skylake-Client-IBRS" | "Skylake-Client-noTSX-IBRS" | "Skylake-Client-v4" | "Skylake-Server" | "Skylake-Server-IBRS" | "Skylake-Server-noTSX-IBRS" | "Skylake-Server-v4" | "Skylake-Server-v5" | "Westmere" | "Westmere-IBRS";
+                "reported-model"?: "486" | "a64fx" | "athlon" | "Broadwell" | "Broadwell-IBRS" | "Broadwell-noTSX" | "Broadwell-noTSX-IBRS" | "Cascadelake-Server" | "Cascadelake-Server-noTSX" | "Cascadelake-Server-v2" | "Cascadelake-Server-v4" | "Cascadelake-Server-v5" | "Cascadelake-Server-v6" | "Cascadelake-Server-v7" | "ClearwaterForest" | "ClearwaterForest-v2" | "ClearwaterForest-v3" | "ClearwaterForest-v4" | "Conroe" | "Cooperlake" | "Cooperlake-v2" | "core2duo" | "coreduo" | "cortex-a35" | "cortex-a53" | "cortex-a55" | "cortex-a57" | "cortex-a710" | "cortex-a72" | "cortex-a76" | "cortex-a78ae" | "DiamondRapids" | "DiamondRapids-v2" | "EPYC" | "EPYC-Genoa" | "EPYC-Genoa-v2" | "EPYC-Genoa-v3" | "EPYC-IBPB" | "EPYC-Milan" | "EPYC-Milan-v2" | "EPYC-Milan-v3" | "EPYC-Milan-v4" | "EPYC-Rome" | "EPYC-Rome-v2" | "EPYC-Rome-v3" | "EPYC-Rome-v4" | "EPYC-Rome-v5" | "EPYC-Turin" | "EPYC-Turin-v2" | "EPYC-v3" | "EPYC-v4" | "EPYC-v5" | "GraniteRapids" | "GraniteRapids-v2" | "GraniteRapids-v3" | "GraniteRapids-v4" | "GraniteRapids-v5" | "GraniteRapids-v6" | "GraniteRapids-v7" | "Haswell" | "Haswell-IBRS" | "Haswell-noTSX" | "Haswell-noTSX-IBRS" | "host" | "Icelake-Client" | "Icelake-Client-noTSX" | "Icelake-Server" | "Icelake-Server-noTSX" | "Icelake-Server-v3" | "Icelake-Server-v4" | "Icelake-Server-v5" | "Icelake-Server-v6" | "Icelake-Server-v7" | "Icelake-Server-v8" | "Icelake-Server-v9" | "IvyBridge" | "IvyBridge-IBRS" | "KnightsMill" | "kvm32" | "kvm64" | "max" | "Nehalem" | "Nehalem-IBRS" | "neoverse-n1" | "neoverse-n2" | "neoverse-v1" | "Opteron_G1" | "Opteron_G2" | "Opteron_G3" | "Opteron_G4" | "Opteron_G5" | "Penryn" | "pentium" | "pentium2" | "pentium3" | "phenom" | "qemu32" | "qemu64" | "SandyBridge" | "SandyBridge-IBRS" | "SapphireRapids" | "SapphireRapids-v2" | "SapphireRapids-v3" | "SapphireRapids-v4" | "SapphireRapids-v5" | "SapphireRapids-v6" | "SapphireRapids-v7" | "SapphireRapids-v8" | "SierraForest" | "SierraForest-v2" | "SierraForest-v3" | "SierraForest-v4" | "SierraForest-v5" | "SierraForest-v6" | "Skylake-Client" | "Skylake-Client-IBRS" | "Skylake-Client-noTSX-IBRS" | "Skylake-Client-v4" | "Skylake-Server" | "Skylake-Server-IBRS" | "Skylake-Server-noTSX-IBRS" | "Skylake-Server-v4" | "Skylake-Server-v5" | "Skylake-Server-v6" | "Westmere" | "Westmere-IBRS";
             }[]
         },
         "POST": {
             parameters: {
                 $body: {
                     "cputype": string;
-                    "reported-model": "486" | "a64fx" | "athlon" | "Broadwell" | "Broadwell-IBRS" | "Broadwell-noTSX" | "Broadwell-noTSX-IBRS" | "Cascadelake-Server" | "Cascadelake-Server-noTSX" | "Cascadelake-Server-v2" | "Cascadelake-Server-v4" | "Cascadelake-Server-v5" | "ClearwaterForest" | "ClearwaterForest-v2" | "ClearwaterForest-v3" | "Conroe" | "Cooperlake" | "Cooperlake-v2" | "core2duo" | "coreduo" | "cortex-a35" | "cortex-a53" | "cortex-a55" | "cortex-a57" | "cortex-a710" | "cortex-a72" | "cortex-a76" | "cortex-a78ae" | "DiamondRapids" | "EPYC" | "EPYC-Genoa" | "EPYC-Genoa-v2" | "EPYC-IBPB" | "EPYC-Milan" | "EPYC-Milan-v2" | "EPYC-Milan-v3" | "EPYC-Rome" | "EPYC-Rome-v2" | "EPYC-Rome-v3" | "EPYC-Rome-v4" | "EPYC-Rome-v5" | "EPYC-Turin" | "EPYC-v3" | "EPYC-v4" | "EPYC-v5" | "GraniteRapids" | "GraniteRapids-v2" | "GraniteRapids-v3" | "GraniteRapids-v4" | "GraniteRapids-v5" | "Haswell" | "Haswell-IBRS" | "Haswell-noTSX" | "Haswell-noTSX-IBRS" | "host" | "Icelake-Client" | "Icelake-Client-noTSX" | "Icelake-Server" | "Icelake-Server-noTSX" | "Icelake-Server-v3" | "Icelake-Server-v4" | "Icelake-Server-v5" | "Icelake-Server-v6" | "Icelake-Server-v7" | "IvyBridge" | "IvyBridge-IBRS" | "KnightsMill" | "kvm32" | "kvm64" | "max" | "Nehalem" | "Nehalem-IBRS" | "neoverse-n1" | "neoverse-n2" | "neoverse-v1" | "Opteron_G1" | "Opteron_G2" | "Opteron_G3" | "Opteron_G4" | "Opteron_G5" | "Penryn" | "pentium" | "pentium2" | "pentium3" | "phenom" | "qemu32" | "qemu64" | "SandyBridge" | "SandyBridge-IBRS" | "SapphireRapids" | "SapphireRapids-v2" | "SapphireRapids-v3" | "SapphireRapids-v4" | "SapphireRapids-v5" | "SapphireRapids-v6" | "SierraForest" | "SierraForest-v2" | "SierraForest-v3" | "SierraForest-v4" | "SierraForest-v5" | "Skylake-Client" | "Skylake-Client-IBRS" | "Skylake-Client-noTSX-IBRS" | "Skylake-Client-v4" | "Skylake-Server" | "Skylake-Server-IBRS" | "Skylake-Server-noTSX-IBRS" | "Skylake-Server-v4" | "Skylake-Server-v5" | "Westmere" | "Westmere-IBRS";
+                    "reported-model": "486" | "a64fx" | "athlon" | "Broadwell" | "Broadwell-IBRS" | "Broadwell-noTSX" | "Broadwell-noTSX-IBRS" | "Cascadelake-Server" | "Cascadelake-Server-noTSX" | "Cascadelake-Server-v2" | "Cascadelake-Server-v4" | "Cascadelake-Server-v5" | "Cascadelake-Server-v6" | "Cascadelake-Server-v7" | "ClearwaterForest" | "ClearwaterForest-v2" | "ClearwaterForest-v3" | "ClearwaterForest-v4" | "Conroe" | "Cooperlake" | "Cooperlake-v2" | "core2duo" | "coreduo" | "cortex-a35" | "cortex-a53" | "cortex-a55" | "cortex-a57" | "cortex-a710" | "cortex-a72" | "cortex-a76" | "cortex-a78ae" | "DiamondRapids" | "DiamondRapids-v2" | "EPYC" | "EPYC-Genoa" | "EPYC-Genoa-v2" | "EPYC-Genoa-v3" | "EPYC-IBPB" | "EPYC-Milan" | "EPYC-Milan-v2" | "EPYC-Milan-v3" | "EPYC-Milan-v4" | "EPYC-Rome" | "EPYC-Rome-v2" | "EPYC-Rome-v3" | "EPYC-Rome-v4" | "EPYC-Rome-v5" | "EPYC-Turin" | "EPYC-Turin-v2" | "EPYC-v3" | "EPYC-v4" | "EPYC-v5" | "GraniteRapids" | "GraniteRapids-v2" | "GraniteRapids-v3" | "GraniteRapids-v4" | "GraniteRapids-v5" | "GraniteRapids-v6" | "GraniteRapids-v7" | "Haswell" | "Haswell-IBRS" | "Haswell-noTSX" | "Haswell-noTSX-IBRS" | "host" | "Icelake-Client" | "Icelake-Client-noTSX" | "Icelake-Server" | "Icelake-Server-noTSX" | "Icelake-Server-v3" | "Icelake-Server-v4" | "Icelake-Server-v5" | "Icelake-Server-v6" | "Icelake-Server-v7" | "Icelake-Server-v8" | "Icelake-Server-v9" | "IvyBridge" | "IvyBridge-IBRS" | "KnightsMill" | "kvm32" | "kvm64" | "max" | "Nehalem" | "Nehalem-IBRS" | "neoverse-n1" | "neoverse-n2" | "neoverse-v1" | "Opteron_G1" | "Opteron_G2" | "Opteron_G3" | "Opteron_G4" | "Opteron_G5" | "Penryn" | "pentium" | "pentium2" | "pentium3" | "phenom" | "qemu32" | "qemu64" | "SandyBridge" | "SandyBridge-IBRS" | "SapphireRapids" | "SapphireRapids-v2" | "SapphireRapids-v3" | "SapphireRapids-v4" | "SapphireRapids-v5" | "SapphireRapids-v6" | "SapphireRapids-v7" | "SapphireRapids-v8" | "SierraForest" | "SierraForest-v2" | "SierraForest-v3" | "SierraForest-v4" | "SierraForest-v5" | "SierraForest-v6" | "Skylake-Client" | "Skylake-Client-IBRS" | "Skylake-Client-noTSX-IBRS" | "Skylake-Client-v4" | "Skylake-Server" | "Skylake-Server-IBRS" | "Skylake-Server-noTSX-IBRS" | "Skylake-Server-v4" | "Skylake-Server-v5" | "Skylake-Server-v6" | "Westmere" | "Westmere-IBRS";
                     "flags"?: string;
                     "guest-phys-bits"?: number;
                     "hidden"?: boolean;
@@ -3285,7 +3368,7 @@ export type ClusterAPI = {
                 "hv-vendor-id"?: string;
                 "level"?: number;
                 "phys-bits"?: string;
-                "reported-model"?: "486" | "a64fx" | "athlon" | "Broadwell" | "Broadwell-IBRS" | "Broadwell-noTSX" | "Broadwell-noTSX-IBRS" | "Cascadelake-Server" | "Cascadelake-Server-noTSX" | "Cascadelake-Server-v2" | "Cascadelake-Server-v4" | "Cascadelake-Server-v5" | "ClearwaterForest" | "ClearwaterForest-v2" | "ClearwaterForest-v3" | "Conroe" | "Cooperlake" | "Cooperlake-v2" | "core2duo" | "coreduo" | "cortex-a35" | "cortex-a53" | "cortex-a55" | "cortex-a57" | "cortex-a710" | "cortex-a72" | "cortex-a76" | "cortex-a78ae" | "DiamondRapids" | "EPYC" | "EPYC-Genoa" | "EPYC-Genoa-v2" | "EPYC-IBPB" | "EPYC-Milan" | "EPYC-Milan-v2" | "EPYC-Milan-v3" | "EPYC-Rome" | "EPYC-Rome-v2" | "EPYC-Rome-v3" | "EPYC-Rome-v4" | "EPYC-Rome-v5" | "EPYC-Turin" | "EPYC-v3" | "EPYC-v4" | "EPYC-v5" | "GraniteRapids" | "GraniteRapids-v2" | "GraniteRapids-v3" | "GraniteRapids-v4" | "GraniteRapids-v5" | "Haswell" | "Haswell-IBRS" | "Haswell-noTSX" | "Haswell-noTSX-IBRS" | "host" | "Icelake-Client" | "Icelake-Client-noTSX" | "Icelake-Server" | "Icelake-Server-noTSX" | "Icelake-Server-v3" | "Icelake-Server-v4" | "Icelake-Server-v5" | "Icelake-Server-v6" | "Icelake-Server-v7" | "IvyBridge" | "IvyBridge-IBRS" | "KnightsMill" | "kvm32" | "kvm64" | "max" | "Nehalem" | "Nehalem-IBRS" | "neoverse-n1" | "neoverse-n2" | "neoverse-v1" | "Opteron_G1" | "Opteron_G2" | "Opteron_G3" | "Opteron_G4" | "Opteron_G5" | "Penryn" | "pentium" | "pentium2" | "pentium3" | "phenom" | "qemu32" | "qemu64" | "SandyBridge" | "SandyBridge-IBRS" | "SapphireRapids" | "SapphireRapids-v2" | "SapphireRapids-v3" | "SapphireRapids-v4" | "SapphireRapids-v5" | "SapphireRapids-v6" | "SierraForest" | "SierraForest-v2" | "SierraForest-v3" | "SierraForest-v4" | "SierraForest-v5" | "Skylake-Client" | "Skylake-Client-IBRS" | "Skylake-Client-noTSX-IBRS" | "Skylake-Client-v4" | "Skylake-Server" | "Skylake-Server-IBRS" | "Skylake-Server-noTSX-IBRS" | "Skylake-Server-v4" | "Skylake-Server-v5" | "Westmere" | "Westmere-IBRS";
+                "reported-model"?: "486" | "a64fx" | "athlon" | "Broadwell" | "Broadwell-IBRS" | "Broadwell-noTSX" | "Broadwell-noTSX-IBRS" | "Cascadelake-Server" | "Cascadelake-Server-noTSX" | "Cascadelake-Server-v2" | "Cascadelake-Server-v4" | "Cascadelake-Server-v5" | "Cascadelake-Server-v6" | "Cascadelake-Server-v7" | "ClearwaterForest" | "ClearwaterForest-v2" | "ClearwaterForest-v3" | "ClearwaterForest-v4" | "Conroe" | "Cooperlake" | "Cooperlake-v2" | "core2duo" | "coreduo" | "cortex-a35" | "cortex-a53" | "cortex-a55" | "cortex-a57" | "cortex-a710" | "cortex-a72" | "cortex-a76" | "cortex-a78ae" | "DiamondRapids" | "DiamondRapids-v2" | "EPYC" | "EPYC-Genoa" | "EPYC-Genoa-v2" | "EPYC-Genoa-v3" | "EPYC-IBPB" | "EPYC-Milan" | "EPYC-Milan-v2" | "EPYC-Milan-v3" | "EPYC-Milan-v4" | "EPYC-Rome" | "EPYC-Rome-v2" | "EPYC-Rome-v3" | "EPYC-Rome-v4" | "EPYC-Rome-v5" | "EPYC-Turin" | "EPYC-Turin-v2" | "EPYC-v3" | "EPYC-v4" | "EPYC-v5" | "GraniteRapids" | "GraniteRapids-v2" | "GraniteRapids-v3" | "GraniteRapids-v4" | "GraniteRapids-v5" | "GraniteRapids-v6" | "GraniteRapids-v7" | "Haswell" | "Haswell-IBRS" | "Haswell-noTSX" | "Haswell-noTSX-IBRS" | "host" | "Icelake-Client" | "Icelake-Client-noTSX" | "Icelake-Server" | "Icelake-Server-noTSX" | "Icelake-Server-v3" | "Icelake-Server-v4" | "Icelake-Server-v5" | "Icelake-Server-v6" | "Icelake-Server-v7" | "Icelake-Server-v8" | "Icelake-Server-v9" | "IvyBridge" | "IvyBridge-IBRS" | "KnightsMill" | "kvm32" | "kvm64" | "max" | "Nehalem" | "Nehalem-IBRS" | "neoverse-n1" | "neoverse-n2" | "neoverse-v1" | "Opteron_G1" | "Opteron_G2" | "Opteron_G3" | "Opteron_G4" | "Opteron_G5" | "Penryn" | "pentium" | "pentium2" | "pentium3" | "phenom" | "qemu32" | "qemu64" | "SandyBridge" | "SandyBridge-IBRS" | "SapphireRapids" | "SapphireRapids-v2" | "SapphireRapids-v3" | "SapphireRapids-v4" | "SapphireRapids-v5" | "SapphireRapids-v6" | "SapphireRapids-v7" | "SapphireRapids-v8" | "SierraForest" | "SierraForest-v2" | "SierraForest-v3" | "SierraForest-v4" | "SierraForest-v5" | "SierraForest-v6" | "Skylake-Client" | "Skylake-Client-IBRS" | "Skylake-Client-noTSX-IBRS" | "Skylake-Client-v4" | "Skylake-Server" | "Skylake-Server-IBRS" | "Skylake-Server-noTSX-IBRS" | "Skylake-Server-v4" | "Skylake-Server-v5" | "Skylake-Server-v6" | "Westmere" | "Westmere-IBRS";
             }
         },
         "PUT": {
@@ -3302,7 +3385,7 @@ export type ClusterAPI = {
                     "hv-vendor-id"?: string;
                     "level"?: number;
                     "phys-bits"?: string;
-                    "reported-model"?: "486" | "a64fx" | "athlon" | "Broadwell" | "Broadwell-IBRS" | "Broadwell-noTSX" | "Broadwell-noTSX-IBRS" | "Cascadelake-Server" | "Cascadelake-Server-noTSX" | "Cascadelake-Server-v2" | "Cascadelake-Server-v4" | "Cascadelake-Server-v5" | "ClearwaterForest" | "ClearwaterForest-v2" | "ClearwaterForest-v3" | "Conroe" | "Cooperlake" | "Cooperlake-v2" | "core2duo" | "coreduo" | "cortex-a35" | "cortex-a53" | "cortex-a55" | "cortex-a57" | "cortex-a710" | "cortex-a72" | "cortex-a76" | "cortex-a78ae" | "DiamondRapids" | "EPYC" | "EPYC-Genoa" | "EPYC-Genoa-v2" | "EPYC-IBPB" | "EPYC-Milan" | "EPYC-Milan-v2" | "EPYC-Milan-v3" | "EPYC-Rome" | "EPYC-Rome-v2" | "EPYC-Rome-v3" | "EPYC-Rome-v4" | "EPYC-Rome-v5" | "EPYC-Turin" | "EPYC-v3" | "EPYC-v4" | "EPYC-v5" | "GraniteRapids" | "GraniteRapids-v2" | "GraniteRapids-v3" | "GraniteRapids-v4" | "GraniteRapids-v5" | "Haswell" | "Haswell-IBRS" | "Haswell-noTSX" | "Haswell-noTSX-IBRS" | "host" | "Icelake-Client" | "Icelake-Client-noTSX" | "Icelake-Server" | "Icelake-Server-noTSX" | "Icelake-Server-v3" | "Icelake-Server-v4" | "Icelake-Server-v5" | "Icelake-Server-v6" | "Icelake-Server-v7" | "IvyBridge" | "IvyBridge-IBRS" | "KnightsMill" | "kvm32" | "kvm64" | "max" | "Nehalem" | "Nehalem-IBRS" | "neoverse-n1" | "neoverse-n2" | "neoverse-v1" | "Opteron_G1" | "Opteron_G2" | "Opteron_G3" | "Opteron_G4" | "Opteron_G5" | "Penryn" | "pentium" | "pentium2" | "pentium3" | "phenom" | "qemu32" | "qemu64" | "SandyBridge" | "SandyBridge-IBRS" | "SapphireRapids" | "SapphireRapids-v2" | "SapphireRapids-v3" | "SapphireRapids-v4" | "SapphireRapids-v5" | "SapphireRapids-v6" | "SierraForest" | "SierraForest-v2" | "SierraForest-v3" | "SierraForest-v4" | "SierraForest-v5" | "Skylake-Client" | "Skylake-Client-IBRS" | "Skylake-Client-noTSX-IBRS" | "Skylake-Client-v4" | "Skylake-Server" | "Skylake-Server-IBRS" | "Skylake-Server-noTSX-IBRS" | "Skylake-Server-v4" | "Skylake-Server-v5" | "Westmere" | "Westmere-IBRS";
+                    "reported-model"?: "486" | "a64fx" | "athlon" | "Broadwell" | "Broadwell-IBRS" | "Broadwell-noTSX" | "Broadwell-noTSX-IBRS" | "Cascadelake-Server" | "Cascadelake-Server-noTSX" | "Cascadelake-Server-v2" | "Cascadelake-Server-v4" | "Cascadelake-Server-v5" | "Cascadelake-Server-v6" | "Cascadelake-Server-v7" | "ClearwaterForest" | "ClearwaterForest-v2" | "ClearwaterForest-v3" | "ClearwaterForest-v4" | "Conroe" | "Cooperlake" | "Cooperlake-v2" | "core2duo" | "coreduo" | "cortex-a35" | "cortex-a53" | "cortex-a55" | "cortex-a57" | "cortex-a710" | "cortex-a72" | "cortex-a76" | "cortex-a78ae" | "DiamondRapids" | "DiamondRapids-v2" | "EPYC" | "EPYC-Genoa" | "EPYC-Genoa-v2" | "EPYC-Genoa-v3" | "EPYC-IBPB" | "EPYC-Milan" | "EPYC-Milan-v2" | "EPYC-Milan-v3" | "EPYC-Milan-v4" | "EPYC-Rome" | "EPYC-Rome-v2" | "EPYC-Rome-v3" | "EPYC-Rome-v4" | "EPYC-Rome-v5" | "EPYC-Turin" | "EPYC-Turin-v2" | "EPYC-v3" | "EPYC-v4" | "EPYC-v5" | "GraniteRapids" | "GraniteRapids-v2" | "GraniteRapids-v3" | "GraniteRapids-v4" | "GraniteRapids-v5" | "GraniteRapids-v6" | "GraniteRapids-v7" | "Haswell" | "Haswell-IBRS" | "Haswell-noTSX" | "Haswell-noTSX-IBRS" | "host" | "Icelake-Client" | "Icelake-Client-noTSX" | "Icelake-Server" | "Icelake-Server-noTSX" | "Icelake-Server-v3" | "Icelake-Server-v4" | "Icelake-Server-v5" | "Icelake-Server-v6" | "Icelake-Server-v7" | "Icelake-Server-v8" | "Icelake-Server-v9" | "IvyBridge" | "IvyBridge-IBRS" | "KnightsMill" | "kvm32" | "kvm64" | "max" | "Nehalem" | "Nehalem-IBRS" | "neoverse-n1" | "neoverse-n2" | "neoverse-v1" | "Opteron_G1" | "Opteron_G2" | "Opteron_G3" | "Opteron_G4" | "Opteron_G5" | "Penryn" | "pentium" | "pentium2" | "pentium3" | "phenom" | "qemu32" | "qemu64" | "SandyBridge" | "SandyBridge-IBRS" | "SapphireRapids" | "SapphireRapids-v2" | "SapphireRapids-v3" | "SapphireRapids-v4" | "SapphireRapids-v5" | "SapphireRapids-v6" | "SapphireRapids-v7" | "SapphireRapids-v8" | "SierraForest" | "SierraForest-v2" | "SierraForest-v3" | "SierraForest-v4" | "SierraForest-v5" | "SierraForest-v6" | "Skylake-Client" | "Skylake-Client-IBRS" | "Skylake-Client-noTSX-IBRS" | "Skylake-Client-v4" | "Skylake-Server" | "Skylake-Server-IBRS" | "Skylake-Server-noTSX-IBRS" | "Skylake-Server-v4" | "Skylake-Server-v5" | "Skylake-Server-v6" | "Westmere" | "Westmere-IBRS";
                 };
             }
             return: null
@@ -3431,7 +3514,7 @@ export type ClusterAPI = {
                 };
                 $body?: {
                     "action"?: "permit" | "deny";
-                    "delete"?: "le" | "ge" | "seq"[];
+                    "delete"?: ("le" | "ge" | "seq")[];
                     "digest"?: string;
                     "ge"?: number;
                     "le"?: number;
@@ -3554,7 +3637,7 @@ export type ClusterAPI = {
                 $body?: {
                     "action"?: "permit" | "deny";
                     "call"?: string;
-                    "delete"?: "set" | "match" | "call" | "exit-action"[];
+                    "delete"?: ("set" | "match" | "call" | "exit-action")[];
                     "digest"?: string;
                     "exit-action"?: string;
                     "lock-token"?: string;

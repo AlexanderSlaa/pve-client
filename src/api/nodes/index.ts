@@ -16,7 +16,7 @@ import lxcFactory from "./lxc";
 import qemuFactory from "./qemu";
 import type { Client } from "../../index";
 import type { ArgsTuple, HttpMethod, PathContext, RequestInput } from "../index";
-import type { NodesAPI } from "./types";
+import type { NodesAPI, Service } from "./types";
 import nodeStorageFactory from "./storage";
 
 type NodePath = keyof NodesAPI;
@@ -26,19 +26,17 @@ type NodeParams<P extends NodePath, M extends NodeMethod<P>> =
 type NodeReturn<P extends NodePath, M extends NodeMethod<P>> =
 	NodesAPI[P][M] extends { return: infer T } ? T : never;
 type BoundArgs<P extends NodePath, M extends NodeMethod<P>> = ArgsTuple<PathContext<NodeParams<P, M>>>;
-type A = {
-	$query?: Record<string, unknown>;
-	$body?: Record<string, unknown>;
-	$headers?: Record<string, string | undefined>;
-};
-
+/** Arguments of a factory function after its bound `node` argument. */
+type Bound1<F> = F extends (node: any, ...rest: infer R) => any ? R : never;
+/** Arguments of a factory function after its bound `node` and `vmid` arguments. */
+type Bound2<F> = F extends (node: any, vmid: any, ...rest: infer R) => any ? R : never;
 function Nodes(client: Client) {
 	const r = <P extends NodePath, M extends NodeMethod<P>>(
 		path: P,
 		method: M,
-		args?: NodeParams<P, M> | (A & { $path?: Record<string, string | number> })
+		args: NodeParams<P, M>
 	): Promise<NodeReturn<P, M>> =>
-		client.request(path, method as never, (args ?? {}) as never) as Promise<NodeReturn<P, M>>;
+		client.request(path, method as never, args as never) as Promise<NodeReturn<P, M>>;
 
 	const qemuApi = qemuFactory(client);
 	const lxcApi = lxcFactory(client);
@@ -57,8 +55,8 @@ function Nodes(client: Client) {
 
 				// ── APT ─────────────────────────────────────────────────────
 				apt: {
-					index:        (args?: A) => aptApi.index(node, args as never),
-					changelog:    (args?: A) => aptApi.changelog(node, args as never),
+					index:        (...args: Bound1<typeof aptApi.index>) => aptApi.index(node, ...args),
+					changelog:    (...args: Bound1<typeof aptApi.changelog>) => aptApi.changelog(node, ...args),
 					repositories: (...args: BoundArgs<"/nodes/{node}/apt/repositories", "GET">) => r("/nodes/{node}/apt/repositories", "GET", { ...args[0], $path: { node } }),
 					update:       (...args: BoundArgs<"/nodes/{node}/apt/update", "POST">) => r("/nodes/{node}/apt/update", "POST", { ...args[0], $path: { node } }),
 					versions:     (...args: BoundArgs<"/nodes/{node}/apt/versions", "GET">) => r("/nodes/{node}/apt/versions", "GET",  { ...args[0], $path: { node } }),
@@ -69,17 +67,17 @@ function Nodes(client: Client) {
 					index: () => r("/nodes/{node}/capabilities",                 "GET", { $path: { node } }),
 					qemu:  {
 						index:     () => r("/nodes/{node}/capabilities/qemu",           "GET", { $path: { node } }),
-						cpu:       () => r("/nodes/{node}/capabilities/qemu/cpu",       "GET", { $path: { node } }),
-						cpu_flags: () => r("/nodes/{node}/capabilities/qemu/cpu-flags", "GET", { $path: { node } }),
-						machines:  () => r("/nodes/{node}/capabilities/qemu/machines",  "GET", { $path: { node } }),
+						cpu: (...args: BoundArgs<"/nodes/{node}/capabilities/qemu/cpu", "GET">) => r("/nodes/{node}/capabilities/qemu/cpu", "GET", { ...args[0], $path: { node } }),
+						cpu_flags: (...args: BoundArgs<"/nodes/{node}/capabilities/qemu/cpu-flags", "GET">) => r("/nodes/{node}/capabilities/qemu/cpu-flags", "GET", { ...args[0], $path: { node } }),
+						machines: (...args: BoundArgs<"/nodes/{node}/capabilities/qemu/machines", "GET">) => r("/nodes/{node}/capabilities/qemu/machines", "GET", { ...args[0], $path: { node } }),
 						migration: () => r("/nodes/{node}/capabilities/qemu/migration", "GET", { $path: { node } }),
 					},
 				},
 
 				// ── Ceph ────────────────────────────────────────────────────
 				ceph: {
-					index:  (args?: A) => cephApi.index(node, args as never),
-					cfg:    (args?: A) => cephApi.cfg(node, args as never),
+					index:  (...args: Bound1<typeof cephApi.index>) => cephApi.index(node, ...args),
+					cfg:    (...args: Bound1<typeof cephApi.cfg>) => cephApi.cfg(node, ...args),
 					cfg_db:    () => r("/nodes/{node}/ceph/cfg/db",    "GET",  { $path: { node } }),
 					cfg_raw:   () => r("/nodes/{node}/ceph/cfg/raw",   "GET",  { $path: { node } }),
 					cfg_value: (...args: BoundArgs<"/nodes/{node}/ceph/cfg/value", "GET">) => r("/nodes/{node}/ceph/cfg/value", "GET", { ...args[0], $path: { node } }),
@@ -127,13 +125,13 @@ function Nodes(client: Client) {
 						index:  () => r("/nodes/{node}/ceph/osd", "GET",  { $path: { node } }),
 						create: (...args: BoundArgs<"/nodes/{node}/ceph/osd", "POST">) => r("/nodes/{node}/ceph/osd", "POST", { ...args[0], $path: { node } }),
 						osdid: (osdid: string | number) => ({
-							get:       () => r("/nodes/{node}/ceph/osd/{osdid}",          "GET",    { $path: { node, osdid } }),
-							delete:    (...args: BoundArgs<"/nodes/{node}/ceph/osd/{osdid}", "DELETE">) => r("/nodes/{node}/ceph/osd/{osdid}", "DELETE", { ...args[0], $path: { node, osdid } }),
-							in:        (...args: BoundArgs<"/nodes/{node}/ceph/osd/{osdid}/in", "POST">) => r("/nodes/{node}/ceph/osd/{osdid}/in", "POST", { ...args[0], $path: { node, osdid } }),
-							out:       (...args: BoundArgs<"/nodes/{node}/ceph/osd/{osdid}/out", "POST">) => r("/nodes/{node}/ceph/osd/{osdid}/out", "POST", { ...args[0], $path: { node, osdid } }),
-							scrub:     (...args: BoundArgs<"/nodes/{node}/ceph/osd/{osdid}/scrub", "POST">) => r("/nodes/{node}/ceph/osd/{osdid}/scrub", "POST", { ...args[0], $path: { node, osdid } }),
-							lv_info:   (...args: BoundArgs<"/nodes/{node}/ceph/osd/{osdid}/lv-info", "GET">) => r("/nodes/{node}/ceph/osd/{osdid}/lv-info", "GET",  { ...args[0], $path: { node, osdid } }),
-							metadata:  () => r("/nodes/{node}/ceph/osd/{osdid}/metadata",  "GET",  { $path: { node, osdid } }),
+							get:       () => r("/nodes/{node}/ceph/osd/{osdid}",          "GET",    { $path: { node, osdid: Number(osdid) } }),
+							delete:    (...args: BoundArgs<"/nodes/{node}/ceph/osd/{osdid}", "DELETE">) => r("/nodes/{node}/ceph/osd/{osdid}", "DELETE", { ...args[0], $path: { node, osdid: Number(osdid) } }),
+							in:        (...args: BoundArgs<"/nodes/{node}/ceph/osd/{osdid}/in", "POST">) => r("/nodes/{node}/ceph/osd/{osdid}/in", "POST", { ...args[0], $path: { node, osdid: Number(osdid) } }),
+							out:       (...args: BoundArgs<"/nodes/{node}/ceph/osd/{osdid}/out", "POST">) => r("/nodes/{node}/ceph/osd/{osdid}/out", "POST", { ...args[0], $path: { node, osdid: Number(osdid) } }),
+							scrub:     (...args: BoundArgs<"/nodes/{node}/ceph/osd/{osdid}/scrub", "POST">) => r("/nodes/{node}/ceph/osd/{osdid}/scrub", "POST", { ...args[0], $path: { node, osdid: Number(osdid) } }),
+							lv_info:   (...args: BoundArgs<"/nodes/{node}/ceph/osd/{osdid}/lv-info", "GET">) => r("/nodes/{node}/ceph/osd/{osdid}/lv-info", "GET",  { ...args[0], $path: { node, osdid: Number(osdid) } }),
+							metadata:  () => r("/nodes/{node}/ceph/osd/{osdid}/metadata",  "GET",  { $path: { node, osdid: Number(osdid) } }),
 						}),
 					},
 					pool: {
@@ -161,22 +159,22 @@ function Nodes(client: Client) {
 					},
 					custom: {
 						upload: (...args: BoundArgs<"/nodes/{node}/certificates/custom", "POST">) => r("/nodes/{node}/certificates/custom", "POST",   { ...args[0], $path: { node } }),
-						delete: ()         => r("/nodes/{node}/certificates/custom", "DELETE", { $path: { node } }),
+						delete: (...args: BoundArgs<"/nodes/{node}/certificates/custom", "DELETE">) => r("/nodes/{node}/certificates/custom", "DELETE", { ...args[0], $path: { node } }),
 					},
 					info: () => r("/nodes/{node}/certificates/info", "GET", { $path: { node } }),
 				},
 
 				// ── Config ──────────────────────────────────────────────────
 				config: {
-					get:    () => r("/nodes/{node}/config", "GET", { $path: { node } }),
+					get:    (...args: BoundArgs<"/nodes/{node}/config", "GET">) => r("/nodes/{node}/config", "GET", { ...args[0], $path: { node } }),
 					update: (...args: BoundArgs<"/nodes/{node}/config", "PUT">) => r("/nodes/{node}/config", "PUT", { ...args[0], $path: { node } }),
 				},
 
 				// ── Disks ───────────────────────────────────────────────────
 				disks: {
 					index:    () => disksApi.list(node, {} as never),
-					list:     (args?: A) => disksApi.list(node, args as never),
-					list_disks: (args?: A) => disksApi.list_disks(node, args as never),
+					list:     (...args: Bound1<typeof disksApi.list>) => disksApi.list(node, ...args),
+					list_disks: (...args: Bound1<typeof disksApi.list_disks>) => disksApi.list_disks(node, ...args),
 					directory: {
 						index:  () => r("/nodes/{node}/disks/directory", "GET", { $path: { node } }),
 						create: (...args: BoundArgs<"/nodes/{node}/disks/directory", "POST">) => r("/nodes/{node}/disks/directory", "POST", { ...args[0], $path: { node } }),
@@ -222,7 +220,7 @@ function Nodes(client: Client) {
 
 				// ── Firewall ────────────────────────────────────────────────
 				firewall: {
-					get:     (args?: A) => firewallApi.get(node, args as never),
+					get:     (...args: Bound1<typeof firewallApi.get>) => firewallApi.get(node, ...args),
 					log:     (...args: BoundArgs<"/nodes/{node}/firewall/log", "GET">) => r("/nodes/{node}/firewall/log", "GET", { ...args[0], $path: { node } }),
 					options: {
 						get: () => r("/nodes/{node}/firewall/options", "GET", { $path: { node } }),
@@ -232,24 +230,24 @@ function Nodes(client: Client) {
 						index:  () => r("/nodes/{node}/firewall/rules", "GET",  { $path: { node } }),
 						create: (...args: BoundArgs<"/nodes/{node}/firewall/rules", "POST">) => r("/nodes/{node}/firewall/rules", "POST", { ...args[0], $path: { node } }),
 						pos: (pos: number | string) => ({
-							get:    () => r("/nodes/{node}/firewall/rules/{pos}", "GET",    { $path: { node, pos } }),
-							update: (...args: BoundArgs<"/nodes/{node}/firewall/rules/{pos}", "PUT">) => r("/nodes/{node}/firewall/rules/{pos}", "PUT",    { ...args[0], $path: { node, pos } }),
-							delete: (...args: BoundArgs<"/nodes/{node}/firewall/rules/{pos}", "DELETE">) => r("/nodes/{node}/firewall/rules/{pos}", "DELETE", { ...args[0], $path: { node, pos } }),
+							get:    () => r("/nodes/{node}/firewall/rules/{pos}", "GET",    { $path: { node, pos: Number(pos) } }),
+							update: (...args: BoundArgs<"/nodes/{node}/firewall/rules/{pos}", "PUT">) => r("/nodes/{node}/firewall/rules/{pos}", "PUT",    { ...args[0], $path: { node, pos: Number(pos) } }),
+							delete: (...args: BoundArgs<"/nodes/{node}/firewall/rules/{pos}", "DELETE">) => r("/nodes/{node}/firewall/rules/{pos}", "DELETE", { ...args[0], $path: { node, pos: Number(pos) } }),
 						}),
 					},
 				},
 
 				// ── Hardware ────────────────────────────────────────────────
 				hardware: {
-					get: (args?: A) => hardwareApi.get(node, args as never),
+					get: (...args: Bound1<typeof hardwareApi.get>) => hardwareApi.get(node, ...args),
 					pci: {
-						get: (args?: A) => hardwareApi.pci.get(node, args as never),
+						get: (...args: Bound1<typeof hardwareApi.pci.get>) => hardwareApi.pci.get(node, ...args),
 						pci_id: (pciId: string) => ({
 							get:  () => r("/nodes/{node}/hardware/pci/{pci-id-or-mapping}", "GET", { $path: { node, "pci-id-or-mapping": pciId } }),
 							mdev: () => r("/nodes/{node}/hardware/pci/{pci-id-or-mapping}/mdev", "GET", { $path: { node, "pci-id-or-mapping": pciId } }),
 						}),
 					},
-					usb: { get: (args?: A) => hardwareApi.usb.get(node, args as never) },
+					usb: { get: (...args: Bound1<typeof hardwareApi.usb.get>) => hardwareApi.usb.get(node, ...args) },
 				},
 
 				// ── Hosts ───────────────────────────────────────────────────
@@ -264,71 +262,71 @@ function Nodes(client: Client) {
 
 				// ── LXC ─────────────────────────────────────────────────────
 				lxc: {
-					list:   (args?: A) => lxcApi.list(node, args as never),
-					create: (args?: A) => lxcApi.create(node, args as never),
+					list:   (...args: Bound1<typeof lxcApi.list>) => lxcApi.list(node, ...args),
+					create: (...args: Bound1<typeof lxcApi.create>) => lxcApi.create(node, ...args),
 					id: (vmid: number) => ({
 						status_index:    () => lxcApi.status_index(node, vmid),
-						mtunnel:         (args?: A) => lxcApi.mtunnel(node, vmid, args as never),
-						mtunnelwebsocket:(args?: A) => lxcApi.mtunnelwebsocket(node, vmid, args as never),
-						remote_migrate:  (args?: A) => lxcApi.remote_migrate(node, vmid, args as never),
-						destroy:    (args?: A) => lxcApi.delete(node, vmid, args as never),
-						diridx:     (args?: A) => lxcApi.get(node, vmid, args as never),
-						clone:      (args: A)  => lxcApi.clone(node, vmid, args as never),
+						mtunnel:         (...args: Bound2<typeof lxcApi.mtunnel>) => lxcApi.mtunnel(node, vmid, ...args),
+						mtunnelwebsocket:(...args: Bound2<typeof lxcApi.mtunnelwebsocket>) => lxcApi.mtunnelwebsocket(node, vmid, ...args),
+						remote_migrate:  (...args: Bound2<typeof lxcApi.remote_migrate>) => lxcApi.remote_migrate(node, vmid, ...args),
+						destroy:    (...args: Bound2<typeof lxcApi.delete>) => lxcApi.delete(node, vmid, ...args),
+						diridx:     (...args: Bound2<typeof lxcApi.get>) => lxcApi.get(node, vmid, ...args),
+						clone:      (...args: Bound2<typeof lxcApi.clone>) => lxcApi.clone(node, vmid, ...args),
 						interfaces: ()         => lxcApi.interfaces(node, vmid),
-						migrate:    (args: A)  => lxcApi.migrate(node, vmid, args as never),
-						migrate_info: (args?: A) => lxcApi.migrate_info(node, vmid, args as never),
-						move_volume:(args: A)  => lxcApi.move_volume(node, vmid, args as never),
-						resize:     (args: A)  => lxcApi.resize(node, vmid, args as never),
+						migrate:    (...args: Bound2<typeof lxcApi.migrate>) => lxcApi.migrate(node, vmid, ...args),
+						migrate_info: (...args: Bound2<typeof lxcApi.migrate_info>) => lxcApi.migrate_info(node, vmid, ...args),
+						move_volume:(...args: Bound2<typeof lxcApi.move_volume>) => lxcApi.move_volume(node, vmid, ...args),
+						resize:     (...args: Bound2<typeof lxcApi.resize>) => lxcApi.resize(node, vmid, ...args),
 						template:   ()         => lxcApi.template(node, vmid),
-						feature:    (args?: A) => lxcApi.feature(node, vmid, args as never),
+						feature:    (...args: Bound2<typeof lxcApi.feature>) => lxcApi.feature(node, vmid, ...args),
 						pending:    ()         => lxcApi.pending(node, vmid),
-						rrd:        (args?: A) => lxcApi.rrd(node, vmid, args as never),
-						rrddata:    (args?: A) => lxcApi.rrddata(node, vmid, args as never),
-						spiceproxy: (args?: A) => lxcApi.spiceproxy(node, vmid, args as never),
-						termproxy:  (args?: A) => lxcApi.termproxy(node, vmid, args as never),
-						vncproxy:   (args?: A) => lxcApi.vncproxy(node, vmid, args as never),
-						vncwebsocket:(args?: A) => lxcApi.vncwebsocket(node, vmid, args as never),
+						rrd:        (...args: Bound2<typeof lxcApi.rrd>) => lxcApi.rrd(node, vmid, ...args),
+						rrddata:    (...args: Bound2<typeof lxcApi.rrddata>) => lxcApi.rrddata(node, vmid, ...args),
+						spiceproxy: (...args: Bound2<typeof lxcApi.spiceproxy>) => lxcApi.spiceproxy(node, vmid, ...args),
+						termproxy:  (...args: Bound2<typeof lxcApi.termproxy>) => lxcApi.termproxy(node, vmid, ...args),
+						vncproxy:   (...args: Bound2<typeof lxcApi.vncproxy>) => lxcApi.vncproxy(node, vmid, ...args),
+						vncwebsocket:(...args: Bound2<typeof lxcApi.vncwebsocket>) => lxcApi.vncwebsocket(node, vmid, ...args),
 						config: {
-							get:    (args?: A) => lxcApi.config.get(node, vmid, args as never),
-							update: (args?: A) => lxcApi.config.put(node, vmid, args as never),
+							get:    (...args: Bound2<typeof lxcApi.config.get>) => lxcApi.config.get(node, vmid, ...args),
+							update: (...args: Bound2<typeof lxcApi.config.put>) => lxcApi.config.put(node, vmid, ...args),
 						},
 						firewall: {
 							get:     () => lxcApi.firewall.get(node, vmid),
-							log:     (args?: A) => lxcApi.firewall.log(node, vmid, args as never),
-							refs:    (args?: A) => lxcApi.firewall.refs(node, vmid, args as never),
+							log:     (...args: Bound2<typeof lxcApi.firewall.log>) => lxcApi.firewall.log(node, vmid, ...args),
+							refs:    (...args: Bound2<typeof lxcApi.firewall.refs>) => lxcApi.firewall.refs(node, vmid, ...args),
 							options: {
 								get: () => lxcApi.firewall.options.get(node, vmid),
-								set: (args?: A) => lxcApi.firewall.options.set(node, vmid, args as never),
+								set: (...args: Bound2<typeof lxcApi.firewall.options.set>) => lxcApi.firewall.options.set(node, vmid, ...args),
 							},
 							aliases: {
 								list:   () => lxcApi.firewall.aliases.list(node, vmid),
-								create: (args: A) => lxcApi.firewall.aliases.create(node, vmid, args as never),
+								create: (...args: Bound2<typeof lxcApi.firewall.aliases.create>) => lxcApi.firewall.aliases.create(node, vmid, ...args),
 								name:   (name: string) => lxcApi.firewall.aliases.name(node, vmid, name),
 							},
 							ipset: {
 								list:   () => lxcApi.firewall.ipset.list(node, vmid),
-								create: (args: A) => lxcApi.firewall.ipset.create(node, vmid, args as never),
+								create: (...args: Bound2<typeof lxcApi.firewall.ipset.create>) => lxcApi.firewall.ipset.create(node, vmid, ...args),
 								name:   (name: string) => lxcApi.firewall.ipset.name(node, vmid, name),
 							},
 							rules: {
 								list:   () => lxcApi.firewall.rules.list(node, vmid),
-								create: (args: A) => lxcApi.firewall.rules.create(node, vmid, args as never),
+								create: (...args: Bound2<typeof lxcApi.firewall.rules.create>) => lxcApi.firewall.rules.create(node, vmid, ...args),
 								pos:    (pos: number) => lxcApi.firewall.rules.pos(node, vmid, pos),
 							},
 						},
 						snapshot: {
 							list:     () => lxcApi.snapshot.list(node, vmid),
-							create:   (args: A) => lxcApi.snapshot.create(node, vmid, args as never),
+							create:   (...args: Bound2<typeof lxcApi.snapshot.create>) => lxcApi.snapshot.create(node, vmid, ...args),
 							snapname: (snapname: string) => lxcApi.snapshot.snapname(node, vmid, snapname),
 						},
 						status: {
 							current:  () => lxcApi.status.current(node, vmid),
-							start:    (args?: A) => lxcApi.status.start(node, vmid, args as never),
-							stop:     (args?: A) => lxcApi.status.stop(node, vmid, args as never),
-							reboot:   (args?: A) => lxcApi.status.reboot(node, vmid, args as never),
-							resume:   (args?: A) => lxcApi.status.resume(node, vmid, args as never),
-							shutdown: (args?: A) => lxcApi.status.shutdown(node, vmid, args as never),
-							suspend:  (args?: A) => lxcApi.status.suspend(node, vmid, args as never),
+							start:    (...args: Bound2<typeof lxcApi.status.start>) => lxcApi.status.start(node, vmid, ...args),
+							stop:     (...args: Bound2<typeof lxcApi.status.stop>) => lxcApi.status.stop(node, vmid, ...args),
+							reboot:   (...args: Bound2<typeof lxcApi.status.reboot>) => lxcApi.status.reboot(node, vmid, ...args),
+							resume:   (...args: Bound2<typeof lxcApi.status.resume>) => lxcApi.status.resume(node, vmid, ...args),
+							shutdown: (...args: Bound2<typeof lxcApi.status.shutdown>) => lxcApi.status.shutdown(node, vmid, ...args),
+							suspend:  (...args: Bound2<typeof lxcApi.status.suspend>) => lxcApi.status.suspend(node, vmid, ...args),
 						},
 					}),
 				},
@@ -381,40 +379,44 @@ function Nodes(client: Client) {
 
 				// ── QEMU ────────────────────────────────────────────────────
 				qemu: {
-					list:   (args?: A) => qemuApi.list(node, args as never),
-					create: (args?: A) => qemuApi.create(node, args as never),
+					list:   (...args: Bound1<typeof qemuApi.list>) => qemuApi.list(node, ...args),
+					create: (...args: Bound1<typeof qemuApi.create>) => qemuApi.create(node, ...args),
 					vmid: (vmid: number) => ({
 						status_index: () => qemuApi.status_index(node, vmid),
 						dbus_vmstate: qemuApi.dbus_vmstate,
-						mtunnel:      (args?: A) => qemuApi.mtunnel(node, vmid, args as never),
-						mtunnelwebsocket: (args?: A) => qemuApi.mtunnelwebsocket(node, vmid, args as never),
-						remote_migrate:   (args?: A) => qemuApi.remote_migrate(node, vmid, args as never),
-						destroy:     (args?: A) => qemuApi.delete(node, vmid, args as never),
-						diridx:      (args?: A) => qemuApi.get(node, vmid, args as never),
-						clone:       (args: A)  => qemuApi.clone(node, vmid, args as never),
-						migrate:     (args: A)  => qemuApi.migrate(node, vmid, args as never),
-						migrate_info: (args?: A) => qemuApi.migrate_info(node, vmid, args as never),
-						feature:     (args?: A) => qemuApi.feature(node, vmid, args as never),
+						mtunnel:      (...args: Bound2<typeof qemuApi.mtunnel>) => qemuApi.mtunnel(node, vmid, ...args),
+						mtunnelwebsocket: (...args: Bound2<typeof qemuApi.mtunnelwebsocket>) => qemuApi.mtunnelwebsocket(node, vmid, ...args),
+						remote_migrate:   (...args: Bound2<typeof qemuApi.remote_migrate>) => qemuApi.remote_migrate(node, vmid, ...args),
+						destroy:     (...args: Bound2<typeof qemuApi.delete>) => qemuApi.delete(node, vmid, ...args),
+						diridx:      (...args: Bound2<typeof qemuApi.get>) => qemuApi.get(node, vmid, ...args),
+						clone:       (...args: Bound2<typeof qemuApi.clone>) => qemuApi.clone(node, vmid, ...args),
+						migrate:     (...args: Bound2<typeof qemuApi.migrate>) => qemuApi.migrate(node, vmid, ...args),
+						migrate_info: (...args: Bound2<typeof qemuApi.migrate_info>) => qemuApi.migrate_info(node, vmid, ...args),
+						feature:     (...args: Bound2<typeof qemuApi.feature>) => qemuApi.feature(node, vmid, ...args),
 						pending:     ()          => qemuApi.pending(node, vmid),
-						template:    (args?: A) => qemuApi.template(node, vmid, args as never),
-						resize:      (args: A)  => qemuApi.resize(node, vmid, args as never),
-						move_disk:   (args: A)  => qemuApi.move_disk(node, vmid, args as never),
-						unlink:      (args: A)  => qemuApi.unlink(node, vmid, args as never),
-						sendkey:     (args: A)  => qemuApi.sendkey(node, vmid, args as never),
-						monitor:     (args: A)  => qemuApi.monitor(node, vmid, args as never),
-						rrd:         (args?: A) => qemuApi.rrd(node, vmid, args as never),
-						rrddata:     (args?: A) => qemuApi.rrddata(node, vmid, args as never),
-						spiceproxy:  (args?: A) => qemuApi.spiceproxy(node, vmid, args as never),
-						termproxy:   (args?: A) => qemuApi.termproxy(node, vmid, args as never),
-						vncproxy:    (args?: A) => qemuApi.vncproxy(node, vmid, args as never),
-						vncwebsocket:(args?: A) => qemuApi.vncwebsocket(node, vmid, args as never),
+						template:    (...args: Bound2<typeof qemuApi.template>) => qemuApi.template(node, vmid, ...args),
+						resize:      (...args: Bound2<typeof qemuApi.resize>) => qemuApi.resize(node, vmid, ...args),
+						move_disk:   (...args: Bound2<typeof qemuApi.move_disk>) => qemuApi.move_disk(node, vmid, ...args),
+						unlink:      (...args: Bound2<typeof qemuApi.unlink>) => qemuApi.unlink(node, vmid, ...args),
+						sendkey:     (...args: Bound2<typeof qemuApi.sendkey>) => qemuApi.sendkey(node, vmid, ...args),
+						monitor:     (...args: Bound2<typeof qemuApi.monitor>) => qemuApi.monitor(node, vmid, ...args),
+						rrd:         (...args: Bound2<typeof qemuApi.rrd>) => qemuApi.rrd(node, vmid, ...args),
+						rrddata:     (...args: Bound2<typeof qemuApi.rrddata>) => qemuApi.rrddata(node, vmid, ...args),
+						spiceproxy:  (...args: Bound2<typeof qemuApi.spiceproxy>) => qemuApi.spiceproxy(node, vmid, ...args),
+						termproxy:   (...args: Bound2<typeof qemuApi.termproxy>) => qemuApi.termproxy(node, vmid, ...args),
+						vncproxy:    (...args: Bound2<typeof qemuApi.vncproxy>) => qemuApi.vncproxy(node, vmid, ...args),
+						vncwebsocket:(...args: Bound2<typeof qemuApi.vncwebsocket>) => qemuApi.vncwebsocket(node, vmid, ...args),
 						agent: {
-							index:                   (args?: A) => qemuApi.agent(node, vmid, args as never),
-							command:                 (args: A)  => qemuApi.agent_command(node, vmid, args as never),
-							exec:                    (args: A)  => qemuApi.agent_exec(node, vmid, args as never),
-							exec_status:             (args?: A) => qemuApi.agent_exec_status(node, vmid, args as never),
-							file_read:               (args?: A) => qemuApi.agent_file_read(node, vmid, args as never),
-							file_write:              (args: A)  => qemuApi.agent_file_write(node, vmid, args as never),
+							index:                   (...args: Bound2<typeof qemuApi.agent>) => qemuApi.agent(node, vmid, ...args),
+							command:                 (...args: Bound2<typeof qemuApi.agent_command>) => qemuApi.agent_command(node, vmid, ...args),
+							exec:                    (...args: Bound2<typeof qemuApi.agent_exec>) => qemuApi.agent_exec(node, vmid, ...args),
+							exec_status:             (...args: Bound2<typeof qemuApi.agent_exec_status>) => qemuApi.agent_exec_status(node, vmid, ...args),
+							file_read:               (...args: Bound2<typeof qemuApi.agent_file_read>) => qemuApi.agent_file_read(node, vmid, ...args),
+							file_write:              (...args: Bound2<typeof qemuApi.agent_file_write>) => qemuApi.agent_file_write(node, vmid, ...args),
+							get_cpustats:            ()          => qemuApi.agent_get_cpustats(node, vmid),
+							get_disks:               ()          => qemuApi.agent_get_disks(node, vmid),
+							get_diskstats:           ()          => qemuApi.agent_get_diskstats(node, vmid),
+							get_load:                ()          => qemuApi.agent_get_load(node, vmid),
 							get_fsinfo:              ()          => qemuApi.agent_get_fsinfo(node, vmid),
 							get_host_name:           ()          => qemuApi.agent_get_host_name(node, vmid),
 							get_memory_block_info:   ()          => qemuApi.agent_get_memory_block_info(node, vmid),
@@ -435,56 +437,56 @@ function Nodes(client: Client) {
 							suspend_disk:            ()          => qemuApi.agent_suspend_disk(node, vmid),
 							suspend_hybrid:          ()          => qemuApi.agent_suspend_hybrid(node, vmid),
 							suspend_ram:             ()          => qemuApi.agent_suspend_ram(node, vmid),
-							set_user_password:       (args: A)  => qemuApi.agent_set_user_password(node, vmid, args as never),
+							set_user_password:       (...args: Bound2<typeof qemuApi.agent_set_user_password>) => qemuApi.agent_set_user_password(node, vmid, ...args),
 						},
 						cloudinit: {
 							get:    () => qemuApi.cloudinit.get(node, vmid),
-							update: (args?: A) => qemuApi.cloudinit.update(node, vmid, args as never),
-							dump:   (args?: A) => qemuApi.cloudinit.dump(node, vmid, args as never),
+							update: (...args: Bound2<typeof qemuApi.cloudinit.update>) => qemuApi.cloudinit.update(node, vmid, ...args),
+							dump:   (...args: Bound2<typeof qemuApi.cloudinit.dump>) => qemuApi.cloudinit.dump(node, vmid, ...args),
 						},
 						config: {
-							get:          (args?: A) => qemuApi.config.get(node, vmid, args as never),
-							update_async: (args?: A) => qemuApi.config.post(node, vmid, args as never),
-							update:       (args?: A) => qemuApi.config.put(node, vmid, args as never),
+							get:          (...args: Bound2<typeof qemuApi.config.get>) => qemuApi.config.get(node, vmid, ...args),
+							update_async: (...args: Bound2<typeof qemuApi.config.post>) => qemuApi.config.post(node, vmid, ...args),
+							update:       (...args: Bound2<typeof qemuApi.config.put>) => qemuApi.config.put(node, vmid, ...args),
 						},
 						firewall: {
 							get:     () => qemuApi.firewall.get(node, vmid),
-							log:     (args?: A) => qemuApi.firewall.log(node, vmid, args as never),
-							refs:    (args?: A) => qemuApi.firewall.refs(node, vmid, args as never),
+							log:     (...args: Bound2<typeof qemuApi.firewall.log>) => qemuApi.firewall.log(node, vmid, ...args),
+							refs:    (...args: Bound2<typeof qemuApi.firewall.refs>) => qemuApi.firewall.refs(node, vmid, ...args),
 							options: {
 								get: () => qemuApi.firewall.options.get(node, vmid),
-								set: (args?: A) => qemuApi.firewall.options.set(node, vmid, args as never),
+								set: (...args: Bound2<typeof qemuApi.firewall.options.set>) => qemuApi.firewall.options.set(node, vmid, ...args),
 							},
 							aliases: {
 								list:   () => qemuApi.firewall.aliases.list(node, vmid),
-								create: (args: A) => qemuApi.firewall.aliases.create(node, vmid, args as never),
+								create: (...args: Bound2<typeof qemuApi.firewall.aliases.create>) => qemuApi.firewall.aliases.create(node, vmid, ...args),
 								name:   (name: string) => qemuApi.firewall.aliases.name(node, vmid, name),
 							},
 							ipset: {
 								list:   () => qemuApi.firewall.ipset.list(node, vmid),
-								create: (args: A) => qemuApi.firewall.ipset.create(node, vmid, args as never),
+								create: (...args: Bound2<typeof qemuApi.firewall.ipset.create>) => qemuApi.firewall.ipset.create(node, vmid, ...args),
 								name:   (name: string) => qemuApi.firewall.ipset.name(node, vmid, name),
 							},
 							rules: {
 								list:   () => qemuApi.firewall.rules.list(node, vmid),
-								create: (args: A) => qemuApi.firewall.rules.create(node, vmid, args as never),
+								create: (...args: Bound2<typeof qemuApi.firewall.rules.create>) => qemuApi.firewall.rules.create(node, vmid, ...args),
 								pos:    (pos: number) => qemuApi.firewall.rules.pos(node, vmid, pos),
 							},
 						},
 						snapshot: {
 							list:     () => qemuApi.snapshot.list(node, vmid),
-							create:   (args: A) => qemuApi.snapshot.create(node, vmid, args as never),
+							create:   (...args: Bound2<typeof qemuApi.snapshot.create>) => qemuApi.snapshot.create(node, vmid, ...args),
 							snapname: (snapname: string) => qemuApi.snapshot.snapname(node, vmid, snapname),
 						},
 						status: {
 							current:  () => qemuApi.status.current(node, vmid),
-							start:    (args?: A) => qemuApi.status.start(node, vmid, args as never),
-							stop:     (args?: A) => qemuApi.status.stop(node, vmid, args as never),
-							reboot:   (args?: A) => qemuApi.status.reboot(node, vmid, args as never),
-							reset:    (args?: A) => qemuApi.status.reset(node, vmid, args as never),
-							resume:   (args?: A) => qemuApi.status.resume(node, vmid, args as never),
-							shutdown: (args?: A) => qemuApi.status.shutdown(node, vmid, args as never),
-							suspend:  (args?: A) => qemuApi.status.suspend(node, vmid, args as never),
+							start:    (...args: Bound2<typeof qemuApi.status.start>) => qemuApi.status.start(node, vmid, ...args),
+							stop:     (...args: Bound2<typeof qemuApi.status.stop>) => qemuApi.status.stop(node, vmid, ...args),
+							reboot:   (...args: Bound2<typeof qemuApi.status.reboot>) => qemuApi.status.reboot(node, vmid, ...args),
+							reset:    (...args: Bound2<typeof qemuApi.status.reset>) => qemuApi.status.reset(node, vmid, ...args),
+							resume:   (...args: Bound2<typeof qemuApi.status.resume>) => qemuApi.status.resume(node, vmid, ...args),
+							shutdown: (...args: Bound2<typeof qemuApi.status.shutdown>) => qemuApi.status.shutdown(node, vmid, ...args),
+							suspend:  (...args: Bound2<typeof qemuApi.status.suspend>) => qemuApi.status.suspend(node, vmid, ...args),
 						},
 					}),
 				},
@@ -543,7 +545,7 @@ function Nodes(client: Client) {
 				// ── Services ────────────────────────────────────────────────
 				services: {
 					index: () => r("/nodes/{node}/services", "GET", { $path: { node } }),
-					service: (service: string) => ({
+					service: (service: Service) => ({
 						get:     () => r("/nodes/{node}/services/{service}",         "GET",  { $path: { node, service } }),
 						reload:  () => r("/nodes/{node}/services/{service}/reload",  "POST", { $path: { node, service } }),
 						restart: () => r("/nodes/{node}/services/{service}/restart", "POST", { $path: { node, service } }),
